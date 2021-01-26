@@ -75,13 +75,13 @@ class Forum {
   }
 }
 
-/// API GetX Controller
+/// WithcenterApi GetX Controller
 ///
 /// TODO: publish it as package.
 ///
-/// [API] is the Api class for commuting backend.
+/// [WithcenterApi] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
-class API extends GetxController {
+class WithcenterApi extends GetxController {
   ApiUser user;
 
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
@@ -94,8 +94,9 @@ class API extends GetxController {
 
   Prefix.Dio dio = Prefix.Dio();
 
-  /// [url] is the api url.
-  String url;
+  /// [_apiUrl] is the api url.
+  String _apiUrl;
+
   GetStorage localStorage;
 
   ApiBio bioData;
@@ -128,18 +129,27 @@ class API extends GetxController {
 
   PublishSubject translationChanges = PublishSubject();
 
+  FirebaseDatabase get database => FirebaseDatabase.instance;
+
+  String get id => user?.id;
+  String get sessionId => user?.sessionId;
+  String get primaryPhotoUrl => user?.profilePhotoUrl;
+  String get fullName => user?.name;
+  bool get profileComplete =>
+      loggedIn &&
+      primaryPhotoUrl != null &&
+      primaryPhotoUrl.isNotEmpty &&
+      fullName != null &&
+      fullName.isNotEmpty;
+
+  bool get loggedIn => user != null && user.sessionId != null;
+  bool get notLoggedIn => !loggedIn;
+
   @override
   void onInit() {
     super.onInit();
 
-    database.reference().child('notifications/translation').onValue.listen((event) {
-      loadTranslations();
-    });
-    loadTranslations();
-
-    checkLocation();
-    listenLocationChange();
-
+    initLocation();
     GetStorage.init().then((b) {
       localStorage = GetStorage();
 
@@ -176,21 +186,29 @@ class API extends GetxController {
     });
   }
 
-  FirebaseDatabase get database => FirebaseDatabase.instance;
+  /// Sets the backend API URL
+  /// ```dart
+  /// withcenterApi.init(apiUrl: apiUrl);
+  /// withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+  /// ```
+  init({@required String apiUrl}) {
+    _apiUrl = apiUrl;
 
-  String get id => user?.id;
-  String get sessionId => user?.sessionId;
-  String get primaryPhotoUrl => user?.profilePhotoUrl;
-  String get fullName => user?.name;
-  bool get profileComplete =>
-      loggedIn &&
-      primaryPhotoUrl != null &&
-      primaryPhotoUrl.isNotEmpty &&
-      fullName != null &&
-      fullName.isNotEmpty;
+    initTranslation();
+    initLocation();
+  }
 
-  bool get loggedIn => user != null && user.sessionId != null;
-  bool get notLoggedIn => !loggedIn;
+  initTranslation() {
+    database.reference().child('notifications/translation').onValue.listen((event) {
+      loadTranslations();
+    });
+    loadTranslations();
+  }
+
+  initLocation() {
+    checkLocation();
+    listenLocationChange();
+  }
 
   /// If the input [data] does not have `session_id` property, add it.
   Map<String, dynamic> _addSessionId(Map<String, dynamic> data) {
@@ -211,7 +229,7 @@ class API extends GetxController {
     });
 
     String queryString = Uri(queryParameters: params).query;
-    print("url: $url?$queryString");
+    print("url: $_apiUrl?$queryString");
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -219,7 +237,7 @@ class API extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     // _printDebugUrl(data);
-    final res = await dio.post(url, data: data);
+    final res = await dio.post(_apiUrl, data: data);
     // print('dio.post(url, data:data) --> result: $res');
     if (res.data == null) {
       throw ('Response.body is null. Backend might not an API server. Or, Backend URL is wrong.');
@@ -236,9 +254,18 @@ class API extends GetxController {
     return res.data['data'];
   }
 
+  /// Get version of backend api.
+  ///
+  /// ```dart
+  /// withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+  /// ```
+  Future<dynamic> version() {
+    return request({'route': 'app.version'});
+  }
+
   /// Query directly to database with SQL.
   /// ```dart
-  /// final re = await api.query('bio', "profile_photo_url!='' ORDER BY updatedAt DESC LIMIT 15");
+  /// final re = await api.query('bio', "profile_photo_apiUrl!='' ORDER BY updatedAt DESC LIMIT 15");
   /// ```
   Future query(String table, String where) {
     return request({
@@ -468,7 +495,7 @@ class API extends GetxController {
     });
 
     final res = await dio.post(
-      url,
+      _apiUrl,
       data: formData,
       onSendProgress: (int sent, int total) {
         if (onProgress != null) onProgress(sent * 100 / total);
@@ -557,9 +584,6 @@ class API extends GetxController {
     }
     return true;
   }
-
-  /// EO
-  ///
 
   /// Update login user's record of a table.
   Future appUpdate(String table, String field, String value) {

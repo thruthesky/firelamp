@@ -1,15 +1,25 @@
-# withcenter
+# Withcenter Api
 
-A new Flutter package project.
+Flutter package for Withcenter backend v3.
 
-## Getting Started
+# Installation
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+- Add latest version into pubspec.yaml
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
-# withcenter
+# Configuration
+
+- An instance of `withcenterApi` is available as global variable, so you don't have to create one unless you wish.
+
+- Put it as `GetX` controller like below. You should do it as early as possible on your app's lifecycle. Root screen page would be a good place.
+
+```dart
+final WithcenterApi wa = Get.put(withcenterApi);
+```
+
+- Intialize `WithcenterApi` like below. `apiUrl` is the backend api url.
+
+```dart
+print('withcenterApi: $withcenterApi');
+withcenterApi.init(apiUrl: apiUrl);
+withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+```
