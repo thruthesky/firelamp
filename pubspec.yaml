@@ -1,7 +1,7 @@
-name: withcenter
+name: firelamp
 description: A new Flutter package project.
 version: 0.0.1
-homepage: https://github.com/thruthesky/withcenter
+homepage: https://github.com/thruthesky/firelamp
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

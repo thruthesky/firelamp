@@ -1,6 +1,25 @@
-# Withcenter Api
+# FireLamp
 
-Flutter package for Withcenter backend v3.
+A flutter package to support fundamental functionalities for building apps.
+
+It is based on Firebase and LAMP stack.
+
+## Overview
+
+We have been working on a flutter package to support basic functionalities to build apps like social community app, shopping mall app, and any kinds app.
+
+We first worked on Firebase with LAMP stack for a while and we decided to remove LAMP stack since it is a hassle to maintain two stacks.
+
+After a couple of months, we had successfully built a flutter package named `fireflutter`..., But we were not satisfied with the complex query on firestore. Without hesitate, we went back to LAMP stack with Firebase.
+
+And here it is, `FireLamp`.
+
+## Reference
+
+### LAMP stack on Wordpress
+
+- We have built the backend on Wordpress.
+  - [withcenter-backend-v3](https://github.com/thruthesky/withcenter-backend-v3)
 
 # Installation
 

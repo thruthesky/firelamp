@@ -1,4 +1,4 @@
-library withcenter;
+library firelamp;
 
 import 'dart:async';
 import 'dart:io';

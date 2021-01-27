@@ -1,4 +1,4 @@
-part of 'withcenter.dart';
+part of 'firelamp.dart';
 
 /// Returns filename with extension.
 ///

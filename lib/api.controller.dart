@@ -1,4 +1,4 @@
-part of 'withcenter.dart';
+part of 'firelamp.dart';
 
 /// Bio table name on backend server datagbase.
 const String BIO_TABLE = 'api_bio';
