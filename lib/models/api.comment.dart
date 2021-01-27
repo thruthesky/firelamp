@@ -45,7 +45,7 @@ class ApiComment {
   /// - `CommentMode.none` string for nothing.
   CommentMode mode;
 
-  bool get isMine => userId == withcenterApi.id;
+  bool get isMine => userId == api.id;
   bool get isNotMine => !isMine;
 
   factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(

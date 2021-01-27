@@ -75,13 +75,13 @@ class Forum {
   }
 }
 
-/// WithcenterApi GetX Controller
+/// Api GetX Controller
 ///
 /// TODO: publish it as package.
 ///
-/// [WithcenterApi] is the Api class for commuting backend.
+/// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
-class WithcenterApi extends GetxController {
+class Api extends GetxController {
   ApiUser user;
 
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
@@ -145,12 +145,12 @@ class WithcenterApi extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
-  WithcenterApi() {
-    print("--> WithcenterApi() constructor");
+  Api() {
+    print("--> Api() constructor");
   }
   @override
   void onInit() {
-    print("--> WithcenterApi::onInit()");
+    print("--> Api::onInit()");
     super.onInit();
 
     GetStorage.init().then((b) {
@@ -191,14 +191,14 @@ class WithcenterApi extends GetxController {
 
   /// Initialization
   ///
-  /// This must be called from the app to initialize [WithcenterApi]
+  /// This must be called from the app to initialize [Api]
   /// This method should be called immediately when [apiUrl] could be set.
   /// No need wait for any other dependencies like user login, firebase initialization.
   ///
   ///
   /// ```dart
-  /// withcenterApi.init(apiUrl: apiUrl);
-  /// withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+  /// Api.init(apiUrl: apiUrl);
+  /// Api.version().then((res) => print('Api.version(): $res'));
   /// ```
   init({@required String apiUrl}) {
     _apiUrl = apiUrl;
@@ -266,7 +266,7 @@ class WithcenterApi extends GetxController {
   /// Get version of backend api.
   ///
   /// ```dart
-  /// withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+  /// Api.version().then((res) => print('Api.version(): $res'));
   /// ```
   Future<dynamic> version() {
     return request({'route': 'app.version'});

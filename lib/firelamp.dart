@@ -23,4 +23,4 @@ part 'models/api.post.dart';
 part 'models/api.user.dart';
 part 'models/api.bio.dart';
 
-final WithcenterApi withcenterApi = WithcenterApi();
+final Api api = Api();

@@ -11,10 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   firebase_core: "0.7.0"
   firebase_database: "^6.0.0"
   get: ^3.24.0
@@ -29,4 +25,9 @@ dev_dependencies:
   scrollable_positioned_list: ^0.1.8
 
   age: ^0.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
 flutter:
