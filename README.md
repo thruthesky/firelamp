@@ -8,15 +8,23 @@ Flutter package for Withcenter backend v3.
 
 # Configuration
 
-- An instance of `withcenterApi` is available as global variable, so you don't have to create one unless you wish.
+- When app starts(and running), the instance of `WithcenterApi` is already available as global variable named `withcenterApi`. This is because data models(like `ApiUser`) shares the instance.
+- You may rename it to `api` like below.
 
-- Put it as `GetX` controller like below. You should do it as early as possible on your app's lifecycle. Root screen page would be a good place.
+```dart
+final WithcenterApi api = withcenterApi;
+```
+
+## Put WithcenterApi instance as GetX controller
+
+- Put the instance as `GetX` controller as early as possible on the app start-up like below. Root screen page would be a good place.
+  `WithcenterApi` is working on `GetX` package.
 
 ```dart
 final WithcenterApi wa = Get.put(withcenterApi);
 ```
 
-- Intialize `WithcenterApi` like below. `apiUrl` is the backend api url.
+- Then, intialize `WithcenterApi` like below. `apiUrl` is the backend api url.
 
 ```dart
 print('withcenterApi: $withcenterApi');

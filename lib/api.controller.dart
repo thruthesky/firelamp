@@ -145,11 +145,14 @@ class WithcenterApi extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
+  WithcenterApi() {
+    print("--> WithcenterApi() constructor");
+  }
   @override
   void onInit() {
+    print("--> WithcenterApi::onInit()");
     super.onInit();
 
-    initLocation();
     GetStorage.init().then((b) {
       localStorage = GetStorage();
 
@@ -186,7 +189,13 @@ class WithcenterApi extends GetxController {
     });
   }
 
-  /// Sets the backend API URL
+  /// Initialization
+  ///
+  /// This must be called from the app to initialize [WithcenterApi]
+  /// This method should be called immediately when [apiUrl] could be set.
+  /// No need wait for any other dependencies like user login, firebase initialization.
+  ///
+  ///
   /// ```dart
   /// withcenterApi.init(apiUrl: apiUrl);
   /// withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
@@ -206,7 +215,7 @@ class WithcenterApi extends GetxController {
   }
 
   initLocation() {
-    checkLocation();
+    checkLocationServicePermission();
     listenLocationChange();
   }
 
@@ -702,10 +711,10 @@ class WithcenterApi extends GetxController {
     return ApiBio.fromJson(re);
   }
 
-  /// 필요한 경우 언제든지 [checkLocation]을 호출해서, Location 기능이 사용가능한지 확인을 해 볼 수 있다.
+  /// 필요한 경우 언제든지 [checkLocationServicePermission]을 호출해서, Location 기능이 사용가능한지 확인을 해 볼 수 있다.
   /// 예를 들어, Location 기능이 사용가능한지 아닌지에 따라서 동작을 달리해야 할 경우, [locationChanges] 이벤트를 listen 해도 되겠지만,
-  /// 직접 `re = await checkLocation()` 와 같이 호출 해도 된다.
-  Future<bool> checkLocation() async {
+  /// 직접 `re = await checkLocationServicePermission()` 와 같이 호출 해도 된다.
+  Future<bool> checkLocationServicePermission() async {
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
@@ -729,11 +738,12 @@ class WithcenterApi extends GetxController {
       return false;
     }
 
-    // 나의 위치를 한번 읽는다.
-    myLocation = await location.getLocation();
-
     // location.permissionGranted 와 같이 참조 가능
     locationChanges.add(locationReady);
+
+    // 나의 위치를 한번 읽는다. 주의: 위치를 못읽을 수 있다. 그래서 Promise 로 동작한다.
+    await location.getLocation().then((data) => myLocation = data);
+
     return locationReady;
   }
 
@@ -768,7 +778,7 @@ class WithcenterApi extends GetxController {
   /// todo: make it one time call.
   loadTranslations() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    print('loadTranslations() res: $res');
+    // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
   }
