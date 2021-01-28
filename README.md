@@ -1,16 +1,16 @@
 # FireLamp
 
-A flutter package to support fundamental functionalities for building apps.
+A flutter package to support CMS(Content Management System) functionalities like user management, forum management, and more for building apps like social apps, shopping apps.
 
 It is based on Firebase and LAMP stack.
 
-## Overview
+## A story
 
-We have been working on a flutter package to support basic functionalities to build apps like social community app, shopping mall app, and any kinds app.
+We have been working on a flutter package to support the basic functionalities that every app needs.
 
-We first worked on Firebase with LAMP stack for a while and we decided to remove LAMP stack since it is a hassle to maintain two stacks.
+We first worked on Firebase with LAMP(or LEMP) stack for a while and we decided to remove LAMP stack since it is a hassle to maintain two stacks.
 
-After a couple of months, we had successfully built a flutter package named `fireflutter`..., But we were not satisfied with the complex query on firestore. Without hesitate, we went back to LAMP stack with Firebase.
+After a couple of months, we had successfully built the first version of flutter package without LAMP stack named `fireflutter`. But we were not satisfied with the complex query on firestore. Then, without hesitate, we went back to LAMP stack with Firebase.
 
 And here it is, `FireLamp`.
 
@@ -19,7 +19,7 @@ And here it is, `FireLamp`.
 ### LAMP stack on Wordpress
 
 - We have built the backend on Wordpress.
-  - [withcenter-backend-v3](https://github.com/thruthesky/withcenter-backend-v3)
+  - [sonub](https://github.com/thruthesky/sonub)
 
 # Installation
 
@@ -27,26 +27,20 @@ And here it is, `FireLamp`.
 
 # Configuration
 
-- When app starts(and running), the instance of `WithcenterApi` is already available as global variable named `withcenterApi`. This is because data models(like `ApiUser`) shares the instance.
-- You may rename it to `api` like below.
-
-```dart
-final WithcenterApi api = withcenterApi;
-```
+- When app starts(and running), the instance of `Api` is already available as global variable named `api`. This is because data models(like `ApiUser`) shares the global instance.
 
 ## Put WithcenterApi instance as GetX controller
 
 - Put the instance as `GetX` controller as early as possible on the app start-up like below. Root screen page would be a good place.
-  `WithcenterApi` is working on `GetX` package.
 
 ```dart
-final WithcenterApi wa = Get.put(withcenterApi);
+final Api a = Get.put(api);
 ```
 
-- Then, intialize `WithcenterApi` like below. `apiUrl` is the backend api url.
+- Then, intialize `Api` like below. `apiUrl` is the backend api url.
 
 ```dart
-print('withcenterApi: $withcenterApi');
-withcenterApi.init(apiUrl: apiUrl);
-withcenterApi.version().then((res) => print('withcenterApi.version(): $res'));
+print('api: $api');
+api.init(apiUrl: apiUrl);
+api.version().then((res) => print('api.version(): $res'));
 ```

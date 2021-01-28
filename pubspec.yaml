@@ -1,6 +1,6 @@
 name: firelamp
-description: A new Flutter package project.
-version: 0.0.1
+description: A flutter package to support CMS(Content Management System) functionalities like user management, forum management, and more for building apps like social apps, shopping apps.
+version: 0.0.2
 homepage: https://github.com/thruthesky/firelamp
 
 environment:
