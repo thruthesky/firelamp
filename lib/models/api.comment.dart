@@ -58,7 +58,8 @@ class ApiComment {
         commentContent: json["comment_content"],
         commentContentAutop: json["comment_content_autop"],
         commentDate: DateTime.parse(json["comment_date"]),
-        files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+        files:
+            List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
         userPhoto: json["user_photo"] ?? '',
         shortDateTime: json["short_date_time"],
       );

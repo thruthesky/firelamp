@@ -24,7 +24,8 @@ class ApiUser {
     AgeDuration _age;
 
     // Set the age of the user
-    _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
+    _age = Age.dateDifference(
+        fromDate: birthday, toDate: today, includeToDate: false);
 
     return _age.years.toString();
   }

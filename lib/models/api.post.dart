@@ -88,10 +88,12 @@ class ApiPost {
         guid: json["guid"],
         commentCount: json["comment_count"],
         postCategory: List<int>.from(json["post_category"].map((x) => x)),
-        files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+        files:
+            List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
         authorName: json["author_name"],
         shortDateTime: json["short_date_time"],
-        comments: List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+        comments: List<ApiComment>.from(
+            json["comments"].map((x) => ApiComment.fromJson(x))),
         category: json["category"],
         featuredImageUrl: json["featured_image_url"],
         featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
@@ -118,7 +120,8 @@ class ApiPost {
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         "author_name": authorName,
         "short_date_time": shortDateTime,
-        "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        "comments":
+            List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "category": category,
         "featured_image_url": featuredImageUrl,
         "featured_image_thumbnail_url": featuredImageThumbnailUrl,
