@@ -24,23 +24,74 @@ And here it is, `FireLamp`.
 # Installation
 
 - Add latest version into pubspec.yaml
+- Set the Firebase settings on the project.
 
-# Configuration
+  - Add iOS `GoogleServices-info.plist` and Android `google-serfvices.json`.
 
-- When app starts(and running), the instance of `Api` is already available as global variable named `api`. This is because data models(like `ApiUser`) shares the global instance.
+- The instance of FireLamp `Api` is created and available as global variable named `api`. This is because data models(like `ApiUser`) shares the global instance.
 
 ## Put WithcenterApi instance as GetX controller
 
 - Put the instance as `GetX` controller as early as possible on the app start-up like below. Root screen page would be a good place.
+  - And, intialize `Api` like below. `apiUrl` is the backend api url.
 
 ```dart
-final Api a = Get.put(api);
+class _MainAppState extends State<MainApp> {
+  final Api a = Get.put<Api>(api);
+
+  @override
+  void initState() {
+    super.initState();
+    a.init(apiUrl: 'https://flutterkorea.com/wp-content/themes/sonub/api/index.php');
+    a.version().then((res) {
+      print('res: $res');
+    });
+    a.translationChanges.listen((trs) {
+      print('trs: $trs');
+    });
+  }
 ```
 
-- Then, intialize `Api` like below. `apiUrl` is the backend api url.
+## Language Settings
+
+- First, add `language codes` in `Info.plist` on iOS. For android, it work out of the box.
+
+```xml
+		<key>CFBundleLocalizations</key>
+		<array>
+			<string>en</string>
+			<string>ch</string>
+			<string>ja</string>
+			<string>ko</string>
+		</array>
+```
+
+- Then, code like below.
 
 ```dart
-print('api: $api');
-api.init(apiUrl: apiUrl);
-api.version().then((res) => print('api.version(): $res'));
+
+class _MainAppState extends State<MainApp> {
+  final Api a = Get.put<Api>(api);
+
+  @override
+  void initState() {
+    super.initState();
+    a.init(apiUrl: 'https://flutterkorea.com/wp-content/themes/sonub/api/index.php');
+    a.translationChanges.listen((trs) {
+      updateTranslations(trs);
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      locale: Locale(Get.deviceLocale.languageCode),
+      translations: AppTranslations(),
+      getPages: [
+        /// ...
+      ],
+    );
+  }
+}
 ```

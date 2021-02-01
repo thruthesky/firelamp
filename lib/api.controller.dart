@@ -24,8 +24,7 @@ class Forum {
   bool get canLoad => loading == false && noMorePosts == false;
   bool get canList => postInEdit == null && posts.length > 0;
   final ItemScrollController listController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   Function render;
 
@@ -91,6 +90,7 @@ class Api extends GetxController {
   BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
 
   /// [errror] is posted on any error.
+  // ignore: close_sinks
   PublishSubject<dynamic> error = PublishSubject();
 
   Prefix.Dio dio = Prefix.Dio();
@@ -99,34 +99,6 @@ class Api extends GetxController {
   String _apiUrl;
 
   GetStorage localStorage;
-
-  ApiBio bioData;
-
-  /// [location] is the location package
-  Location location = Location();
-
-  /// Location 이 사용가능한 상태이면, 내 위치를 [myLocation] 에 보관한다. [locationReady] 가 true 인 상태에서 이 값에는 나의 최신 위치 정보가 들어가 있다.
-  LocationData myLocation;
-  bool serviceEnabled = false;
-  bool permissionGranted = false;
-  PermissionStatus _permissionGranted;
-
-  /// Location(내 위치) 서비스가 Enable 되었고, 앱에 권한이 있으면 true
-  bool get locationReady => serviceEnabled && permissionGranted;
-
-  /// 이 이벤트가 false 값으로 전달되는 경우, serviceEnabled 또는 permissionGranted 를 참고해서,
-  /// 서비스가 Enable 되지 않았는지 또는 앱 권한이 없는지 확인 할 수 있다.
-  /// 참고로 앱이 부팅 할 때, 처음에는 null 이벤트가 발생하며, 그 이후, Location 기능이 사용가능하면 true, 아니면 false 가 한번 발생하게 된다.
-  ///
-  /// 예제)
-  /// ```
-  /// api.locationChanges.listen((re) async {
-  ///   if (re == null) return;
-  ///   /* 여기에 코드가 오면, Location 이 사용 가능한지 아닌지 확인된상태이다. */
-  ///   await fetchUsers();
-  /// });
-  /// ```
-  BehaviorSubject<bool> locationChanges = BehaviorSubject.seeded(null);
 
   PublishSubject translationChanges = PublishSubject();
 
@@ -145,6 +117,8 @@ class Api extends GetxController {
 
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
+
+  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
   Api() {
     print("--> Api() constructor");
@@ -172,56 +146,44 @@ class Api extends GetxController {
     });
 
     authChanges.listen((user) async {
-      if (user == null) {
-        bioData = null;
-      } else {
-        try {
-          bioData = await getMyBioRecord();
-          update();
-        } catch (e) {
-          if (e == ERROR_EMPTY_RESPONSE) {
-            bioData = ApiBio.fromJson({});
-            print("bio data: $bioData");
-          } else {
-            error.add(e);
-          }
-        }
-      }
+      print('authChanges');
     });
   }
 
   /// Initialization
   ///
   /// This must be called from the app to initialize [Api]
-  /// This method should be called immediately when [apiUrl] could be set.
-  /// No need wait for any other dependencies like user login, firebase initialization.
+  ///
+  /// This method initialize firebase and the translation.
+  ///
   ///
   ///
   /// ```dart
   /// Api.init(apiUrl: apiUrl);
   /// Api.version().then((res) => print('Api.version(): $res'));
   /// ```
-  init({@required String apiUrl}) {
+  Future<void> init({@required String apiUrl}) async {
     _apiUrl = apiUrl;
-
-    initTranslation();
-    initLocation();
+    await _initializeFirebase();
+    _initTranslation();
   }
 
-  initTranslation() {
-    database
-        .reference()
-        .child('notifications/translation')
-        .onValue
-        .listen((event) {
+  Future<void> _initializeFirebase() async {
+    try {
+      await Firebase.initializeApp();
+      firebaseInitialized.add(true);
+      print("App is connected to Firebase!");
+    } catch (e) {
+      print("Error: failed to connect to Firebase!");
+    }
+  }
+
+  /// Load translations
+  _initTranslation() {
+    database.reference().child('notifications/translation').onValue.listen((event) {
       loadTranslations();
     });
     loadTranslations();
-  }
-
-  initLocation() {
-    checkLocationServicePermission();
-    listenLocationChange();
   }
 
   /// If the input [data] does not have `session_id` property, add it.
@@ -261,8 +223,7 @@ class Api extends GetxController {
       throw (res.data);
     } else if (res.data['code'] != 0) {
       /// If there is error like "ERROR_", then it throws exception.
-      print(
-          'api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+      print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
       print(data);
       throw res.data['code'];
     }
@@ -377,8 +338,7 @@ class Api extends GetxController {
 
   userProfile(String sessionId) async {
     if (sessionId == null) return;
-    final Map<String, dynamic> res =
-        await request({'route': 'user.profile', 'session_id': sessionId});
+    final Map<String, dynamic> res = await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
     update();
     return user;
@@ -416,9 +376,7 @@ class Api extends GetxController {
     final data = {
       'route': 'forum.editComment',
       'comment_post_ID': post.id,
-      if (comment != null &&
-          comment.commentId != null &&
-          comment.commentId != '')
+      if (comment != null && comment.commentId != null && comment.commentId != '')
         'comment_ID': comment.commentId,
       if (parent != null) 'comment_parent': parent.commentId,
       'comment_content': content ?? '',
@@ -436,8 +394,7 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
-  Future<Map<dynamic, dynamic>> setFeaturedImage(
-      ApiPost post, ApiFile file) async {
+  Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
       'ID': post.id,
@@ -480,8 +437,7 @@ class Api extends GetxController {
     return data['comment_ID'];
   }
 
-  Future<List<ApiPost>> searchPost(
-      {String category, int limit = 20, int paged = 1, String author}) async {
+  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
@@ -497,8 +453,7 @@ class Api extends GetxController {
     return _posts;
   }
 
-  Future<ApiFile> uploadFile(
-      {@required File file, Function onProgress, String postType}) async {
+  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
@@ -577,8 +532,7 @@ class Api extends GetxController {
     forum.render();
 
     List<ApiPost> _posts;
-    _posts = await searchPost(
-        category: forum.category, paged: forum.pageNo, limit: forum.limit);
+    _posts = await searchPost(category: forum.category, paged: forum.pageNo, limit: forum.limit);
 
     if (_posts.length == 0) {
       forum.noMorePosts = true;
@@ -647,12 +601,7 @@ class Api extends GetxController {
     return request({'route': 'notification.updateToken', 'token': token});
   }
 
-  sendMessageToTokens(
-      {String token,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+  sendMessageToTokens({String token, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'token': token,
@@ -664,12 +613,7 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToTopic(
-      {String topic,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -722,89 +666,10 @@ class Api extends GetxController {
     return request({'route': 'translation.list', 'format': 'language-first'});
   }
 
-  Future<ApiBio> updateBio(String code, String value) async {
-    final re = await appUpdate(BIO_TABLE, code, value);
-    bioData = ApiBio.fromJson(re);
-    update();
-    return bioData;
-  }
-
-  Future<ApiBio> getMyBioRecord() async {
-    final re = await appGet(BIO_TABLE);
-    return ApiBio.fromJson(re);
-  }
-
-  /// 필요한 경우 언제든지 [checkLocationServicePermission]을 호출해서, Location 기능이 사용가능한지 확인을 해 볼 수 있다.
-  /// 예를 들어, Location 기능이 사용가능한지 아닌지에 따라서 동작을 달리해야 할 경우, [locationChanges] 이벤트를 listen 해도 되겠지만,
-  /// 직접 `re = await checkLocationServicePermission()` 와 같이 호출 해도 된다.
-  Future<bool> checkLocationServicePermission() async {
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-    }
-    if (serviceEnabled == false) {
-      // location.serviceEnabled 와 같이 참조 가능
-      locationChanges.add(locationReady);
-      return false;
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-    }
-
-    if (_permissionGranted == PermissionStatus.granted) {
-      permissionGranted = true;
-    } else {
-      permissionGranted = false;
-      locationChanges.add(locationReady);
-      return false;
-    }
-
-    // location.permissionGranted 와 같이 참조 가능
-    locationChanges.add(locationReady);
-
-    // 나의 위치를 한번 읽는다. 주의: 위치를 못읽을 수 있다. 그래서 Promise 로 동작한다.
-    await location.getLocation().then((data) => myLocation = data);
-
-    return locationReady;
-  }
-
-  /// 내 위치가 변경되는지 모니터링한다.
-  ///
-  /// 내 위치가 변경되면 서버 api_bio 테이블에 내 위치를 업데이트를 한다.
-  listenLocationChange() async {
-    /// [interval] 은 Android 에서만 동작한다. iOS 는 동작 안 함.
-    location.changeSettings(
-        accuracy: LocationAccuracy.high, interval: 1000, distanceFilter: 0.3);
-
-    ///그래서, iOS 에서는 rxdart 로 12초에 한번씩 업데이트하도록 한다.
-    location.onLocationChanged
-        .throttleTime(Duration(milliseconds: 12345))
-        .listen((LocationData data) async {
-      if (notLoggedIn) return;
-      myLocation = data;
-      final params = {
-        'route': 'app.updates',
-        'table': BIO_TABLE,
-        'latitude': data.latitude,
-        'longitude': data.longitude,
-        'accuracy': data.accuracy,
-        'altitude': data.altitude,
-        'speed': data.speed,
-        'heading': data.heading,
-        'time': data.time,
-      };
-      // print("api.location.controller.dart::listenLocationChange() $params");
-      await request(params);
-    });
-  }
-
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
   loadTranslations() async {
-    final res = await request(
-        {'route': 'translation.list', 'format': 'language-first'});
+    final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
