@@ -95,3 +95,129 @@ class _MainAppState extends State<MainApp> {
   }
 }
 ```
+
+## User
+
+### Display user login information
+
+- with stream builder
+
+```dart
+StreamBuilder(
+  stream: api.authChanges,
+  builder: (_, snapshot) {
+    if (snapshot.hasData)
+      return Text('User nickname: ${api.nickname}');
+    else
+      return Text('loading...');
+  },
+),
+```
+
+- or with getx
+
+```dart
+GetBuilder<Api>(
+  builder: (_) {
+    if (api.loggedIn)
+      return Text('Session Id: ${api.sessionId}\n'
+          'User nickname: ${api.nickname}');
+    else
+      return Text('Not logged in');
+  },
+),
+```
+
+## Forum
+
+- Example of Forum List
+
+```dart
+import 'package:dalgona/screens/forum/widgets/no_more_posts.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:dalgona/services/globals.dart';
+import 'package:dalgona/widgets/app.menu.dart';
+import 'package:dalgona/widgets/spinner.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class ForumListScreen extends StatefulWidget {
+  ForumListScreen({Key key}) : super(key: key);
+
+  @override
+  _ForumListScreenState createState() => _ForumListScreenState();
+}
+
+class _ForumListScreenState extends State<ForumListScreen> {
+  /// Declare forum model(setting)
+  ApiForum forum;
+  @override
+  void initState() {
+    super.initState();
+
+    /// Initialize the forum model
+    forum = ApiForum(
+      category: Get.arguments['category'],
+      render: () {
+        print("no of posts: ${forum.posts.length}");
+        setState(() => null);
+      },
+    );
+
+    /// Attach the forum model to the api controller and let the controller handle
+    /// all the forum settings.
+    api.attachForum(forum);
+
+    /// Load the first page
+    api.fetchPosts(forum: forum).catchError((e) => app.error(e));
+
+    /// Load next page on user scroll
+    forum.itemPositionsListener.itemPositions.addListener(() {
+      int lastVisibleIndex = forum.itemPositionsListener.itemPositions.value.last.index;
+      if (forum.loading) return;
+      if (lastVisibleIndex > forum.posts.length - 4) {
+        api.fetchPosts(forum: forum).catchError((e) => app.error(e));
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Forum list'),
+      ),
+      endDrawer: AppMenu(),
+      body: Column(
+        children: [
+          Expanded(
+            /// Use ScrollablePositinoList instead of ListView.
+            /// It can scroll by the item(post).
+            child: ScrollablePositionedList.builder(
+              itemScrollController: forum.listController,
+              itemPositionsListener: forum.itemPositionsListener,
+              itemCount: forum.posts.length,
+              itemBuilder: (_, i) {
+                ApiPost post = forum.posts[i];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'title: ${post.postTitle}',
+                      style: TextStyle(fontSize: 34),
+                    ),
+                    RaisedButton(child: Text('Button'), onPressed: () {}),
+                  ],
+                );
+              },
+            ),
+          ),
+          Spinner(loading: forum.loading),
+          NoMorePosts(forum: forum),
+        ],
+      ),
+    );
+  }
+}
+```

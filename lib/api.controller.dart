@@ -6,75 +6,6 @@ const String BIO_TABLE = 'api_bio';
 /// Error codes
 const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
-/// Forum model
-///
-/// [Forum] is a data model for a forum category.
-///
-/// Note that forum data model must not connect to backend directly by using API controller. Instead, the API controller
-/// will use the instance of this forum model.
-///
-/// [Forum] only manages the data of a category.
-class Forum {
-  String category;
-  List<ApiPost> posts = [];
-  bool loading = false;
-  bool noMorePosts = false;
-  int pageNo = 1;
-  int limit = 10;
-  bool get canLoad => loading == false && noMorePosts == false;
-  bool get canList => postInEdit == null && posts.length > 0;
-  final ItemScrollController listController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-
-  Function render;
-
-  ApiPost postInEdit;
-  Forum({@required this.category, this.limit = 10, @required this.render});
-
-  /// Edit post or comment
-  ///
-  /// To create a post
-  /// ```
-  /// edit(post: ApiPost())
-  /// ```
-  ///
-  /// To update a post
-  /// ```
-  /// edit(post: post);
-  /// ```
-  ///
-  /// To cancel editing post
-  /// ```
-  /// edit(null)
-  /// ```
-  editPost(ApiPost post) {
-    postInEdit = post;
-    render();
-  }
-
-  /// Inserts a new post on top or updates an existing post.
-  ///
-  /// Logic
-  /// - find existing post and replace. Or add new one on top.
-  /// - render the view
-  /// - scroll to the post
-  insertOrUpdatePost(post) {
-    postInEdit = null;
-    int i = posts.indexWhere((p) => p.id == post.id);
-    int jumpTo = 0;
-    if (i == -1) {
-      posts.insert(0, post);
-    } else {
-      posts[i] = post;
-      jumpTo = i;
-    }
-    render();
-    WidgetsBinding.instance.addPostFrameCallback((x) {
-      listController.jumpTo(index: jumpTo);
-    });
-  }
-}
-
 /// Api GetX Controller
 ///
 /// TODO: publish it as package.
@@ -108,6 +39,7 @@ class Api extends GetxController {
   String get sessionId => user?.sessionId;
   String get primaryPhotoUrl => user?.profilePhotoUrl;
   String get fullName => user?.name;
+  String get nickname => user?.nickname;
   bool get profileComplete =>
       loggedIn &&
       primaryPhotoUrl != null &&
@@ -278,6 +210,7 @@ class Api extends GetxController {
     @required String pass,
     Map<String, dynamic> data,
   }) async {
+    if (data == null) data = {};
     data['route'] = 'user.loginOrRegister';
     data['user_email'] = email;
     data['user_pass'] = pass;
@@ -322,6 +255,7 @@ class Api extends GetxController {
     await localStorage.remove('user');
     user = null;
     authChanges.add(null);
+    update();
   }
 
   /// Update user key/value on user meta (Not on wp_users table)
@@ -409,7 +343,7 @@ class Api extends GetxController {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<int> deletePost(ApiPost post, [Forum forum]) async {
+  Future<int> deletePost(ApiPost post, [ApiForum forum]) async {
     final dynamic data = await request({
       'route': 'forum.deletePost',
       'ID': post.id,
@@ -506,20 +440,25 @@ class Api extends GetxController {
   ///
   /// App can list/view multiple forum category at the same time.
   /// That's why it manages the container for each category.
-  Map<String, Forum> forumContainer = {};
+  Map<String, ApiForum> forumContainer = {};
 
   @Deprecated('user attachForum')
-  Forum initForum({@required String category, @required Function render}) {
-    forumContainer[category] = Forum(category: category, render: render);
+  ApiForum initForum({@required String category, @required Function render}) {
+    forumContainer[category] = ApiForum(category: category, render: render);
     return forumContainer[category];
   }
 
-  Forum attachForum(Forum forum) {
+  /// Put the forum setting into a container. The container manages different categories.
+  /// An app may open many forum list page at once. For instance, a user opens qna forum,
+  /// then, opens discussion forum. So, there are two forums. And this handles the two forums
+  /// and its settings, posts, and other meta information nicely.
+  /// Without this, the developer must handle it himself.
+  ApiForum attachForum(ApiForum forum) {
     forumContainer[forum.category] = forum;
     return forumContainer[forum.category];
   }
 
-  fetchPosts({Forum forum, String category}) async {
+  Future<void> fetchPosts({ApiForum forum, String category}) async {
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
       print(
@@ -531,18 +470,17 @@ class Api extends GetxController {
     forum.loading = true;
     forum.render();
 
+    print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await searchPost(category: forum.category, paged: forum.pageNo, limit: forum.limit);
 
-    if (_posts.length == 0) {
+    // No more posts if it loads less than `forum.list` or even it loads 0 posts.
+    if (_posts.length < forum.limit) {
       forum.noMorePosts = true;
       forum.loading = false;
-      forum.render();
-      return;
+    } else {
+      forum.pageNo++;
     }
-
-    forum.pageNo++;
-    print('forum.pageNo: ${forum.pageNo}');
 
     _posts.forEach((ApiPost p) {
       forum.posts.add(p);

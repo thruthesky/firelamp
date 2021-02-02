@@ -21,5 +21,7 @@ part 'models/api.comment.dart';
 part 'models/api.file.dart';
 part 'models/api.post.dart';
 part 'models/api.user.dart';
+part 'models/api.forum.dart';
 
+/// todo change it to Singleton
 final Api api = Api();
