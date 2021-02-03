@@ -50,18 +50,20 @@ class ApiPost {
   bool get isNotMine => !isMine;
 
   insertOrUpdateComment(ApiComment comment) {
-    // if it's new comment right under post, then add at bottom.
-    if (comment.commentParent == '0') {
-      comments.add(comment);
-      print('parent id: 0, add at bottom');
-      return;
-    }
+    print(comment.commentParent);
 
     // find existing comment and update.
     int i = comments.indexWhere((c) => c.commentId == comment.commentId);
     if (i != -1) {
       comment.depth = comments[i].depth;
       comments[i] = comment;
+      return;
+    }
+
+    // if it's new comment right under post, then add at bottom.
+    if (comment.commentParent == '0') {
+      comments.add(comment);
+      print('parent id: 0, add at bottom');
       return;
     }
 
