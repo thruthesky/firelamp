@@ -216,6 +216,7 @@ class Api extends GetxController {
     data['user_pass'] = pass;
     data['session_id'] = '';
     final Map<String, dynamic> res = await request(data);
+    // print(res);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
     authChanges.add(user);
@@ -600,6 +601,15 @@ class Api extends GetxController {
       'route': 'notification.unsubscribeTopic',
       'topic': topic,
       if (tokens != null) 'tokens': tokens,
+    };
+    return request(req);
+  }
+
+  subscribeOrUnsubscribeTopic(String topic, bool subscribe) {
+    Map<String, dynamic> req = {
+      'route': 'notification.topicSubscription',
+      'topic': topic,
+      'subscribe': subscribe ? "Y" : "N",
     };
     return request(req);
   }
