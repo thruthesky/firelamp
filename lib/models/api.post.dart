@@ -2,6 +2,7 @@ part of '../firelamp.dart';
 
 class ApiPost {
   ApiPost({
+    this.data,
     this.id,
     this.postAuthor,
     this.postDate,
@@ -26,6 +27,9 @@ class ApiPost {
     if (postContent == null) postContent = '';
   }
 
+  /// [data] is the original data for the post. When you need to access an extra meta property,
+  /// you can access [data] directly.
+  dynamic data;
   int id;
   String postAuthor;
   DateTime postDate;
@@ -50,18 +54,20 @@ class ApiPost {
   bool get isNotMine => !isMine;
 
   insertOrUpdateComment(ApiComment comment) {
-    // if it's new comment right under post, then add at bottom.
-    if (comment.commentParent == '0') {
-      comments.add(comment);
-      print('parent id: 0, add at bottom');
-      return;
-    }
+    print(comment.commentParent);
 
     // find existing comment and update.
     int i = comments.indexWhere((c) => c.commentId == comment.commentId);
     if (i != -1) {
       comment.depth = comments[i].depth;
       comments[i] = comment;
+      return;
+    }
+
+    // if it's new comment right under post, then add at bottom.
+    if (comment.commentParent == '0') {
+      comments.add(comment);
+      print('parent id: 0, add at bottom');
       return;
     }
 
@@ -78,6 +84,7 @@ class ApiPost {
   }
 
   factory ApiPost.fromJson(Map<String, dynamic> json) => ApiPost(
+        data: json,
         id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
         postAuthor: json["post_author"],
         postDate: DateTime.parse(json["post_date"]),
@@ -88,12 +95,10 @@ class ApiPost {
         guid: json["guid"],
         commentCount: json["comment_count"],
         postCategory: List<int>.from(json["post_category"].map((x) => x)),
-        files:
-            List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+        files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
         authorName: json["author_name"],
         shortDateTime: json["short_date_time"],
-        comments: List<ApiComment>.from(
-            json["comments"].map((x) => ApiComment.fromJson(x))),
+        comments: List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
         category: json["category"],
         featuredImageUrl: json["featured_image_url"],
         featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
@@ -120,8 +125,7 @@ class ApiPost {
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         "author_name": authorName,
         "short_date_time": shortDateTime,
-        "comments":
-            List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "category": category,
         "featured_image_url": featuredImageUrl,
         "featured_image_thumbnail_url": featuredImageThumbnailUrl,

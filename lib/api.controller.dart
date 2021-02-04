@@ -144,9 +144,15 @@ class Api extends GetxController {
     data = _addSessionId(data);
     // final res = await dio.get(url, queryParameters: data);
 
-    _printDebugUrl(data);
-    final res = await dio.post(_apiUrl, data: data);
-    // print('dio.post(url, data:data) --> result: $res');
+    dynamic res;
+
+    try {
+      res = await dio.post(_apiUrl, data: data);
+    } catch (e) {
+      _printDebugUrl(data);
+      rethrow;
+    }
+    // print('-------------> result of: dio.post(url, data:data) --> result: $res');
     if (res.data == null) {
       throw ('Response.body is null. Backend might not an API server. Or, Backend URL is wrong.');
     }
@@ -273,8 +279,7 @@ class Api extends GetxController {
 
   userProfile(String sessionId) async {
     if (sessionId == null) return;
-    final Map<String, dynamic> res =
-        await request({'route': 'user.profile', 'session_id': sessionId});
+    final Map<String, dynamic> res = await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
     update();
     return user;
@@ -373,8 +378,11 @@ class Api extends GetxController {
     return data['comment_ID'];
   }
 
-  Future<List<ApiPost>> searchPost(
-      {String category, int limit = 20, int paged = 1, String author}) async {
+  /// Get posts from backend.
+  ///
+  /// You can use this to display some posts from the forum category. You may use this for displaying
+  /// latest posts.
+  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
@@ -388,6 +396,11 @@ class Api extends GetxController {
       _posts.add(ApiPost.fromJson(jsonList[i]));
     }
     return _posts;
+  }
+
+  /// [getPosts] is an alias of [searchPosts]
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
+    return searchPost(category: category, limit: limit, paged: paged, author: author);
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
@@ -555,8 +568,7 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToTopic(
-      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
