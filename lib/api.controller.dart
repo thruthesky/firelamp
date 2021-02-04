@@ -377,6 +377,10 @@ class Api extends GetxController {
     return data['comment_ID'];
   }
 
+  /// Get posts from backend.
+  ///
+  /// You can use this to display some posts from the forum category. You may use this for displaying
+  /// latest posts.
   Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
@@ -391,6 +395,11 @@ class Api extends GetxController {
       _posts.add(ApiPost.fromJson(jsonList[i]));
     }
     return _posts;
+  }
+
+  /// [getPosts] is an alias of [searchPosts]
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
+    return searchPost(category: category, limit: limit, paged: paged, author: author);
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
