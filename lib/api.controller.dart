@@ -50,7 +50,8 @@ class Api extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
-  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<bool> firebaseInitialized =
+      BehaviorSubject<bool>.seeded(false);
 
   Api() {
     print("--> Api() constructor");
@@ -112,7 +113,11 @@ class Api extends GetxController {
 
   /// Load translations
   _initTranslation() {
-    database.reference().child('notifications/translation').onValue.listen((event) {
+    database
+        .reference()
+        .child('notifications/translation')
+        .onValue
+        .listen((event) {
       loadTranslations();
     });
     loadTranslations();
@@ -161,7 +166,8 @@ class Api extends GetxController {
       throw (res.data);
     } else if (res.data['code'] != 0) {
       /// If there is error like "ERROR_", then it throws exception.
-      print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+      print(
+          'api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
       print(data);
       throw res.data['code'];
     }
@@ -278,7 +284,8 @@ class Api extends GetxController {
 
   userProfile(String sessionId) async {
     if (sessionId == null) return;
-    final Map<String, dynamic> res = await request({'route': 'user.profile', 'session_id': sessionId});
+    final Map<String, dynamic> res =
+        await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
     update();
     return user;
@@ -316,7 +323,9 @@ class Api extends GetxController {
     final data = {
       'route': 'forum.editComment',
       'comment_post_ID': post.id,
-      if (comment != null && comment.commentId != null && comment.commentId != '')
+      if (comment != null &&
+          comment.commentId != null &&
+          comment.commentId != '')
         'comment_ID': comment.commentId,
       if (parent != null) 'comment_parent': parent.commentId,
       'comment_content': content ?? '',
@@ -334,7 +343,8 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
-  Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
+  Future<Map<dynamic, dynamic>> setFeaturedImage(
+      ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
       'ID': post.id,
@@ -377,7 +387,8 @@ class Api extends GetxController {
     return data['comment_ID'];
   }
 
-  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
+  Future<List<ApiPost>> searchPost(
+      {String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
@@ -393,7 +404,8 @@ class Api extends GetxController {
     return _posts;
   }
 
-  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
+  Future<ApiFile> uploadFile(
+      {@required File file, Function onProgress, String postType}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
@@ -478,7 +490,8 @@ class Api extends GetxController {
 
     print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
-    _posts = await searchPost(category: forum.category, paged: forum.pageNo, limit: forum.limit);
+    _posts = await searchPost(
+        category: forum.category, paged: forum.pageNo, limit: forum.limit, author: forum.author);
 
     // No more posts if it loads less than `forum.list` or even it loads 0 posts.
     if (_posts.length < forum.limit) {
@@ -542,11 +555,16 @@ class Api extends GetxController {
   }
 
   updateToken(String token, {String topic = ''}) {
-    return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
+    return request(
+        {'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
   sendMessageToTokens(
-      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+      {String tokens,
+      String title,
+      String body,
+      Map<String, dynamic> data,
+      String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -558,7 +576,12 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic(
+      {String topic,
+      String title,
+      String body,
+      Map<String, dynamic> data,
+      String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -614,7 +637,8 @@ class Api extends GetxController {
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
   loadTranslations() async {
-    final res = await request({'route': 'translation.list', 'format': 'language-first'});
+    final res = await request(
+        {'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
