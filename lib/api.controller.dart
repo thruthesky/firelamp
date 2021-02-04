@@ -387,8 +387,11 @@ class Api extends GetxController {
     return data['comment_ID'];
   }
 
-  Future<List<ApiPost>> searchPost(
-      {String category, int limit = 20, int paged = 1, String author}) async {
+  /// Get posts from backend.
+  ///
+  /// You can use this to display some posts from the forum category. You may use this for displaying
+  /// latest posts.
+  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
@@ -404,8 +407,12 @@ class Api extends GetxController {
     return _posts;
   }
 
-  Future<ApiFile> uploadFile(
-      {@required File file, Function onProgress, String postType}) async {
+  /// [getPosts] is an alias of [searchPosts]
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
+    return searchPost(category: category, limit: limit, paged: paged, author: author);
+  }
+
+  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
