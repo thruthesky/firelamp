@@ -150,7 +150,7 @@ class Api extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
-
+    _printDebugUrl(data);
     try {
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
@@ -605,11 +605,7 @@ class Api extends GetxController {
   }
 
   sendMessageToTopic(
-      {String topic,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -658,13 +654,15 @@ class Api extends GetxController {
     return request(req);
   }
 
-  subscribeOrUnsubscribeTopic(String topic, bool subscribe) {
+  subscribeOrUnsubscribeTopic(String topic, bool subscribe) async {
     Map<String, dynamic> req = {
       'route': 'notification.topicSubscription',
       'topic': topic,
       'subscribe': subscribe ? "Y" : "N",
     };
-    return request(req);
+    final res = await request(req);
+    api.user.data[topic] = subscribe ? 'Y' : 'N';
+    return res;
   }
 
   Future translationList() {
