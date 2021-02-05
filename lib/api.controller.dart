@@ -392,18 +392,19 @@ class Api extends GetxController {
   ///
   /// You can use this to display some posts from the forum category. You may use this for displaying
   /// latest posts.
-  Future<List<ApiPost>> searchPost(
-      {String category,
-      int limit = 20,
-      int paged = 1,
-      String author,
-      String keyword}) async {
+  Future<List<ApiPost>> searchPost({
+    String category,
+    int limit = 20,
+    int paged = 1,
+    String author,
+    String searchKey,
+  }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
     data['paged'] = paged;
     data['numberposts'] = limit;
-    if (keyword != null) data['s'] = keyword;
+    if (searchKey != null) data['s'] = searchKey;
     if (author != null) data['author'] = author;
     final jsonList = await request(data);
 
@@ -512,7 +513,7 @@ class Api extends GetxController {
       paged: forum.pageNo,
       limit: forum.limit,
       author: forum.author,
-      keyword: forum.keySearch,
+      searchKey: forum.searchKey,
     );
 
     // No more posts if it loads less than `forum.list` or even it loads 0 posts.
@@ -524,7 +525,7 @@ class Api extends GetxController {
     }
 
     // If keySearch is not null, remove existing posts from list.
-    if (forum.keySearch != null) {
+    if (forum.searchKey != null) {
       forum.posts = [];
     }
 

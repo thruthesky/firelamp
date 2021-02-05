@@ -11,7 +11,7 @@ part of '../firelamp.dart';
 class ApiForum {
   String category;
   String author;
-  String keySearch;
+  String searchKey;
   List<ApiPost> posts = [];
   bool loading = false;
   bool noMorePosts = false;
@@ -25,7 +25,7 @@ class ApiForum {
   Function render;
 
   ApiPost postInEdit;
-  ApiForum({this.category, this.author, this.keySearch, this.limit = 10, @required this.render});
+  ApiForum({this.category, this.author, this.searchKey, this.limit = 10, @required this.render});
 
   /// Edit post or comment
   ///
