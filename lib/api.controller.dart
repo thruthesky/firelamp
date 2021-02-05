@@ -392,12 +392,18 @@ class Api extends GetxController {
   ///
   /// You can use this to display some posts from the forum category. You may use this for displaying
   /// latest posts.
-  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
+  Future<List<ApiPost>> searchPost(
+      {String category,
+      int limit = 20,
+      int paged = 1,
+      String author,
+      String keyword}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
     data['paged'] = paged;
     data['numberposts'] = limit;
+    if (keyword != null) data['s'] = keyword;
     if (author != null) data['author'] = author;
     final jsonList = await request(data);
 
@@ -409,11 +415,14 @@ class Api extends GetxController {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
-    return searchPost(category: category, limit: limit, paged: paged, author: author);
+  Future<List<ApiPost>> getPosts(
+      {String category, int limit = 20, int paged = 1, String author}) {
+    return searchPost(
+        category: category, limit: limit, paged: paged, author: author);
   }
 
-  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
+  Future<ApiFile> uploadFile(
+      {@required File file, Function onProgress, String postType}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
@@ -499,7 +508,12 @@ class Api extends GetxController {
     print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await searchPost(
-        category: forum.category, paged: forum.pageNo, limit: forum.limit, author: forum.author);
+      category: forum.category,
+      paged: forum.pageNo,
+      limit: forum.limit,
+      author: forum.author,
+      keyword: forum.keySearch,
+    );
 
     // No more posts if it loads less than `forum.list` or even it loads 0 posts.
     if (_posts.length < forum.limit) {
@@ -507,6 +521,11 @@ class Api extends GetxController {
       forum.loading = false;
     } else {
       forum.pageNo++;
+    }
+
+    // If keySearch is not null, remove existing posts from list.
+    if (forum.keySearch != null) {
+      forum.posts = [];
     }
 
     _posts.forEach((ApiPost p) {
