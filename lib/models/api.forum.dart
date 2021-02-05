@@ -10,6 +10,7 @@ part of '../firelamp.dart';
 /// [Forum] only manages the data of a category.
 class ApiForum {
   String category;
+  String author;
   List<ApiPost> posts = [];
   bool loading = false;
   bool noMorePosts = false;
@@ -23,7 +24,7 @@ class ApiForum {
   Function render;
 
   ApiPost postInEdit;
-  ApiForum({@required this.category, this.limit = 10, @required this.render});
+  ApiForum({this.category, this.limit = 10, @required this.render});
 
   /// Edit post or comment
   ///
