@@ -50,12 +50,13 @@ class Api extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
-  BehaviorSubject<bool> firebaseInitialized =
-      BehaviorSubject<bool>.seeded(false);
+  /// [firebaseInitialized] will be posted with `true` when it is initialized.
+  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
   Api() {
     print("--> Api() constructor");
   }
+
   @override
   void onInit() {
     print("--> Api::onInit()");
@@ -64,12 +65,14 @@ class Api extends GetxController {
     GetStorage.init().then((b) {
       localStorage = GetStorage();
 
-      /// Load user profile from localStorage.
+      /// First, load user profile from localStorage if the user previouly logged in
+      ///
       /// If the user has logged in previously, he will be auto logged in on next app running.
       /// [user] will be null if the user has not logged in previously.
       user = _loadUserProfile();
       // if (loggedIn) print('ApiUser logged in with cached profile: ${user.sessionId}');
 
+      /// Get user profile from backend if the user previous logged in.
       /// If user has logged in with localStorage data, refresh the user data from backend.
       if (loggedIn) {
         userProfile(sessionId);
@@ -101,6 +104,10 @@ class Api extends GetxController {
     _initTranslation();
   }
 
+  /// Firebase Initialization
+  ///
+  /// ! This must done after [init] because [init] sets the backend url,
+  /// ! and probably the codes that run right after firebase initialization needs to connect to backend.
   Future<void> _initializeFirebase() async {
     try {
       await Firebase.initializeApp();
@@ -113,11 +120,7 @@ class Api extends GetxController {
 
   /// Load translations
   _initTranslation() {
-    database
-        .reference()
-        .child('notifications/translation')
-        .onValue
-        .listen((event) {
+    database.reference().child('notifications/translation').onValue.listen((event) {
       loadTranslations();
     });
     loadTranslations();
@@ -166,8 +169,7 @@ class Api extends GetxController {
       throw (res.data);
     } else if (res.data['code'] != 0) {
       /// If there is error like "ERROR_", then it throws exception.
-      print(
-          'api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+      print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
       print(data);
       throw res.data['code'];
     }
@@ -283,13 +285,26 @@ class Api extends GetxController {
     return user;
   }
 
-  userProfile(String sessionId) async {
-    if (sessionId == null) return;
+  /// User profile data
+  ///
+  /// * logic
+  ///   - load user profile data
+  ///   - update app
+  ///   - return user
+  Future<ApiUser> userProfile(String sessionId) async {
+    if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     final Map<String, dynamic> res =
         await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
     update();
     return user;
+  }
+
+  /// Refresh user profile
+  ///
+  /// It is a helper function of [userProfile].
+  Future<ApiUser> refreshUserProfile() {
+    return userProfile(sessionId);
   }
 
   Future<ApiPost> editPost({
@@ -324,9 +339,7 @@ class Api extends GetxController {
     final data = {
       'route': 'forum.editComment',
       'comment_post_ID': post.id,
-      if (comment != null &&
-          comment.commentId != null &&
-          comment.commentId != '')
+      if (comment != null && comment.commentId != null && comment.commentId != '')
         'comment_ID': comment.commentId,
       if (parent != null) 'comment_parent': parent.commentId,
       'comment_content': content ?? '',
@@ -344,8 +357,7 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
-  Future<Map<dynamic, dynamic>> setFeaturedImage(
-      ApiPost post, ApiFile file) async {
+  Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
       'ID': post.id,
@@ -416,14 +428,11 @@ class Api extends GetxController {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts(
-      {String category, int limit = 20, int paged = 1, String author}) {
-    return searchPost(
-        category: category, limit: limit, paged: paged, author: author);
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
+    return searchPost(category: category, limit: limit, paged: paged, author: author);
   }
 
-  Future<ApiFile> uploadFile(
-      {@required File file, Function onProgress, String postType}) async {
+  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
@@ -583,16 +592,11 @@ class Api extends GetxController {
   }
 
   updateToken(String token, {String topic = ''}) {
-    return request(
-        {'route': 'notification.updateToken', 'token': token, 'topic': topic});
+    return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
   sendMessageToTokens(
-      {String tokens,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -672,8 +676,7 @@ class Api extends GetxController {
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
   loadTranslations() async {
-    final res = await request(
-        {'route': 'translation.list', 'format': 'language-first'});
+    final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
