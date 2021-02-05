@@ -145,7 +145,7 @@ class Api extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
-
+    _printDebugUrl(data);
     try {
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
@@ -279,7 +279,8 @@ class Api extends GetxController {
 
   userProfile(String sessionId) async {
     if (sessionId == null) return;
-    final Map<String, dynamic> res = await request({'route': 'user.profile', 'session_id': sessionId});
+    final Map<String, dynamic> res =
+        await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
     update();
     return user;
@@ -382,7 +383,8 @@ class Api extends GetxController {
   ///
   /// You can use this to display some posts from the forum category. You may use this for displaying
   /// latest posts.
-  Future<List<ApiPost>> searchPost({String category, int limit = 20, int paged = 1, String author}) async {
+  Future<List<ApiPost>> searchPost(
+      {String category, int limit = 20, int paged = 1, String author}) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
     data['category_name'] = category;
@@ -568,7 +570,8 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic(
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -617,13 +620,15 @@ class Api extends GetxController {
     return request(req);
   }
 
-  subscribeOrUnsubscribeTopic(String topic, bool subscribe) {
+  subscribeOrUnsubscribeTopic(String topic, bool subscribe) async {
     Map<String, dynamic> req = {
       'route': 'notification.topicSubscription',
       'topic': topic,
       'subscribe': subscribe ? "Y" : "N",
     };
-    return request(req);
+    final res = await request(req);
+    api.user.data[topic] = subscribe ? 'Y' : 'N';
+    return res;
   }
 
   Future translationList() {
