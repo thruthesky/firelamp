@@ -76,8 +76,16 @@ class Api extends GetxController {
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
 
-  Api() {
-    print("--> Api() constructor");
+  static Api _instance;
+  static Api get instance {
+    if (_instance == null) {
+      _instance = Api._internal();
+    }
+    return _instance;
+  }
+
+  Api._internal() {
+    print('=> Api._internal()');
   }
 
   /// FireLamp Api init
@@ -141,7 +149,8 @@ class Api extends GetxController {
     Function onMessageOpenedFromBackground,
   }) async {
     if (enableMessaging) {
-      assert(onForegroundMessage != null);
+      assert(onForegroundMessage != null,
+          'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
       assert(onMessageOpenedFromTermiated != null);
       assert(onMessageOpenedFromBackground != null);
     }
@@ -796,7 +805,7 @@ class Api extends GetxController {
     FirebaseMessaging.instance.onTokenRefresh.listen(_saveTokenToDatabase);
 
     // When ever user logs in, update the token with user Id.
-    api.authChanges.listen((user) {
+    authChanges.listen((user) {
       if (user == null) return;
       // print('Saving token on user auth chagnes: $token');
       _saveTokenToDatabase(token);
