@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'package:age/age.dart';
@@ -23,6 +24,3 @@ part 'models/api.file.dart';
 part 'models/api.post.dart';
 part 'models/api.user.dart';
 part 'models/api.forum.dart';
-
-/// todo change it to Singleton
-final Api api = Api();

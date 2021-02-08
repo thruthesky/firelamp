@@ -221,3 +221,13 @@ class _ForumListScreenState extends State<ForumListScreen> {
   }
 }
 ```
+
+# Push Notification
+
+- When user login, the app sends push token to backend and update it on backend.
+
+  - Case - when user chagne, the token is updated on backend.
+
+- When user register, the app send token to backend.
+
+- When app is started(restarted), the app updates token to backend with session id if the user logged in.
