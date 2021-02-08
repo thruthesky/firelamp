@@ -374,6 +374,13 @@ class Api extends GetxController {
     return userProfile(sessionId);
   }
 
+  Future<List<dynamic>> getForumCategories() async {
+    final res = await request({'route': 'forum.categories'});
+    print("res");
+    print(res);
+    return res;
+  }
+
   Future<ApiPost> editPost({
     int id,
     String category,
