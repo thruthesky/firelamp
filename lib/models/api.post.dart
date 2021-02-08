@@ -50,7 +50,7 @@ class ApiPost {
   String featuredImageThumbnailUrl;
   int featuredImageId;
 
-  bool get isMine => postAuthor == api.id;
+  bool get isMine => postAuthor == Api.instance.id;
   bool get isNotMine => !isMine;
 
   insertOrUpdateComment(ApiComment comment) {
