@@ -658,14 +658,13 @@ class Api extends GetxController {
     return request(req);
   }
 
-  subscribeOrUnsubscribeTopic(String topic, bool subscribe) async {
+  subscribeOrUnsubscribeTopic(String topic) async {
     Map<String, dynamic> req = {
       'route': 'notification.topicSubscription',
       'topic': topic,
-      'subscribe': subscribe ? "Y" : "N",
     };
     final res = await request(req);
-    api.user.data[topic] = subscribe ? 'Y' : 'N';
+    // api.user.data[topic] = subscribe ? 'Y' : 'N';
     return res;
   }
 
