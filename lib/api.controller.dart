@@ -31,6 +31,10 @@ class Api extends GetxController {
 
   GetStorage localStorage;
 
+  /// [storageInitialized] will be posted on get storage is ready.
+  /// After this, you can use [localStorage]
+  BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
+
   PublishSubject translationChanges = PublishSubject();
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
@@ -64,6 +68,7 @@ class Api extends GetxController {
 
     GetStorage.init().then((b) {
       localStorage = GetStorage();
+      storageInitialized.add(true);
 
       /// First, load user profile from localStorage if the user previouly logged in
       ///
