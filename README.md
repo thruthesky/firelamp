@@ -28,7 +28,7 @@ And here it is, `FireLamp`.
 
   - Add iOS `GoogleServices-info.plist` and Android `google-serfvices.json`.
 
-- The instance of FireLamp `Api` is created and available as global variable named `api`. This is because data models(like `ApiUser`) shares the global instance.
+- The instance of FireLamp `Api` is a signleton.
 
 ## Put WithcenterApi instance as GetX controller
 
@@ -37,7 +37,7 @@ And here it is, `FireLamp`.
 
 ```dart
 class _MainAppState extends State<MainApp> {
-  final Api a = Get.put<Api>(api);
+  final Api a = Get.put<Api>(Api.instance);
 
   @override
   void initState() {
