@@ -1,5 +1,7 @@
 part of 'firelamp.dart';
 
+@Deprecated('No more bio table and bio related functionality.')
+
 /// Bio table name on backend server datagbase.
 const String BIO_TABLE = 'api_bio';
 
@@ -8,7 +10,6 @@ const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
 /// Api GetX Controller
 ///
-/// TODO: publish it as package.
 ///
 /// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
@@ -57,10 +58,36 @@ class Api extends GetxController {
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
   BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
+  /// Firebase Messaging
+  ///
+  /// If [enableMessaging] is set to true, it will do push notification. By default true.
+  bool enableMessaging;
+
+  /// [token] is the push notification token.
+  String token;
+
+  /// Event handlers on perssion state changes. for iOS only.
+  /// These event will be called when permission is denied or not determined.
+  Function onNotificationPermissionDenied;
+  Function onNotificationPermissionNotDetermined;
+
+  /// [onForegroundMessage] will be posted when there is a foreground message.
+  Function onForegroundMessage;
+  Function onMessageOpenedFromTermiated;
+  Function onMessageOpenedFromBackground;
+
   Api() {
     print("--> Api() constructor");
   }
 
+  /// FireLamp Api init
+  ///
+  /// [onInit] does the basics like
+  /// - initalizing `GetStorage` and
+  /// - loading(checking) user login
+  /// - if the user logged in, then reload profile from backend.
+  ///
+  /// Note that, if you need to chagne the settings, you can do it with [init] method.
   @override
   void onInit() {
     print("--> Api::onInit()");
@@ -93,9 +120,10 @@ class Api extends GetxController {
 
   /// Initialization
   ///
-  /// This must be called from the app to initialize [Api]
+  /// This must be called from the app to initialize FireLamp Api.
+  /// This method initialize firebase related code, i18n text translation, and others.
   ///
-  /// This method initialize firebase and the translation.
+  /// You can set all the settings with this [init].
   ///
   ///
   ///
@@ -103,9 +131,31 @@ class Api extends GetxController {
   /// Api.init(apiUrl: apiUrl);
   /// Api.version().then((res) => print('Api.version(): $res'));
   /// ```
-  Future<void> init({@required String apiUrl}) async {
+  Future<void> init({
+    @required String apiUrl,
+    bool enableMessaging = true,
+    Function onNotificationPermissionDenied,
+    Function onNotificationPermissionNotDetermined,
+    Function onForegroundMessage,
+    Function onMessageOpenedFromTermiated,
+    Function onMessageOpenedFromBackground,
+  }) async {
+    if (enableMessaging) {
+      assert(onForegroundMessage != null);
+      assert(onMessageOpenedFromTermiated != null);
+      assert(onMessageOpenedFromBackground != null);
+    }
+    this.enableMessaging = enableMessaging;
+    this.onNotificationPermissionDenied = onNotificationPermissionDenied;
+    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
+
+    this.onForegroundMessage = onForegroundMessage;
+    this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
+    this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
+
     _apiUrl = apiUrl;
     await _initializeFirebase();
+    if (enableMessaging) _initMessaging();
     _initTranslation();
   }
 
@@ -131,7 +181,8 @@ class Api extends GetxController {
     loadTranslations();
   }
 
-  /// If the input [data] does not have `session_id` property, add it.
+  /// If the input [data] does not have `session_id` property and the user had logged in,
+  /// then add `session_id`.
   Map<String, dynamic> _addSessionId(Map<String, dynamic> data) {
     if (data['session_id'] != null) return data;
     if (notLoggedIn) return data;
@@ -596,7 +647,10 @@ class Api extends GetxController {
     return request({'route': 'purchase.myPurchase'});
   }
 
-  updateToken(String token, {String topic = ''}) {
+  /// Save token to backend.
+  ///
+  /// `session_id` will be added if the user had logged in.
+  Future updateToken(String token, {String topic = ''}) {
     return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
@@ -684,5 +738,74 @@ class Api extends GetxController {
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
+  }
+
+  /// Initialize Messaging
+  _initMessaging() async {
+    /// Permission request for iOS only. For Android, the permission is granted by default.
+    if (Platform.isIOS) {
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+
+      print('User granted permission: ${settings.authorizationStatus}');
+
+      switch (settings.authorizationStatus) {
+        case AuthorizationStatus.authorized:
+          break;
+        case AuthorizationStatus.denied:
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
+          break;
+        case AuthorizationStatus.notDetermined:
+          if (onNotificationPermissionNotDetermined != null)
+            onNotificationPermissionNotDetermined();
+          break;
+        case AuthorizationStatus.provisional:
+          break;
+      }
+    }
+
+    // Handler, when app is on Foreground.
+    FirebaseMessaging.onMessage.listen(onForegroundMessage);
+
+    // Check if app is opened from terminated state and get message data.
+    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      onMessageOpenedFromTermiated(initialMessage);
+    }
+
+    // Check if the app is opened from the background state.
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      onMessageOpenedFromBackground(message);
+    });
+
+    // Get the token each time the application loads and save it to database.
+    token = await FirebaseMessaging.instance.getToken();
+
+    print('_initMessaging:: token: $token');
+    _saveTokenToDatabase(token);
+
+    // Any time the token refreshes, store this in the database too.
+    FirebaseMessaging.instance.onTokenRefresh.listen(_saveTokenToDatabase);
+
+    // When ever user logs in, update the token with user Id.
+    api.authChanges.listen((user) {
+      if (user == null) return;
+      // print('Saving token on user auth chagnes: $token');
+      _saveTokenToDatabase(token);
+    });
+  }
+
+  /// Save the token to backend.
+  ///
+  Future _saveTokenToDatabase(String token) {
+    this.token = token;
+    return updateToken(token);
   }
 }
