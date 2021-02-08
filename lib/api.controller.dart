@@ -76,9 +76,15 @@ class Api extends GetxController {
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
 
-  Api() {
-    print("--> Api() constructor");
+  static Api _instance;
+  static Api get instance {
+    if (_instance == null) {
+      _instance = Api._internal();
+    }
+    return _instance;
   }
+
+  Api._internal();
 
   /// FireLamp Api init
   ///
