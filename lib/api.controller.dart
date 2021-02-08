@@ -263,7 +263,7 @@ class Api extends GetxController {
     data['user_email'] = email;
     data['user_pass'] = pass;
     data['session_id'] = '';
-
+    data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     // print('res: $res');
     user = ApiUser.fromJson(res);
@@ -285,6 +285,7 @@ class Api extends GetxController {
     data['user_email'] = email;
     data['user_pass'] = pass;
     data['session_id'] = '';
+    data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     // print(res);
     user = ApiUser.fromJson(res);
@@ -314,6 +315,7 @@ class Api extends GetxController {
     data['user_email'] = email;
     data['user_pass'] = pass;
     data['session_id'] = '';
+    data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
@@ -787,7 +789,6 @@ class Api extends GetxController {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-
     print('_initMessaging:: token: $token');
     _saveTokenToDatabase(token);
 
