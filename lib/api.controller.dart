@@ -371,6 +371,7 @@ class Api extends GetxController {
   /// Returns other user profile data.
   ///
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
+  /// ! @todo cache it on memory, so, next time when it is called again, it will not get it from server.
   Future<ApiUser> otherUserProfile(String id) async {
     final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
     user = ApiUser.fromJson(res);
