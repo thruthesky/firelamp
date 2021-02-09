@@ -36,8 +36,14 @@ class Api extends GetxController {
   /// After this, you can use [localStorage]
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
 
-  PublishSubject translationChanges = PublishSubject();
-  PublishSubject settingsChanges = PublishSubject();
+  /// When translation changes(from backend), [translationChanges] event is posted with translation data.
+  PublishSubject<Map<String, dynamic>> translationChanges = PublishSubject();
+
+  /// When settings changes(from backend), [settingChanges] is posted with settings.
+  PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
+
+  /// [settings] is the settings that was develivered over [settingChanges] event.
+  Map<String, dynamic> settings;
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
@@ -168,7 +174,7 @@ class Api extends GetxController {
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
-    _initAppSettings();
+    _initSettings();
   }
 
   /// Firebase Initialization
@@ -185,19 +191,25 @@ class Api extends GetxController {
     }
   }
 
-  /// Load translations
+  /// Load app translations and listen changes.
   _initTranslation() {
     database.reference().child('notifications/translation').onValue.listen((event) {
-      loadTranslations();
+      _loadTranslations();
     });
-    loadTranslations();
+    _loadTranslations();
   }
 
-  _initAppSettings() {
+  /// Load app global settings and listen changes.
+  ///
+  /// Logic
+  ///  - When there is chnages on settings,
+  ///  - Get the whole settings from backend
+  ///  - Post `settingChanges` event with settings.
+  _initSettings() {
     database.reference().child('notifications/settings').onValue.listen((event) {
-      loadAppSettings();
+      _loadSettings();
     });
-    loadAppSettings();
+    _loadSettings();
   }
 
   /// If the input [data] does not have `session_id` property and the user had logged in,
@@ -393,13 +405,6 @@ class Api extends GetxController {
   /// It is a helper function of [userProfile].
   Future<ApiUser> refreshUserProfile() {
     return userProfile(sessionId);
-  }
-
-  Future<List<dynamic>> getForumCategories() async {
-    final res = await request({'route': 'forum.categories'});
-    print("res");
-    print(res);
-    return res;
   }
 
   Future<ApiPost> editPost({
@@ -772,17 +777,18 @@ class Api extends GetxController {
 
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
-  loadTranslations() async {
+  _loadTranslations() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
   }
 
-  /// TODO: Load app settings
-  loadAppSettings() async {
+  /// loadSettings
+  _loadSettings() async {
     print('Update on APP SETTINGS');
-    // settingsChanges.add(null);
+    settings = await request({'route': 'app.settings'});
+    settingChanges.add(settings);
   }
 
   /// Initialize Messaging
