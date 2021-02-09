@@ -46,6 +46,7 @@ class Api extends GetxController {
   String get fullName => user?.name;
   String get nickname => user?.nickname;
   String get profilePhotoUrl => user?.profilePhotoUrl;
+  String get md5 => user?.md5;
   bool get profileComplete =>
       loggedIn &&
       primaryPhotoUrl != null &&
@@ -846,32 +847,105 @@ class Api extends GetxController {
 
   /// [talkingTo] is the other user's document key that the login user is talking to.
   String talkingTo;
+  ApiUser otherUser;
 
   chatEnter({@required String userId}) async {
-    final user = await Api.instance.otherUserProfile(userId);
-    final String otherId = user.md5;
+    otherUser = await Api.instance.otherUserProfile(userId);
 
     /// @todo create `chat/rooms/myId/otherId` if not exists.
+    database
+        .reference()
+        .child('chat/rooms/$id/${otherUser.md5}')
+        .once()
+        .then((DataSnapshot snapshot) {
+      print('chat/rooms/$id/${otherUser.md5}');
+      print(snapshot);
+      if (snapshot.value == null) return;
+    });
+
     /// @todo create `chat/rooms/otherId/myId` if not exists.
+    // database
+    //     .reference()
+    //     .child('chat/rooms/${otherUser.md5}/$id')
+    //     .once()
+    //     .then((DataSnapshot snapshot) {
+    //   print('chat/rooms/${otherUser.md5}/$id');
+    //   if (snapshot.value == null) return;
+    // });
+
     /// @todo send message to `chat/message/myId/otherId` with protocol roomCreated
     /// @todo send message to `chat/message/otherId/myId` with protocol roomCreated
     /// @todo update chat room `chat/rooms/myId/otherId`. increase newMessage and stamp.
     /// @todo update chat room `chat/rooms/otherId/myId`. increase newMessage and stamp.
 
-    talkingTo = otherId;
+    talkingTo = otherUser.md5;
 
     print('I am talking to: $talkingTo');
 
     /// @todo send push notification
   }
 
+  /// Send chat message to the users in the room
   ///
-  chatSend({
+  /// [displayName] is the name that the sender will use. The default is
+  /// `ff.user.displayName`.
+  ///
+  /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
+  ///
+  /// [type] is the type of the message. It can be `image` or `text` if string only.
+  Future<Map<String, dynamic>> sendMessage({
     @required String text,
+    Map<String, dynamic> extra,
     String url,
     String urlType,
-  }) {
-    ///
+  }) async {
+    // if (displayName == null || displayName.trim() == '') {
+    //   throw CHAT_DISPLAY_NAME_IS_EMPTY;
+    // }
+
+    Map<String, dynamic> message = {
+      'senderUid': id,
+      'text': text,
+
+      // Time that this message(or last message) was created.
+      'createdAt': ServerValue.timestamp,
+
+      if (extra != null) ...extra,
+    };
+
+    // message = mergeMap([message, extra]);
+    database.reference().child('chat/message/${otherUser..data['roomId']}/').push().set(message);
+    // database
+    //     .reference()
+    //     .child('chat/rooms/${otherUser.md5}/$id/')
+    //     .update(message);
+
+    // // print(message);
+    // message['newMessages'] = FieldValue.increment(1); // To increase, it must be an udpate.
+    // List<Future<void>> messages = [];
+
+    // /// Just incase there are duplicated UIDs.
+    // List<String> newUsers = [...global.users.toSet()];
+
+    // /// Send a message to all users in the room.
+    // for (String uid in newUsers) {
+    //   // print(chatUserRoomDoc(uid, info['id']).path);
+    //   messages.add(userRoomDoc(uid, global.roomId).set(message, SetOptions(merge: true)));
+    // }
+    // // print('send messages to: ${messages.length}');
+    // await Future.wait(messages);
+
+    // // TODO: Sending notification should be handled outside of firechat.
+
+    // // await __ff.sendNotification(
+    // //   '$displayName send you message.',
+    // //   text,
+    // //   id: id,
+    // //   screen: 'chatRoom',
+    // //   topic: topic,
+    // // );
+
+    return message;
   }
 
   /// -------------------------------------------------------------------------------
