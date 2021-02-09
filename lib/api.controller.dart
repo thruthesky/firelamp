@@ -234,7 +234,7 @@ class Api extends GetxController {
     });
 
     String queryString = Uri(queryParameters: params).query;
-    // print("url: $_apiUrl?$queryString");
+    print("_printDebugUrl: $_apiUrl?$queryString");
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -242,7 +242,6 @@ class Api extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
-    _printDebugUrl(data);
     try {
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
@@ -609,9 +608,9 @@ class Api extends GetxController {
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
       // print(
-        'Can not load anymore: loading: ${forum.loading},'
-        ' noMorePosts: ${forum.noMorePosts}',
-      );
+      //   'Can not load anymore: loading: ${forum.loading},'
+      //   ' noMorePosts: ${forum.noMorePosts}',
+      // );
       return;
     }
     forum.loading = true;
