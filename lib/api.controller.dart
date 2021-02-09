@@ -43,7 +43,7 @@ class Api extends GetxController {
   PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
 
   /// [settings] is the settings that was develivered over [settingChanges] event.
-  Map<String, dynamic> settings;
+  Map<String, dynamic> settings = {};
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
