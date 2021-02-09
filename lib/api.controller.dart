@@ -45,6 +45,7 @@ class Api extends GetxController {
   String get primaryPhotoUrl => user?.profilePhotoUrl;
   String get fullName => user?.name;
   String get nickname => user?.nickname;
+  String get profilePhotoUrl => user?.profilePhotoUrl;
   bool get profileComplete =>
       loggedIn &&
       primaryPhotoUrl != null &&
@@ -362,6 +363,16 @@ class Api extends GetxController {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     final Map<String, dynamic> res =
         await request({'route': 'user.profile', 'session_id': sessionId});
+    user = ApiUser.fromJson(res);
+    update();
+    return user;
+  }
+
+  /// Returns other user profile data.
+  ///
+  /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
+  Future<ApiUser> otherUserProfile(String id) async {
+    final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
     user = ApiUser.fromJson(res);
     update();
     return user;
