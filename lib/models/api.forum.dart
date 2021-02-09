@@ -12,7 +12,7 @@ class ApiForum {
   String category;
   String author;
   String searchKey;
-  List<ApiPost> posts = [];
+  List<ApiPost> posts;
   bool loading = false;
   bool noMorePosts = false;
   int pageNo = 1;
@@ -25,7 +25,14 @@ class ApiForum {
   Function render;
 
   ApiPost postInEdit;
-  ApiForum({this.category, this.author, this.searchKey, this.limit = 10, @required this.render});
+  ApiForum({
+    this.category,
+    this.author,
+    this.searchKey,
+    this.limit = 10,
+    @required this.render,
+    posts,
+  }) : this.posts = posts ?? [];
 
   /// Edit post or comment
   ///

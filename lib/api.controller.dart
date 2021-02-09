@@ -43,7 +43,7 @@ class Api extends GetxController {
   PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
 
   /// [settings] is the settings that was develivered over [settingChanges] event.
-  Map<String, dynamic> settings;
+  Map<String, dynamic> settings = {};
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
@@ -788,7 +788,8 @@ class Api extends GetxController {
   /// loadSettings
   _loadSettings() async {
     // print('Update on APP SETTINGS');
-    settings = await request({'route': 'app.settings'});
+    final _settings = await request({'route': 'app.settings'});
+    settings = { ...settings, ..._settings };
     settingChanges.add(settings);
   }
 
