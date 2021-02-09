@@ -47,7 +47,7 @@ class _MainAppState extends State<MainApp> {
       print('res: $res');
     });
     a.translationChanges.listen((trs) {
-      print('trs: $trs');
+      // print('trs: $trs');
     });
   }
 ```
@@ -160,7 +160,7 @@ class _ForumListScreenState extends State<ForumListScreen> {
     forum = ApiForum(
       category: Get.arguments['category'],
       render: () {
-        print("no of posts: ${forum.posts.length}");
+        // print("no of posts: ${forum.posts.length}");
         setState(() => null);
       },
     );

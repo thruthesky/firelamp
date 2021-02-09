@@ -93,7 +93,7 @@ class Api extends GetxController {
   }
 
   Api._internal() {
-    print('=> Api._internal()');
+    // print('=> Api._internal()');
   }
 
   /// FireLamp Api init
@@ -106,7 +106,7 @@ class Api extends GetxController {
   /// Note that, if you need to chagne the settings, you can do it with [init] method.
   @override
   void onInit() {
-    print("--> Api::onInit()");
+    // print("--> Api::onInit()");
     super.onInit();
 
     GetStorage.init().then((b) {
@@ -130,7 +130,7 @@ class Api extends GetxController {
     });
 
     authChanges.listen((user) async {
-      print('authChanges');
+      // print('authChanges');
     });
   }
 
@@ -185,15 +185,16 @@ class Api extends GetxController {
     try {
       await Firebase.initializeApp();
       firebaseInitialized.add(true);
-      print("App is connected to Firebase!");
+      // print("App is connected to Firebase!");
     } catch (e) {
-      print("Error: failed to connect to Firebase!");
+      // print("Error: failed to connect to Firebase!");
     }
   }
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    database.reference().child('notifications/translation').onValue.listen((event) {
+    database.reference().child('notifications').child('translation').onValue.listen((event) {
+      // print('_initTranslation:: updated');
       _loadTranslations();
     });
     _loadTranslations();
@@ -206,7 +207,8 @@ class Api extends GetxController {
   ///  - Get the whole settings from backend
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
-    database.reference().child('notifications/settings').onValue.listen((event) {
+    database.reference().child('notifications').child('settings').onValue.listen((event) {
+      // print('_initSettings:: updated');
       _loadSettings();
     });
     _loadSettings();
@@ -232,7 +234,7 @@ class Api extends GetxController {
     });
 
     String queryString = Uri(queryParameters: params).query;
-    print("url: $_apiUrl?$queryString");
+    print("_printDebugUrl: $_apiUrl?$queryString");
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -240,7 +242,6 @@ class Api extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
-    _printDebugUrl(data);
     try {
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
@@ -256,8 +257,8 @@ class Api extends GetxController {
       throw (res.data);
     } else if (res.data['code'] != 0) {
       /// If there is error like "ERROR_", then it throws exception.
-      print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
-      print(data);
+      // print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+      // print(data);
       throw res.data['code'];
     }
     return res.data['data'];
@@ -606,16 +607,16 @@ class Api extends GetxController {
   Future<void> fetchPosts({ApiForum forum, String category}) async {
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
-      print(
-        'Can not load anymore: loading: ${forum.loading},'
-        ' noMorePosts: ${forum.noMorePosts}',
-      );
+      // print(
+      //   'Can not load anymore: loading: ${forum.loading},'
+      //   ' noMorePosts: ${forum.noMorePosts}',
+      // );
       return;
     }
     forum.loading = true;
     forum.render();
 
-    print('Going to load pageNo: ${forum.pageNo}');
+    // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await searchPost(
       category: forum.category,
@@ -786,7 +787,7 @@ class Api extends GetxController {
 
   /// loadSettings
   _loadSettings() async {
-    print('Update on APP SETTINGS');
+    // print('Update on APP SETTINGS');
     settings = await request({'route': 'app.settings'});
     settingChanges.add(settings);
   }
@@ -805,7 +806,7 @@ class Api extends GetxController {
         sound: true,
       );
 
-      print('User granted permission: ${settings.authorizationStatus}');
+      // print('User granted permission: ${settings.authorizationStatus}');
 
       switch (settings.authorizationStatus) {
         case AuthorizationStatus.authorized:
@@ -838,7 +839,7 @@ class Api extends GetxController {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-    print('_initMessaging:: token: $token');
+    // print('_initMessaging:: token: $token');
     _saveTokenToDatabase(token);
 
     // Any time the token refreshes, store this in the database too.
@@ -881,7 +882,7 @@ class Api extends GetxController {
 
     talkingTo = otherId;
 
-    print('I am talking to: $talkingTo');
+    // print('I am talking to: $talkingTo');
 
     /// @todo send push notification
   }
