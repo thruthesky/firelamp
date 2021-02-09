@@ -37,6 +37,7 @@ class Api extends GetxController {
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
 
   PublishSubject translationChanges = PublishSubject();
+  PublishSubject settingsChanges = PublishSubject();
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
@@ -167,6 +168,7 @@ class Api extends GetxController {
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
+    _initAppSettings();
   }
 
   /// Firebase Initialization
@@ -189,6 +191,13 @@ class Api extends GetxController {
       loadTranslations();
     });
     loadTranslations();
+  }
+
+  _initAppSettings() {
+    database.reference().child('notifications/settings').onValue.listen((event) {
+      loadAppSettings();
+    });
+    loadAppSettings();
   }
 
   /// If the input [data] does not have `session_id` property and the user had logged in,
@@ -768,6 +777,12 @@ class Api extends GetxController {
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
+  }
+
+  /// TODO: Load app settings
+  loadAppSettings() async {
+    print('Update on APP SETTINGS');
+    // settingsChanges.add(null);
   }
 
   /// Initialize Messaging
