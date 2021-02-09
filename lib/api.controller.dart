@@ -43,7 +43,7 @@ class Api extends GetxController {
   PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
 
   /// [settings] is the settings that was develivered over [settingChanges] event.
-  Map<String, dynamic> settings;
+  Map<String, dynamic> settings = {};
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
@@ -373,6 +373,10 @@ class Api extends GetxController {
     user = ApiUser.fromJson(res);
     update();
     return user;
+  }
+
+  Future<ApiUser> updateProfile(String key, String value) async {
+    return updateUserMeta(key, value);
   }
 
   /// User profile data
