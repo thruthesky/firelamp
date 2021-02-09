@@ -24,8 +24,7 @@ class ApiUser {
     AgeDuration _age;
 
     // Set the age of the user
-    _age = Age.dateDifference(
-        fromDate: birthday, toDate: today, includeToDate: false);
+    _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
 
     return _age.years.toString();
   }
@@ -43,6 +42,7 @@ class ApiUser {
   String userEmail;
   String userRegistered;
   String sessionId;
+  String md5;
 
   /// [mode] is used only when `loginOrRegister` method is being invoked.
   /// It is one of `login` or `register`.
@@ -81,6 +81,7 @@ class ApiUser {
     this.userEmail,
     this.userRegistered,
     this.sessionId,
+    this.md5,
     this.mode,
     this.profilePhotoUrl,
   });
@@ -109,6 +110,7 @@ class ApiUser {
     userEmail = json['user_email'];
     userRegistered = json['user_registered'];
     sessionId = json['session_id'];
+    md5 = json['md5'];
     mode = json['mode'];
     profilePhotoUrl = json['profilePhotoUrl'];
   }
@@ -136,6 +138,7 @@ class ApiUser {
     data['user_email'] = this.userEmail;
     data['user_registered'] = this.userRegistered;
     data['session_id'] = this.sessionId;
+    data['md5'] = this.md5;
     data['mode'] = this.mode;
     data['profilePhotoUrl'] = this.profilePhotoUrl;
 

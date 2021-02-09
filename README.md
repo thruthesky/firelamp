@@ -242,12 +242,18 @@ class _ForumListScreenState extends State<ForumListScreen> {
 ```
 /// Chat
 match /chat {
-  /UserA {
-    /UserB { ... chat messages documents .... }
-    /UserC { ... chat messages documents .... }
-  },
-  /UserB {
-    /UserA { .... chat messages .... }
+  /rooms {
+    /UserA/UserB/ { newMessages: 0, timestamp: ..., }
+    /UserA/UserC/ { newMessages: 0, timestamp: ..., }
+  }
+  /messages {
+    /UserA {
+      /UserB/ { ... chat messages documents .... }
+      /UserC/ { ... chat messages documents .... }
+    },
+    /UserB {
+      /UserA/ { .... chat messages .... }
+    }
   }
 }
 ```
@@ -257,8 +263,11 @@ match /chat {
 - User A's room list is under `/chat/UserA` where `UserA` is the `userKey`.
 - If UserA had a chat with UserB, all chat messages will be saved under
 
-  - Not only `/chat/UserA/UserB`
-  - But also `/chat/UserB/UserA`
+  - Not only `/chat/messages/UserA/UserB` - save chat message
+  - But also `/chat/messages/UserB/UserA` - save chat message
+  - And also UPDATE `/chat/rooms/UserA/UserB` - update stamp of last chat message and increase newMessages.
+  - And also UPDATE `/chat/rooms/UserB/UserA` - update stamp of last chat message and increase newMessages.
+
     That means, when UserA chats to UserB, the chat message will be saved under bother UserA and UserB.
     So, they can see each other's message.
 
