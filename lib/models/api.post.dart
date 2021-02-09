@@ -54,7 +54,7 @@ class ApiPost {
   bool get isNotMine => !isMine;
 
   insertOrUpdateComment(ApiComment comment) {
-    print(comment.commentParent);
+    // print(comment.commentParent);
 
     // find existing comment and update.
     int i = comments.indexWhere((c) => c.commentId == comment.commentId);
@@ -67,7 +67,7 @@ class ApiPost {
     // if it's new comment right under post, then add at bottom.
     if (comment.commentParent == '0') {
       comments.add(comment);
-      print('parent id: 0, add at bottom');
+      // print('parent id: 0, add at bottom');
       return;
     }
 
@@ -80,7 +80,7 @@ class ApiPost {
     }
 
     // error. code should not come here.
-    print('error on comment add:');
+    // print('error on comment add:');
   }
 
   factory ApiPost.fromJson(Map<String, dynamic> json) => ApiPost(
