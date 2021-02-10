@@ -1,10 +1,7 @@
 part of '../firelamp.dart';
 
 /// Chat room message list helper class.
-///
-/// By defining this helper class, you may open more than one chat room at the same time.
-/// todo separate this class to `chat.dart`
-class ChatRoom extends ChatBase {
+class ChatRoom {
   /// [render] will be called to notify chat room listener to re-render the screen.
   ///
   /// For one chat message sending,
@@ -13,12 +10,10 @@ class ChatRoom extends ChatBase {
   ///
   /// [globalRoomChange] will be invoked when global chat room changes.
   ChatRoom({
-    String otherUserId,
     Function render,
-  })  : _render = render,
-        otherUserId = otherUserId;
+  }) : _render = render;
 
-  String otherUserId;
+  ApiUser otherUser;
 
   /// Room id
   String roomId;
@@ -26,6 +21,11 @@ class ChatRoom extends ChatBase {
   /// push notification topic name
   String get topic => 'notifyChat_${this.roomId}';
 
+  /// [noMoreMessage] becomes true when there is no more old messages to view.
+  /// The app should display 'no more message' to user.
+  bool noMoreMessage = false;
+
+  int page = 0;
   int _limit = 30;
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event
@@ -63,424 +63,211 @@ class ChatRoom extends ChatBase {
   Timestamped get createdAt => chatRoomInfo.createdAt;
 
   /// Enter chat room
-  Future<void> enter(String id) async {
-    String _id = id;
+  Future<void> enter(String userId) async {
+    otherUser = await Api.instance.otherUserProfile(userId);
 
-    if (_id != null) {
-      // Enter existing room
-      // If permission-denied error happens here,
-      // 1. Probably the room does not exists.
-      // 2. Or, the login user is not a user of the room.
-      // print(f.user.uid);
-      // print(_id);
-      // chatRoomInfo = await getRoomInformation(_id);
+    roomId = otherUser.data['roomId'];
+
+    ///create `chat/rooms/myId/roomId` if not exists.
+    ///create `chat/rooms/otherId/roomId` if not exists.
+    DataSnapshot snapshot = await Api.instance.userRoomRef(Api.instance.md5, roomId).once();
+    print('userRoomRef(${Api.instance.md5}, ${otherUser.data['roomId']})');
+    print(snapshot);
+    if (snapshot.value == null) {
+      await Api.instance.userRoomRef(Api.instance.md5, roomId).set({
+        'createdAt': ServerValue.timestamp,
+        'newMessages': 0,
+        'senderId': otherUser.id,
+        'senderDisplayName': otherUser.nickname,
+        'senderprofilePhotoUrl': otherUser.profilePhotoUrl,
+      });
+      await Api.instance.userRoomRef(otherUser.md5, roomId).set({
+        'createdAt': ServerValue.timestamp,
+        'newMessages': 0,
+        'senderId': Api.instance.id,
+        'senderDisplayName': Api.instance.nickname,
+        'senderprofilePhotoUrl': Api.instance.profilePhotoUrl,
+      });
+
+      /// send message to `chat/message/roomId` with protocol roomCreated
+      ///   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
+      await Api.instance.chatMessagesRef(roomId).set({
+        'createdAt': ServerValue.timestamp,
+        'senderId': Api.instance.id,
+        'senderDisplayName': Api.instance.nickname,
+        'senderprofilePhotoUrl': Api.instance.profilePhotoUrl,
+        'protocol': ChatProtocol.roomCreated
+      });
     }
 
-    // fetch latest messages
+    //   /// @todo update chat room `chat/rooms/myId/otherId`. increase newMessage and stamp.
+    //   /// @todo update chat room `chat/rooms/otherId/myId`. increase newMessage and stamp.
+
+    chatRoomInfo = await Api.instance.getRoomInformation(roomId);
+
+    // // fetch latest messages
     // fetchMessages();
 
-    // _globalRoomSubscription = globalRoomDoc(_id).snapshots().listen((event) {
-    //   global = ChatGlobalRoom.fromSnapshot(event);
-    //   if (_globalRoomChange != null) {
-    //     _globalRoomChange();
-    //   }
-    // });
-
-    // Listening current room in my room list.
-    //
-    // This will be notify chat room listener when chat room title changes, or new users enter, etc.
-    // if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
-    // _currentRoomSubscription = currentRoom.snapshots().listen((DocumentSnapshot doc) {
-    //   // If the user got a message from a chat room where the user is currently in,
-    //   // then, set `newMessages` to 0.
-    //   final data = ChatUserRoom.fromSnapshot(doc);
-    //   if (data.newMessages > 0 && data.createdAt != null) {
-    //     currentRoom.update({'newMessages': 0});
-    //   }
-    // });
+    // // Listening current room in my room list.
+    // // This will be notify chat room listener when chat room title changes, or new users enter, etc.
+    if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
+    _currentRoomSubscription = Api.instance.myRoom(roomId).onValue.listen((Event event) {
+      // If the user got a message from a chat room where the user is currently in,
+      // then, set `newMessages` to 0.
+      final data = ChatRoomInfo.fromSnapshot(event.snapshot);
+      if (data.newMessages > 0 && data.createdAt != null) {
+        Api.instance.myRoom(roomId).update({'newMessages': 0});
+      }
+    });
   }
 
-  /// Returns the room list info `/chat/room/list/{roomId}` document.
-  /// If the room does exists, it returns null.
-  /// The return value has `id` as its room id.
-  // Future<ChatRoomInfo> getRoomInformation(String roomId) async {
-  //   DataSnapshot snapshot = await myRoom(roomId).once().then((value) => value);
-  //   return ChatRoomInfo.fromSnapshot(snapshot);
-  // }
-
-  // /// Returns the current room in my room list.
-  // DataSnapshot get currentRoom => myRoom(id);
-
-  // Future<void> ___create({List<String> users, String id}) async {
-  //   // String roomId = chatRoomId();
-  //   // print('roomId: $roomId');
-
-  //   final info = ChatGlobalRoom(
-  //     users: users,
-  //     moderators: [loginUserId],
-  //     createdAt: FieldValue.serverTimestamp(),
-  //   );
-
-  //   DocumentReference doc;
-  //   if (id == null) {
-  //     doc = await globalRoomListCol.add(info.data);
-  //   } else {
-  //     doc = globalRoomListCol.doc(id);
-  //     // Cannot create if the document is already exists.
-  //     // Cannot update if the user is not one of the room user.
-  //     await doc.set(info.data);
-  //   }
-
-  //   global = ChatGlobalRoom.fromSnapshot(await doc.get());
-
-  //   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
-  // }
-
   // /// Notify chat room listener to re-render the screen.
-  // _notify() {
-  //   if (_render != null) _render();
-  // }
+  _notify() {
+    if (_render != null) _render();
+  }
 
-  // /// Fetch previous messages
-  // fetchMessages() {
-  //   if (_throttling || noMoreMessage) return;
-  //   loading = true;
-  //   _throttling = true;
+  /// Fetch previous messages
+  fetchMessages() {
+    if (_throttling || noMoreMessage) return;
+    loading = true;
+    _throttling = true;
 
-  //   page++;
-  //   if (page == 1) {
-  //     // don't wait
-  //     myRoom(global.roomId).set({'newMessages': 0}, SetOptions(merge: true));
-  //   }
+    page++;
+    if (page == 1) {
+      Api.instance.myRoom(roomId).set({'newMessages': 0});
+    }
 
-  //   /// Get messages for the chat room
-  //   Query q = messagesCol(global.roomId)
-  //       .orderBy('createdAt', descending: true)
+    /// Get messages for the chat room
+    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToFirst(_limit);
 
-  //       /// todo make it optional from firestore settings.
-  //       .limit(_limit); // 몇 개만 가져온다.
+    if (messages.isNotEmpty) {
+      q = q.startAt([messages.first['createdAt']]);
+    }
 
-  //   if (messages.isNotEmpty) {
-  //     q = q.startAfter([messages.first['createdAt']]);
-  //   }
+    _chatRoomSubscription = q.onValue.listen((Event event) {
+      // print('fetchMessage() -> done: _page: $_page');
+      // Block loading previous messages for some time.
 
-  //   _chatRoomSubscription = q.snapshots().listen((snapshot) {
-  //     // print('fetchMessage() -> done: _page: $_page');
-  //     // Block loading previous messages for some time.
+      loading = false;
+      Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
-  //     loading = false;
-  //     Timer(Duration(milliseconds: _throttle), () => _throttling = false);
-  //     // Timer(Duration(milliseconds: _loadingTimeout), () {
-  //     //   loading = false;
-  //     //   _notify();
-  //     // });
+      print(event.snapshot);
+      // event.snapshot.value.forEach((DocumentChange documentChange) {
+      //   final message = documentChange.doc.data();
 
-  //     snapshot.docChanges.forEach((DocumentChange documentChange) {
-  //       final message = documentChange.doc.data();
+      //   message['id'] = documentChange.doc.id;
 
-  //       message['id'] = documentChange.doc.id;
+      //   // print('type: ${documentChange.type}. ${message['text']}');
 
-  //       // print('type: ${documentChange.type}. ${message['text']}');
+      //   /// 새로 채팅을 하거나, 이전 글을 가져 올 때, 새 채팅(생성)뿐만 아니라, 이전 채팅 글을 가져올 때에도 added 이벤트 발생.
+      //   if (documentChange.type == DocumentChangeType.added) {
+      //     // Two events will be fired on the sender's device.
+      //     // First event has null of FieldValue.serverTimestamp()
+      //     // Only one event will be fired on other user's devices.
+      //     if (message['createdAt'] == null) {
+      //       messages.add(message);
+      //     }
 
-  //       /// 새로 채팅을 하거나, 이전 글을 가져 올 때, 새 채팅(생성)뿐만 아니라, 이전 채팅 글을 가져올 때에도 added 이벤트 발생.
-  //       if (documentChange.type == DocumentChangeType.added) {
-  //         // Two events will be fired on the sender's device.
-  //         // First event has null of FieldValue.serverTimestamp()
-  //         // Only one event will be fired on other user's devices.
-  //         if (message['createdAt'] == null) {
-  //           messages.add(message);
-  //         }
+      //     /// if it's new message, add at bottom.
+      //     else if (messages.length > 0 &&
+      //         messages[0]['createdAt'] != null &&
+      //         message['createdAt'].microsecondsSinceEpoch >
+      //             messages[0]['createdAt'].microsecondsSinceEpoch) {
+      //       messages.add(message);
+      //     } else {
+      //       // if it's old message, add on top.
+      //       messages.insert(0, message);
+      //     }
 
-  //         /// if it's new message, add at bottom.
-  //         else if (messages.length > 0 &&
-  //             messages[0]['createdAt'] != null &&
-  //             message['createdAt'].microsecondsSinceEpoch >
-  //                 messages[0]['createdAt'].microsecondsSinceEpoch) {
-  //           messages.add(message);
-  //         } else {
-  //           // if it's old message, add on top.
-  //           messages.insert(0, message);
-  //         }
+      //     // if it is loading old messages
+      //     // and if it has less messages than the limit
+      //     // check if it is the very first message.
+      //     if (message['createdAt'] != null) {
+      //       if (snapshot.docs.length < _limit) {
+      //         if (message['text'] == ChatProtocol.roomCreated) {
+      //           noMoreMessage = true;
+      //           // print('-----> noMoreMessage: $noMoreMessage');
+      //         }
+      //       }
+      //     }
+      //   } else if (documentChange.type == DocumentChangeType.modified) {
+      //     final int i = messages.indexWhere((r) => r['id'] == message['id']);
+      //     if (i > -1) {
+      //       messages[i] = message;
+      //     }
+      //   } else if (documentChange.type == DocumentChangeType.removed) {
+      //     final int i = messages.indexWhere((r) => r['id'] == message['id']);
+      //     if (i > -1) {
+      //       messages.removeAt(i);
+      //     }
+      //   } else {
+      //     assert(false, 'This is error');
+      //   }
+      // });
+      _notify();
+    });
+  }
 
-  //         // if it is loading old messages
-  //         // and if it has less messages than the limit
-  //         // check if it is the very first message.
-  //         if (message['createdAt'] != null) {
-  //           if (snapshot.docs.length < _limit) {
-  //             if (message['text'] == ChatProtocol.roomCreated) {
-  //               noMoreMessage = true;
-  //               // print('-----> noMoreMessage: $noMoreMessage');
-  //             }
-  //           }
-  //         }
-  //       } else if (documentChange.type == DocumentChangeType.modified) {
-  //         final int i = messages.indexWhere((r) => r['id'] == message['id']);
-  //         if (i > -1) {
-  //           messages[i] = message;
-  //         }
-  //       } else if (documentChange.type == DocumentChangeType.removed) {
-  //         final int i = messages.indexWhere((r) => r['id'] == message['id']);
-  //         if (i > -1) {
-  //           messages.removeAt(i);
-  //         }
-  //       } else {
-  //         assert(false, 'This is error');
-  //       }
-  //     });
-  //     _notify();
-  //   });
-  // }
+  unsubscribe() {
+    _chatRoomSubscription.cancel();
+    _currentRoomSubscription.cancel();
+  }
 
-  // unsubscribe() {
-  //   _chatRoomSubscription.cancel();
-  //   _currentRoomSubscription.cancel();
-  // }
+  /// Send chat message to the users in the room
+  ///
+  /// [displayName] is the name that the sender will use. The default is
+  /// `ff.user.displayName`.
+  ///
+  /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
+  ///
+  /// [type] is the type of the message. It can be `image` or `text` if string only.
+  Future<Map<String, dynamic>> sendMessage({
+    @required String text,
+    Map<String, dynamic> extra,
+    String url,
+    String urlType,
+  }) async {
+    // if (displayName == null || displayName.trim() == '') {
+    //   throw CHAT_DISPLAY_NAME_IS_EMPTY;
+    // }
 
-  // /// Send chat message to the users in the room
-  // ///
-  // /// [displayName] is the name that the sender will use. The default is
-  // /// `ff.user.displayName`.
-  // ///
-  // /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
-  // ///
-  // /// [type] is the type of the message. It can be `image` or `text` if string only.
-  // Future<Map<String, dynamic>> sendMessage({
-  //   @required String text,
-  //   Map<String, dynamic> extra,
-  //   @required String displayName,
-  //   String photoURL = '',
-  // }) async {
-  //   if (displayName == null || displayName.trim() == '') {
-  //     throw CHAT_DISPLAY_NAME_IS_EMPTY;
-  //   }
+    Map<String, dynamic> message = {
+      'senderUid': id,
+      'text': text,
+      'createdAt': ServerValue.timestamp,
+      if (extra != null) ...extra,
+    };
 
-  //   Map<String, dynamic> message = {
-  //     'senderUid': loginUserId,
-  //     'senderDisplayName': displayName,
-  //     'senderPhotoURL': photoURL,
-  //     'text': text,
+    await Api.instance.chatMessagesRef(otherUser.data['roomId']).push().set(message);
+    await Api.instance
+        .userRoomRef(otherUser.id, chatRoomInfo.roomId)
+        .child('newMessages')
+        .set(ServerValue.increment(1));
 
-  //     // Time that this message(or last message) was created.
-  //     'createdAt': FieldValue.serverTimestamp(),
+    // TODO: Sending notification should be handled outside of firechat.
+    // await __ff.sendNotification(
+    //   '$displayName send you message.',
+    //   text,
+    //   id: id,
+    //   screen: 'chatRoom',
+    //   topic: topic,
+    // );
+    return message;
+  }
 
-  //     // Make [newUsers] empty string for re-setting(removing) from previous
-  //     // message.
-  //     'newUsers': [],
+  text(Map<String, dynamic> message) {
+    String text = message['text'] ?? '';
+    if (text == ChatProtocol.roomCreated) {
+      text = 'Chat room created. ';
+    }
 
-  //     if (extra != null) ...extra,
-  //   };
-
-  //   // message = mergeMap([message, extra]);
-
-  //   // print('my uid: ${f.user.uid}');
-  //   // print('users: ${this.users}');
-  //   // print('extra: $extra');
-  //   // print(message);
-  //   // print(messagesCol(id).path);
-  //   await messagesCol(global.roomId).add(message);
-  //   // print(message);
-  //   message['newMessages'] = FieldValue.increment(1); // To increase, it must be an udpate.
-  //   List<Future<void>> messages = [];
-
-  //   /// Just incase there are duplicated UIDs.
-  //   List<String> newUsers = [...global.users.toSet()];
-
-  //   /// Send a message to all users in the room.
-  //   for (String uid in newUsers) {
-  //     // print(chatUserRoomDoc(uid, info['id']).path);
-  //     messages.add(userRoomDoc(uid, global.roomId).set(message, SetOptions(merge: true)));
-  //   }
-  //   // print('send messages to: ${messages.length}');
-  //   await Future.wait(messages);
-
-  //   // TODO: Sending notification should be handled outside of firechat.
-
-  //   // await __ff.sendNotification(
-  //   //   '$displayName send you message.',
-  //   //   text,
-  //   //   id: id,
-  //   //   screen: 'chatRoom',
-  //   //   topic: topic,
-  //   // );
-
-  //   return message;
-  // }
-
-  // /// Add users to chat room
-  // ///
-  // /// Once user(s) has added, `who added who` messages will be delivered to all
-  // /// of room users. `newUsers` array will have the names of newly added users.
-  // ///
-  // /// [users] is a Map of user uid and user name. like `{uidA: 'nameA', ...}`
-  // ///
-  // /// See readme
-  // ///
-  // /// todo before adding user, check if the user is in `blockedUsers` property and if yes, throw a special error code.
-  // /// Todo move this method to `ChatRoom`
-  // /// todo use arrayUnion on Firestore
-  // Future<void> addUser(Map<String, String> users) async {
-  //   /// Get latest info from server.
-  //   /// There might be a chance that somehow `info['users']` is not upto date.
-  //   /// So, it is safe to get room info from server.
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-
-  //   if (_globalRoom.blockedUsers != null && _globalRoom.blockedUsers.length > 0) {
-  //     for (String blockedUid in _globalRoom.blockedUsers) {
-  //       if (users.keys.contains(blockedUid)) {
-  //         throw ONE_OF_USERS_ARE_BLOCKED;
-  //       }
-  //     }
-  //   }
-
-  //   List<String> newUsers = [...List<String>.from(_globalRoom.users), ...users.keys.toList()];
-  //   newUsers = newUsers.toSet().toList();
-
-  //   /// Update users first and then send chat messages to all users.
-  //   /// In this way, newly entered/added user(s) will have the room in the my-room-list
-
-  //   /// Update users array with added user.
-  //   // print('users:');
-  //   // print(newUsers);
-  //   final doc = globalRoomDoc(_globalRoom.roomId);
-  //   // print(doc.path);
-  //   // print('my uid: ${f.user.uid}');
-  //   // print(newUsers);
-  //   // print((await doc.get()).data());
-  //   await doc.update({'users': newUsers});
-
-  //   /// Update last message of room users.
-  //   // print('newUserNames:');
-  //   // print(users.values.toList());
-  //   // TODO: display name.
-  //   await sendMessage(text: ChatProtocol.add, displayName: loginUserId, extra: {
-  //     'newUsers': users.values.toList(),
-  //   });
-  // }
-
-  // /// Returns a user's room (that has last message of the room) document
-  // /// reference.
-  // DocumentReference userRoomDoc(String uid, String roomId) {
-  //   return userRoomListCol(uid).doc(roomId);
-  // }
-
-  // /// Moderator removes a user
-  // ///
-  // /// TODO [roomId] should be omitted.
-  // Future<void> blockUser(String uid, String userName) async {
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-  //   _globalRoom.users.remove(uid);
-
-  //   // List<String> blocked = info.blocked ?? [];
-  //   _globalRoom.blockedUsers.add(uid);
-
-  //   /// Update users and blockedUsers first to inform by sending a message.
-  //   await globalRoomDoc(id)
-  //       .update({'users': _globalRoom.users, 'blockedUsers': _globalRoom.blockedUsers});
-
-  //   /// Inform all users.
-  //   await sendMessage(text: ChatProtocol.block, displayName: uid, extra: {'userName': userName});
-  // }
-
-  // /// Add a moderator
-  // ///
-  // /// Only moderator can add a user to moderator.
-  // /// The user must be included in `users` array.
-  // ///
-  // /// Todo move this method to `ChatRoom`
-  // Future<void> addModerator(String uid) async {
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-  //   List<String> moderators = _globalRoom.moderators;
-  //   if (moderators.contains(loginUserId) == false) throw YOU_ARE_NOT_MODERATOR;
-  //   if (_globalRoom.users.contains(uid) == false) throw MODERATOR_NOT_EXISTS_IN_USERS;
-  //   moderators.add(uid);
-  //   await globalRoomDoc(id).update({'moderators': moderators});
-  // }
-
-  // /// Remove a moderator.
-  // ///
-  // /// Only moderator can remove a moderator.
-  // ///
-  // /// Todo move this method to `ChatRoom`
-  // Future<void> removeModerator(String uid) async {
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-  //   List<String> moderators = _globalRoom.moderators;
-  //   moderators.remove(uid);
-  //   await globalRoomDoc(id).update({'moderators': moderators});
-
-  //   // TODO inform it to all users by sending message
-  // }
-
-  // /// User go out of a room. The user is no longer part of the room
-  // ///
-  // /// Once a user has left, the user will not be able to update last message of
-  // /// room users. So, before leave, it should update 'leave' last message of room users.
-  // ///
-  // /// For moderator to block user, see [chatBlockUser]
-  // ///
-  // /// [roomId] is the chat room id.
-  // /// [uid] is the user to be kicked out by moderator.
-  // /// [userName] is the userName to leave or to be kicked out. and it is required.
-  // /// [text] is the text to send to all users.
-  // ///
-  // /// This method throws permission error when a user try to remove another user.
-  // /// But admin can remove other users.
-  // ///
-  // ///
-  // /// TODO if moderator is leaving, it needs to remove the uid from moderator.
-  // /// TODO if the last moderator tries to leave, ask the moderator to add another user to moderator.
-  // /// TODO When a user(or a moderator) leaves the room and there is no user left in the room,
-  // /// then move the room information from /chat/info/room-list to /chat/info/deleted-room-list.
-  // Future<void> leave() async {
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-  //   _globalRoom.users.remove(loginUserId);
-
-  //   // Update last message of room users that the user is leaving.
-  //   await sendMessage(
-  //       text: ChatProtocol.leave, displayName: loginUserId, extra: {'userName': loginUserId});
-
-  //   // Update users after removing himself.
-  //   await globalRoomDoc(_globalRoom.roomId).update({'users': _globalRoom.users});
-
-  //   // If I am the one who is willingly leave the room, then remove the
-  //   // room in my-room-list.
-  //   // print(chatMyRoom(roomId).path);
-  //   await myRoom(id).delete();
-  // }
-
-  // /// Kicks a user out of the room.
-  // ///
-  // /// The user who was kicked can enter room again by himself. Somebody must add
-  // /// him.
-  // /// Only moderator can kick a user out.
-  // Future<void> kickout(String uid, String userName) async {
-  //   ChatGlobalRoom _globalRoom = await getGlobalRoom(id);
-
-  //   if (_globalRoom.moderators.contains(loginUserId) == false) throw YOU_ARE_NOT_MODERATOR;
-  //   if (_globalRoom.users.contains(uid) == false) throw USER_NOT_EXIST_IN_ROOM;
-  //   _globalRoom.users.remove(uid);
-
-  //   // Update users after removing himself.
-  //   await globalRoomDoc(_globalRoom.roomId).update({'users': _globalRoom.users});
-
-  //   await sendMessage(
-  //       text: ChatProtocol.leave, displayName: loginUserId, extra: {'userName': loginUserId});
-  // }
-
-  // /// Returns a room of a user.
-  // Future<ChatUserRoom> getMyRoomInfo(String uid, String roomId) async {
-  //   DocumentSnapshot snapshot = await userRoomDoc(uid, roomId).get();
-  //   if (snapshot.exists) {
-  //     return ChatUserRoom.fromSnapshot(snapshot);
-  //   } else {
-  //     throw ROOM_NOT_EXISTS;
-  //   }
-  // }
-
-  // /// Returns the last message of current room.
-  // ///
-  // /// User's private room has all the information of last chat.
-  // ///
-  // /// Note that `getMyRoomInfo()` returns `ChatRoomInfo` while `myRoom()`
-  // /// returns document reference.
-  // Future<ChatUserRoom> get lastMessage => getMyRoomInfo(loginUserId, id);
+    /// Display `no more messages` only when user scrolled up to see more messages.
+    else if (page > 1 && noMoreMessage) {
+      text = 'No more messages. ';
+    } else if (text == ChatProtocol.enter) {
+      // print(message);
+      text = "${message['senderDisplayName']} invited ${message['newUsers']}";
+    }
+    return text;
+  }
 }

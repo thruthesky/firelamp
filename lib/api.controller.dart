@@ -881,7 +881,7 @@ class Api extends GetxController {
   }
 
   /// Return the collection of messages of the room id.
-  DatabaseReference messagesRef(String roomId) {
+  DatabaseReference chatMessagesRef(String roomId) {
     return database.reference().child('chat/messages').child(roomId);
   }
 
@@ -895,30 +895,28 @@ class Api extends GetxController {
     return userRoomListRef(userId).child(roomId);
   }
 
-  /// Returns document reference of my room (that has last message of the room)
+  /// Returns reference of my room (that has last message of the room)
   /// `/chat/rooms/my-id/{roomId}`
   DatabaseReference myRoom(String roomId) {
     return myRoomList.child(roomId);
   }
 
+  /// Returns the room list info `/chat/room/list/{roomId}` document.
+  /// If the room does exists, it returns null.
+  /// The return value has `id` as its room id.
+  Future<ChatRoomInfo> getRoomInformation(String roomId) async {
+    DataSnapshot snapshot = await myRoom(roomId).once();
+    return ChatRoomInfo.fromSnapshot(snapshot);
+  }
+
   chatEnter({@required String userId}) async {
-    otherUser = await Api.instance.otherUserProfile(userId);
+    // otherUser = await Api.instance.otherUserProfile(userId);
 
-    /// @todo create `chat/rooms/myId/otherId` if not exists.
-    userRoomRef(md5, otherUser.md5).once().then((DataSnapshot snapshot) {
-      print('userRoomRef($md5, ${otherUser.md5})');
-      print(snapshot);
-      if (snapshot.value == null) return;
-    });
-
-    /// @todo create `chat/rooms/otherId/myId` if not exists.
-    // database
-    //     .reference()
-    //     .child('chat/rooms/${otherUser.md5}/$id')
-    //     .once()
-    //     .then((DataSnapshot snapshot) {
-    //   print('chat/rooms/${otherUser.md5}/$id');
+    // userRoomRef(md5, otherUser.data['roomId']).once().then((DataSnapshot snapshot) {
+    //   print('userRoomRef($md5, ${otherUser.data['roomId']})');
+    //   print(snapshot);
     //   if (snapshot.value == null) return;
+    //   userRoomRef(md5, otherUser.data['roomId']).set({});
     // });
 
     /// @todo send message to `chat/message/myId/otherId` with protocol roomCreated
@@ -931,66 +929,6 @@ class Api extends GetxController {
     // print('I am talking to: $talkingTo');
 
     /// @todo send push notification
-  }
-
-  /// Send chat message to the users in the room
-  ///
-  /// [displayName] is the name that the sender will use. The default is
-  /// `ff.user.displayName`.
-  ///
-  /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
-  ///
-  /// [type] is the type of the message. It can be `image` or `text` if string only.
-  Future<Map<String, dynamic>> sendMessage({
-    @required String text,
-    Map<String, dynamic> extra,
-    String url,
-    String urlType,
-  }) async {
-    // if (displayName == null || displayName.trim() == '') {
-    //   throw CHAT_DISPLAY_NAME_IS_EMPTY;
-    // }
-
-    Map<String, dynamic> message = {
-      'senderUid': id,
-      'text': text,
-
-      // Time that this message(or last message) was created.
-      'createdAt': ServerValue.timestamp,
-
-      if (extra != null) ...extra,
-    };
-
-    await messagesRef(otherUser.data['roomId']).push().set(message);
-
-    // userRoomRef(userId, chat.roomId)
-
-    // // print(message);
-    // message['newMessages'] = FieldValue.increment(1); // To increase, it must be an udpate.
-    // List<Future<void>> messages = [];
-
-    // /// Just incase there are duplicated UIDs.
-    // List<String> newUsers = [...global.users.toSet()];
-
-    // /// Send a message to all users in the room.
-    // for (String uid in newUsers) {
-    //   // print(chatUserRoomDoc(uid, info['id']).path);
-    //   messages.add(userRoomDoc(uid, global.roomId).set(message, SetOptions(merge: true)));
-    // }
-    // // print('send messages to: ${messages.length}');
-    // await Future.wait(messages);
-
-    // // TODO: Sending notification should be handled outside of firechat.
-
-    // // await __ff.sendNotification(
-    // //   '$displayName send you message.',
-    // //   text,
-    // //   id: id,
-    // //   screen: 'chatRoom',
-    // //   topic: topic,
-    // // );
-
-    return message;
   }
 
   /// -------------------------------------------------------------------------------

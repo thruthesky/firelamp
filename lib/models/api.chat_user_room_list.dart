@@ -4,7 +4,7 @@
 // ///
 // /// This is a completely independent helper class to help to list login user's room list.
 // /// You may rewrite your own helper class.
-// class ChatMyRoomList extends ChatBase {
+// class ChatMyRoomList{
 //   Function __render;
 
 //   StreamSubscription _myRoomListSubscription;

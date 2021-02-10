@@ -2,12 +2,15 @@ part of '../firelamp.dart';
 
 /// [ChatRoom] is a model (extending [ChatBase]) that represents the chat room under `/chat-global` collection.
 /// All the chat room resides under this collection.
-class ChatRoomInfo extends ChatBase {
+class ChatRoomInfo {
   String roomId;
   String title;
   List<String> users;
   dynamic createdAt;
   dynamic updatedAt;
+
+  /// [newMessages] has the number of new messages for that room.
+  int newMessages;
 
   String get otherUserId {
     // If there is no other user.
@@ -22,6 +25,7 @@ class ChatRoomInfo extends ChatBase {
     this.title,
     this.users,
     this.createdAt,
+    this.newMessages,
   });
 
   factory ChatRoomInfo.fromSnapshot(DataSnapshot snapshot) {
@@ -38,6 +42,7 @@ class ChatRoomInfo extends ChatBase {
       title: info['title'],
       users: List<String>.from(info['users'] ?? []),
       createdAt: info['createdAt'],
+      newMessages: info['newMessages'],
     );
   }
 
@@ -46,6 +51,7 @@ class ChatRoomInfo extends ChatBase {
       'title': this.title,
       'users': this.users,
       'createdAt': this.createdAt,
+      'newMessages': this.newMessages,
     };
   }
 
