@@ -875,16 +875,38 @@ class Api extends GetxController {
   String talkingTo;
   ApiUser otherUser;
 
+  /// Returns login user's room list collection `/chat/my-room-list/my-uid` reference.
+  DatabaseReference get myRoomList {
+    return userRoomListRef(Api.instance.id);
+  }
+
+  /// Return the collection of messages of the room id.
+  DatabaseReference messagesRef(String roomId) {
+    return database.reference().child('chat/messages').child(roomId);
+  }
+
+  /// Returns my room list collection `/chat/rooms/{user-id}` reference.
+  DatabaseReference userRoomListRef(String userId) {
+    return database.reference().child('chat/rooms').child(userId);
+  }
+
+  /// Returns my room (that has last message of the room) document
+  DatabaseReference userRoomRef(String userId, String roomId) {
+    return userRoomListRef(userId).child(roomId);
+  }
+
+  /// Returns document reference of my room (that has last message of the room)
+  /// `/chat/rooms/my-id/{roomId}`
+  DatabaseReference myRoom(String roomId) {
+    return myRoomList.child(roomId);
+  }
+
   chatEnter({@required String userId}) async {
     otherUser = await Api.instance.otherUserProfile(userId);
 
     /// @todo create `chat/rooms/myId/otherId` if not exists.
-    database
-        .reference()
-        .child('chat/rooms/$id/${otherUser.md5}')
-        .once()
-        .then((DataSnapshot snapshot) {
-      print('chat/rooms/$id/${otherUser.md5}');
+    userRoomRef(md5, otherUser.md5).once().then((DataSnapshot snapshot) {
+      print('userRoomRef($md5, ${otherUser.md5})');
       print(snapshot);
       if (snapshot.value == null) return;
     });
@@ -939,12 +961,9 @@ class Api extends GetxController {
       if (extra != null) ...extra,
     };
 
-    // message = mergeMap([message, extra]);
-    database.reference().child('chat/message/${otherUser..data['roomId']}/').push().set(message);
-    // database
-    //     .reference()
-    //     .child('chat/rooms/${otherUser.md5}/$id/')
-    //     .update(message);
+    await messagesRef(otherUser.data['roomId']).push().set(message);
+
+    // userRoomRef(userId, chat.roomId)
 
     // // print(message);
     // message['newMessages'] = FieldValue.increment(1); // To increase, it must be an udpate.
