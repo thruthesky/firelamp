@@ -56,6 +56,16 @@ class ApiPost {
   bool get isMine => postAuthor == Api.instance.id;
   bool get isNotMine => !isMine;
 
+  bool get showLike => showVoteButton('forum_like');
+  bool get showDislike => showVoteButton('forum_dislike');
+
+  bool showVoteButton(String str) {
+    if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
+      return true;
+    }
+    return false;
+  }
+
   insertOrUpdateComment(ApiComment comment) {
     // print(comment.commentParent);
 

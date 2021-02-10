@@ -48,6 +48,16 @@ class ApiComment {
   bool get isMine => userId == Api.instance.id;
   bool get isNotMine => !isMine;
 
+  bool get showLike => showVoteButton('forum_like');
+  bool get showDislike => showVoteButton('forum_dislike');
+
+  bool showVoteButton(String str) {
+    if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
+      return true;
+    }
+    return false;
+  }
+
   factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(
         commentId: json["comment_ID"],
         commentPostId: json["comment_post_ID"],
