@@ -1,5 +1,8 @@
 part of '../firelamp.dart';
 
+/// [ApiPost] is a model for a post.
+///
+/// Post can be used for many purpose like blog, messaging, shopping mall, etc.
 class ApiPost {
   ApiPost({
     this.data,
