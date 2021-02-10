@@ -36,7 +36,14 @@ class Api extends GetxController {
   /// After this, you can use [localStorage]
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
 
-  PublishSubject translationChanges = PublishSubject();
+  /// When translation changes(from backend), [translationChanges] event is posted with translation data.
+  PublishSubject<Map<String, dynamic>> translationChanges = PublishSubject();
+
+  /// When settings changes(from backend), [settingChanges] is posted with settings.
+  PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
+
+  /// [settings] is the settings that was develivered over [settingChanges] event.
+  Map<String, dynamic> settings = {};
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
@@ -87,7 +94,7 @@ class Api extends GetxController {
   }
 
   Api._internal() {
-    print('=> Api._internal()');
+    // print('=> Api._internal()');
   }
 
   /// FireLamp Api init
@@ -100,7 +107,7 @@ class Api extends GetxController {
   /// Note that, if you need to chagne the settings, you can do it with [init] method.
   @override
   void onInit() {
-    print("--> Api::onInit()");
+    // print("--> Api::onInit()");
     super.onInit();
 
     GetStorage.init().then((b) {
@@ -124,7 +131,7 @@ class Api extends GetxController {
     });
 
     authChanges.listen((user) async {
-      print('authChanges');
+      // print('authChanges');
     });
   }
 
@@ -168,6 +175,7 @@ class Api extends GetxController {
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
+    _initSettings();
   }
 
   /// Firebase Initialization
@@ -178,18 +186,33 @@ class Api extends GetxController {
     try {
       await Firebase.initializeApp();
       firebaseInitialized.add(true);
-      print("App is connected to Firebase!");
+      // print("App is connected to Firebase!");
     } catch (e) {
-      print("Error: failed to connect to Firebase!");
+      // print("Error: failed to connect to Firebase!");
     }
   }
 
-  /// Load translations
+  /// Load app translations and listen changes.
   _initTranslation() {
-    database.reference().child('notifications/translation').onValue.listen((event) {
-      loadTranslations();
+    database.reference().child('notifications').child('translation').onValue.listen((event) {
+      // print('_initTranslation:: updated');
+      _loadTranslations();
     });
-    loadTranslations();
+    _loadTranslations();
+  }
+
+  /// Load app global settings and listen changes.
+  ///
+  /// Logic
+  ///  - When there is chnages on settings,
+  ///  - Get the whole settings from backend
+  ///  - Post `settingChanges` event with settings.
+  _initSettings() {
+    database.reference().child('notifications').child('settings').onValue.listen((event) {
+      // print('_initSettings:: updated');
+      _loadSettings();
+    });
+    _loadSettings();
   }
 
   /// If the input [data] does not have `session_id` property and the user had logged in,
@@ -212,7 +235,7 @@ class Api extends GetxController {
     });
 
     String queryString = Uri(queryParameters: params).query;
-    print("url: $_apiUrl?$queryString");
+    print("_printDebugUrl: $_apiUrl?$queryString");
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -220,7 +243,6 @@ class Api extends GetxController {
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
-    _printDebugUrl(data);
     try {
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
@@ -236,8 +258,8 @@ class Api extends GetxController {
       throw (res.data);
     } else if (res.data['code'] != 0) {
       /// If there is error like "ERROR_", then it throws exception.
-      print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
-      print(data);
+      // print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+      // print(data);
       throw res.data['code'];
     }
     return res.data['data'];
@@ -354,6 +376,10 @@ class Api extends GetxController {
     return user;
   }
 
+  Future<ApiUser> updateProfile(String key, String value) async {
+    return updateUserMeta(key, value);
+  }
+
   /// User profile data
   ///
   /// * logic
@@ -385,13 +411,6 @@ class Api extends GetxController {
   /// It is a helper function of [userProfile].
   Future<ApiUser> refreshUserProfile() {
     return userProfile(sessionId);
-  }
-
-  Future<List<dynamic>> getForumCategories() async {
-    final res = await request({'route': 'forum.categories'});
-    print("res");
-    print(res);
-    return res;
   }
 
   Future<ApiPost> editPost({
@@ -593,16 +612,16 @@ class Api extends GetxController {
   Future<void> fetchPosts({ApiForum forum, String category}) async {
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
-      print(
-        'Can not load anymore: loading: ${forum.loading},'
-        ' noMorePosts: ${forum.noMorePosts}',
-      );
+      // print(
+      //   'Can not load anymore: loading: ${forum.loading},'
+      //   ' noMorePosts: ${forum.noMorePosts}',
+      // );
       return;
     }
     forum.loading = true;
     forum.render();
 
-    print('Going to load pageNo: ${forum.pageNo}');
+    // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await searchPost(
       category: forum.category,
@@ -764,11 +783,18 @@ class Api extends GetxController {
 
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
-  loadTranslations() async {
+  _loadTranslations() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     translationChanges.add(res);
+  }
+
+  /// loadSettings
+  _loadSettings() async {
+    // print('Update on APP SETTINGS');
+    settings = await request({'route': 'app.settings'});
+    settingChanges.add(settings);
   }
 
   /// Initialize Messaging
@@ -785,7 +811,7 @@ class Api extends GetxController {
         sound: true,
       );
 
-      print('User granted permission: ${settings.authorizationStatus}');
+      // print('User granted permission: ${settings.authorizationStatus}');
 
       switch (settings.authorizationStatus) {
         case AuthorizationStatus.authorized:
@@ -818,7 +844,7 @@ class Api extends GetxController {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-    print('_initMessaging:: token: $token');
+    // print('_initMessaging:: token: $token');
     _saveTokenToDatabase(token);
 
     // Any time the token refreshes, store this in the database too.
@@ -880,7 +906,7 @@ class Api extends GetxController {
 
     talkingTo = otherUser.md5;
 
-    print('I am talking to: $talkingTo');
+    // print('I am talking to: $talkingTo');
 
     /// @todo send push notification
   }
