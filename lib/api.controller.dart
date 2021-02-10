@@ -175,7 +175,7 @@ class Api extends GetxController {
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
-    _initSettings();
+    // _initSettings();
   }
 
   /// Firebase Initialization
@@ -401,9 +401,9 @@ class Api extends GetxController {
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get it from server.
   Future<ApiUser> otherUserProfile(String id) async {
     final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
-    user = ApiUser.fromJson(res);
+    ApiUser otherUser = ApiUser.fromJson(res);
     update();
-    return user;
+    return otherUser;
   }
 
   /// Refresh user profile
@@ -877,7 +877,7 @@ class Api extends GetxController {
 
   /// Returns login user's room list collection `/chat/my-room-list/my-uid` reference.
   DatabaseReference get myRoomList {
-    return userRoomListRef(Api.instance.id);
+    return userRoomListRef(Api.instance.md5);
   }
 
   /// Return the collection of messages of the room id.

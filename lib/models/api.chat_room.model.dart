@@ -30,11 +30,11 @@ class ChatRoomInfo {
 
   factory ChatRoomInfo.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot == null) return null;
-    Map<String, dynamic> info = snapshot.value;
+    Map<dynamic, dynamic> info = snapshot.value;
     return ChatRoomInfo.fromData(info, snapshot.key);
   }
 
-  factory ChatRoomInfo.fromData(Map<String, dynamic> info, String id) {
+  factory ChatRoomInfo.fromData(Map<dynamic, dynamic> info, String id) {
     if (info == null) return ChatRoomInfo();
 
     return ChatRoomInfo(

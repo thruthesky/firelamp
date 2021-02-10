@@ -44,7 +44,7 @@ class ChatRoom {
   StreamSubscription _currentRoomSubscription;
 
   /// Loaded the chat messages of current chat room.
-  List<Map<String, dynamic>> messages = [];
+  List<Map<dynamic, dynamic>> messages = [];
 
   /// [loading] becomes true while the app is fetching more messages.
   /// The app should display loader while it is fetching.
@@ -91,7 +91,7 @@ class ChatRoom {
 
       /// send message to `chat/message/roomId` with protocol roomCreated
       ///   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
-      await Api.instance.chatMessagesRef(roomId).set({
+      await Api.instance.chatMessagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
         'senderId': Api.instance.id,
         'senderDisplayName': Api.instance.nickname,
@@ -106,19 +106,19 @@ class ChatRoom {
     chatRoomInfo = await Api.instance.getRoomInformation(roomId);
 
     // // fetch latest messages
-    // fetchMessages();
+    fetchMessages();
 
     // // Listening current room in my room list.
     // // This will be notify chat room listener when chat room title changes, or new users enter, etc.
-    if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
-    _currentRoomSubscription = Api.instance.myRoom(roomId).onValue.listen((Event event) {
-      // If the user got a message from a chat room where the user is currently in,
-      // then, set `newMessages` to 0.
-      final data = ChatRoomInfo.fromSnapshot(event.snapshot);
-      if (data.newMessages > 0 && data.createdAt != null) {
-        Api.instance.myRoom(roomId).update({'newMessages': 0});
-      }
-    });
+    // if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
+    // _currentRoomSubscription = Api.instance.myRoom(roomId).onValue.listen((Event event) {
+    //   // If the user got a message from a chat room where the user is currently in,
+    //   // then, set `newMessages` to 0.
+    //   final data = ChatRoomInfo.fromSnapshot(event.snapshot);
+    //   if (data.newMessages > 0 && data.createdAt != null) {
+    //     Api.instance.myRoom(roomId).update({'newMessages': 0});
+    //   }
+    // });
   }
 
   // /// Notify chat room listener to re-render the screen.
@@ -138,11 +138,15 @@ class ChatRoom {
     }
 
     /// Get messages for the chat room
-    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToFirst(_limit);
+    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToLast(_limit);
 
     if (messages.isNotEmpty) {
       q = q.startAt([messages.first['createdAt']]);
     }
+
+    // q.once().then((value) {
+    //   print(value);
+    // });
 
     _chatRoomSubscription = q.onValue.listen((Event event) {
       // print('fetchMessage() -> done: _page: $_page');
@@ -152,58 +156,62 @@ class ChatRoom {
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
       print(event.snapshot);
-      // event.snapshot.value.forEach((DocumentChange documentChange) {
-      //   final message = documentChange.doc.data();
+      event.snapshot.value.forEach((key, data) {
+        final message = data;
 
-      //   message['id'] = documentChange.doc.id;
+        message['id'] = key;
 
-      //   // print('type: ${documentChange.type}. ${message['text']}');
+        messages.add(message);
 
-      //   /// 새로 채팅을 하거나, 이전 글을 가져 올 때, 새 채팅(생성)뿐만 아니라, 이전 채팅 글을 가져올 때에도 added 이벤트 발생.
-      //   if (documentChange.type == DocumentChangeType.added) {
-      //     // Two events will be fired on the sender's device.
-      //     // First event has null of FieldValue.serverTimestamp()
-      //     // Only one event will be fired on other user's devices.
-      //     if (message['createdAt'] == null) {
-      //       messages.add(message);
-      //     }
+        // print(message['text'] ?? '');
+        print(message['createdAt']);
+        // // print('type: ${documentChange.type}. ${message['text']}');
 
-      //     /// if it's new message, add at bottom.
-      //     else if (messages.length > 0 &&
-      //         messages[0]['createdAt'] != null &&
-      //         message['createdAt'].microsecondsSinceEpoch >
-      //             messages[0]['createdAt'].microsecondsSinceEpoch) {
-      //       messages.add(message);
-      //     } else {
-      //       // if it's old message, add on top.
-      //       messages.insert(0, message);
-      //     }
+        // /// 새로 채팅을 하거나, 이전 글을 가져 올 때, 새 채팅(생성)뿐만 아니라, 이전 채팅 글을 가져올 때에도 added 이벤트 발생.
+        // if (documentChange.type == DocumentChangeType.added) {
+        //   // Two events will be fired on the sender's device.
+        //   // First event has null of FieldValue.serverTimestamp()
+        //   // Only one event will be fired on other user's devices.
+        // if (message['createdAt'] == null) {
+        //   messages.add(message);
+        // }
 
-      //     // if it is loading old messages
-      //     // and if it has less messages than the limit
-      //     // check if it is the very first message.
-      //     if (message['createdAt'] != null) {
-      //       if (snapshot.docs.length < _limit) {
-      //         if (message['text'] == ChatProtocol.roomCreated) {
-      //           noMoreMessage = true;
-      //           // print('-----> noMoreMessage: $noMoreMessage');
-      //         }
-      //       }
-      //     }
-      //   } else if (documentChange.type == DocumentChangeType.modified) {
-      //     final int i = messages.indexWhere((r) => r['id'] == message['id']);
-      //     if (i > -1) {
-      //       messages[i] = message;
-      //     }
-      //   } else if (documentChange.type == DocumentChangeType.removed) {
-      //     final int i = messages.indexWhere((r) => r['id'] == message['id']);
-      //     if (i > -1) {
-      //       messages.removeAt(i);
-      //     }
-      //   } else {
-      //     assert(false, 'This is error');
-      //   }
-      // });
+        //   /// if it's new message, add at bottom.
+        //   else if (messages.length > 0 &&
+        //       messages[0]['createdAt'] != null &&
+        //       message['createdAt'].microsecondsSinceEpoch >
+        //           messages[0]['createdAt'].microsecondsSinceEpoch) {
+        //     messages.add(message);
+        //   } else {
+        //     // if it's old message, add on top.
+        //     messages.insert(0, message);
+        //   }
+
+        //   // if it is loading old messages
+        //   // and if it has less messages than the limit
+        //   // check if it is the very first message.
+        //   if (message['createdAt'] != null) {
+        //     if (snapshot.docs.length < _limit) {
+        //       if (message['text'] == ChatProtocol.roomCreated) {
+        //         noMoreMessage = true;
+        //         // print('-----> noMoreMessage: $noMoreMessage');
+        //       }
+        //     }
+        //   }
+        // } else if (documentChange.type == DocumentChangeType.modified) {
+        //   final int i = messages.indexWhere((r) => r['id'] == message['id']);
+        //   if (i > -1) {
+        //     messages[i] = message;
+        //   }
+        // } else if (documentChange.type == DocumentChangeType.removed) {
+        //   final int i = messages.indexWhere((r) => r['id'] == message['id']);
+        //   if (i > -1) {
+        //     messages.removeAt(i);
+        //   }
+        // } else {
+        //   assert(false, 'This is error');
+        // }
+      });
       _notify();
     });
   }
@@ -238,9 +246,9 @@ class ChatRoom {
       if (extra != null) ...extra,
     };
 
-    await Api.instance.chatMessagesRef(otherUser.data['roomId']).push().set(message);
+    await Api.instance.chatMessagesRef(roomId).push().set(message);
     await Api.instance
-        .userRoomRef(otherUser.id, chatRoomInfo.roomId)
+        .userRoomRef(otherUser.md5, roomId)
         .child('newMessages')
         .set(ServerValue.increment(1));
 
