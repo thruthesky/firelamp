@@ -375,6 +375,10 @@ class Api extends GetxController {
     return user;
   }
 
+  Future<ApiUser> updateProfile(String key, String value) async {
+    return updateUserMeta(key, value);
+  }
+
   /// User profile data
   ///
   /// * logic
