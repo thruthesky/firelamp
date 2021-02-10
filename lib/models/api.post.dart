@@ -24,6 +24,18 @@ class ApiPost {
     this.featuredImageUrl,
     this.featuredImageThumbnailUrl,
     this.featuredImageId,
+    this.shortTitle,
+    this.price,
+    this.discountRate,
+    this.stop,
+    this.point,
+    this.volume,
+    this.deliveryFee,
+    this.stroageMethod,
+    this.expiry,
+    this.itemPrimaryPhoto,
+    this.itemWidgetPhoto,
+    this.itemDetailPhoto,
   }) {
     if (files == null) files = [];
     if (postTitle == null) postTitle = '';
@@ -53,6 +65,22 @@ class ApiPost {
   String featuredImageThumbnailUrl;
   int featuredImageId;
 
+  /// Shopping mall properties
+  ///
+  String shortTitle;
+  int price;
+  int discountRate;
+  bool stop;
+  int point;
+  int volume;
+  int deliveryFee;
+  String stroageMethod;
+  String expiry;
+  String itemPrimaryPhoto;
+  String itemWidgetPhoto;
+  String itemDetailPhoto;
+
+  ///
   bool get isMine => postAuthor == Api.instance.id;
   bool get isNotMine => !isMine;
 
@@ -87,33 +115,52 @@ class ApiPost {
     // print('error on comment add:');
   }
 
-  factory ApiPost.fromJson(Map<String, dynamic> json) => ApiPost(
-        data: json,
-        id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
-        postAuthor: json["post_author"],
-        postDate: DateTime.parse(json["post_date"]),
-        postContent: json["post_content"],
-        postTitle: json["post_title"],
-        postModified: DateTime.parse(json["post_modified"]),
-        postParent: json["post_parent"],
-        guid: json["guid"],
-        commentCount: json["comment_count"],
-        postCategory: List<int>.from(json["post_category"].map((x) => x)),
-        files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-        authorName: json["author_name"],
-        shortDateTime: json["short_date_time"],
-        comments: List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
-        category: json["category"],
-        featuredImageUrl: json["featured_image_url"],
-        featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
-        featuredImageId: json["featured_image_ID"] == null
-            ? 0
-            : json["featured_image_ID"] is int
-                ? json["featured_image_ID"]
+  factory ApiPost.fromJson(Map<String, dynamic> json) {
+    // print(json);
+    return ApiPost(
+      data: json,
+      id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
+      postAuthor: json["post_author"],
+      postDate: DateTime.parse(json["post_date"]),
+      postContent: json["post_content"],
+      postTitle: json["post_title"],
+      postModified: DateTime.parse(json["post_modified"]),
+      postParent: json["post_parent"],
+      guid: json["guid"],
+      commentCount: json["comment_count"],
+      postCategory: List<int>.from(json["post_category"].map((x) => x)),
+      files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      authorName: json["author_name"],
+      shortDateTime: json["short_date_time"],
+      comments: List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+      category: json["category"],
+      featuredImageUrl: json["featured_image_url"],
+      featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
+      featuredImageId: json["featured_image_ID"] == null
+          ? 0
+          : json["featured_image_ID"] is int
+              ? json["featured_image_ID"]
 
-                /// Fix bug here, parse and return int if not as int already.
-                : int.parse(json["featured_image_ID"]),
-      );
+              /// Fix bug here, parse and return int if not as int already.
+              : int.parse(json["featured_image_ID"]),
+      shortTitle: json["short_title"],
+      price: _parseInt(json["price"]),
+      discountRate: _parseInt(json["discount_rate"]),
+      stop: json["stop"] == null || json["stop"] == ""
+          ? false
+          : int.parse(json["stop"]) == 1
+              ? true
+              : false,
+      point: _parseInt(json["point"]),
+      volume: _parseInt(json["volume"]),
+      deliveryFee: _parseInt(json["delivery_fee"]),
+      stroageMethod: json["stroage_method"],
+      expiry: json["expiry"],
+      itemPrimaryPhoto: json["item_primary_photo"],
+      itemWidgetPhoto: json["item_widget_photo"],
+      itemDetailPhoto: json["item_detail_photo"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "ID": id,
@@ -134,10 +181,30 @@ class ApiPost {
         "featured_image_url": featuredImageUrl,
         "featured_image_thumbnail_url": featuredImageThumbnailUrl,
         "featured_image_ID": featuredImageId,
+        "shortTitle": shortTitle,
+        "price": price,
+        "discountRate": discountRate,
+        "stop": stop,
+        "point": point,
+        "volume": volume,
+        "deliveryFee": deliveryFee,
+        "stroageMethod": stroageMethod,
+        "expiry": expiry,
+        "itemPrimaryPhoto": itemPrimaryPhoto,
+        "itemWidgetPhoto": itemWidgetPhoto,
+        "itemDetailPhoto": itemDetailPhoto,
       };
 
   @override
   String toString() {
     return toJson().toString();
+  }
+
+  static int _parseInt(String n) {
+    if (n is String) {
+      if (n == null || n == '') return 0;
+      return int.parse(n);
+    }
+    return 0;
   }
 }
