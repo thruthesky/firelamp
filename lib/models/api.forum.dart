@@ -24,6 +24,17 @@ class ApiForum {
 
   Function render;
 
+  
+  bool get showLike => showVoteButton('forum_like');
+  bool get showDislike => showVoteButton('forum_dislike');
+
+  bool showVoteButton(String str) {
+    if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
+      return true;
+    }
+    return false;
+  }
+
   ApiPost postInEdit;
   ApiForum({
     this.category,
