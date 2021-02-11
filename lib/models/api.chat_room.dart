@@ -135,11 +135,14 @@ class ChatRoom {
     }
 
     /// Get messages for the chat room
-    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToLast(10);
+    Query q = Api.instance
+        .chatMessagesRef(roomId)
+        // .orderByChild('createdAt')
+        .limitToLast(10);
 
-    if (messages.isNotEmpty) {
-      q = q.endAt(messages.first['createdAt']);
-    }
+    // if (messages.isNotEmpty) {
+    //   q = q.endAt(messages.first['createdAt']);
+    // }
 
     _chatRoomSubscription = q.onChildAdded.listen((Event event) {
       loading = false;
