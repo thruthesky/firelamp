@@ -1,7 +1,7 @@
 part of '../firelamp.dart';
 
 /// Chat room message list helper class.
-class ChatRoom {
+class ApiChatRoom {
   /// [render] will be called to notify chat room listener to re-render the screen.
   ///
   /// For one chat message sending,
@@ -9,11 +9,20 @@ class ChatRoom {
   /// - [render] will be invoked 1 times on receiver's device.
   ///
   /// [globalRoomChange] will be invoked when global chat room changes.
-  ChatRoom({
+  ApiChatRoom({
     Function render,
-  }) : _render = render;
+  }) : _render = render {
+    /// If it renders too much, reduce it.
+    _notifySubjectSubscription =
+        _notifySubject.debounceTime(Duration(milliseconds: 50)).listen((x) {
+      _render();
+    });
+  }
 
   ApiUser otherUser;
+
+  /// [otherUserUid] is the other user's document key that the login user is talking to.
+  String get otherUserUid => otherUser.md5;
 
   /// Room id
   String roomId;
@@ -25,11 +34,11 @@ class ChatRoom {
   /// The app should display 'no more message' to user.
   bool noMoreMessage = false;
 
-  int page = 0;
-  int _limit = 30;
+  int pageNo = 0;
+  int _limit = 20;
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event
-  /// too much, so it fetches too many batches(pages) at one time.
+  /// too much, so it fetches too many batches(pageNos) at one time.
   /// [_throttle] reduces the scroll event to relax the fetch racing.
   /// [_throttle] is working together with [_throttling]
   /// 1500ms is recommended.
@@ -40,7 +49,9 @@ class ChatRoom {
   ///
   Function _render;
 
-  StreamSubscription _chatRoomSubscription;
+  StreamSubscription _childAddedSubscription;
+  StreamSubscription _childChangedSubscription;
+  StreamSubscription _childRemovedSubscription;
   StreamSubscription _currentRoomSubscription;
 
   /// Loaded the chat messages of current chat room.
@@ -54,7 +65,7 @@ class ChatRoom {
   /// Use this to dipplay title or other information about the room.
   /// When `/chat/global/room-list/{roomId}` changes, it will be updated and calls render handler.
   ///
-  ChatRoomInfo chatRoomInfo;
+  ApiRoom chatRoomInfo;
 
   /// Chat room properties
   String get id => chatRoomInfo?.roomId;
@@ -62,45 +73,88 @@ class ChatRoom {
   List<String> get users => chatRoomInfo?.users;
   Timestamped get createdAt => chatRoomInfo.createdAt;
 
+  String get myUid => Api.instance.md5;
+
+  PublishSubject _notifySubject = PublishSubject();
+  StreamSubscription _notifySubjectSubscription;
+
+  /// Returns login user's room list collection `/chat/rooms` reference.
+  /// Or, returns reference of my room (that has last message of the room)
+  DatabaseReference myRoomsRef({String roomId}) {
+    final ref = roomsRef(myUid);
+    if (roomId == null)
+      return ref;
+    else
+      return ref.child(roomId);
+  }
+
+  /// Return the reference of `/chat/messages/roomId` under which lots are messages are stored.
+  DatabaseReference messagesRef(String roomId) {
+    return Api.instance.database.reference().child('chat/messages').child(roomId);
+  }
+
+  /// Returns `/chat/rooms/{user-id}` reference.
+  ///
+  /// if [roomId] is given, it returns a reference of a room. Not the list.
+  DatabaseReference roomsRef(String userId, {String roomId}) {
+    final chatRoomsUserIdRef = Api.instance.database.reference().child('chat/rooms').child(userId);
+    if (roomId == null)
+      return chatRoomsUserIdRef;
+    else
+      return chatRoomsUserIdRef.child(roomId);
+  }
+
+  /// Returns one of login user's room document. Not reference.
+  Future<ApiRoom> myRoom(String roomId) async {
+    DataSnapshot snapshot = await myRoomsRef(roomId: roomId).once();
+    return ApiRoom.fromSnapshot(snapshot);
+  }
+
+  myRoomRef(String roomId) {
+    return myRoomsRef(roomId: roomId);
+  }
+
   /// Enter chat room
   Future<void> enter(String userId) async {
     otherUser = await Api.instance.otherUserProfile(userId);
+
+    // print('otherUser: $otherUser');
 
     roomId = otherUser.data['roomId'];
 
     ///create `chat/rooms/myId/roomId` if not exists.
     ///create `chat/rooms/otherId/roomId` if not exists.
-    DataSnapshot snapshot = await Api.instance.userRoomRef(Api.instance.md5, roomId).once();
-    print('userRoomRef(${Api.instance.md5}, ${otherUser.data['roomId']})');
-    print(snapshot);
-    if (snapshot.value == null) {
-      await Api.instance.userRoomRef(Api.instance.md5, roomId).set({
+    final value = await myRoom(roomId);
+    // print('userRoomRef(${myUid}, ${otherUser.data['roomId']})');
+    // print(value);
+    if (value == null) {
+      await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
         'senderId': otherUser.id,
         'senderDisplayName': otherUser.nickname,
-        'senderprofilePhotoUrl': otherUser.profilePhotoUrl,
+        'senderProfilePhotoUrl': otherUser.profilePhotoUrl,
       });
-      await Api.instance.userRoomRef(otherUser.md5, roomId).set({
+      await roomsRef(otherUserUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
         'senderId': Api.instance.id,
         'senderDisplayName': Api.instance.nickname,
-        'senderprofilePhotoUrl': Api.instance.profilePhotoUrl,
+        'senderProfilePhotoUrl': Api.instance.profilePhotoUrl,
       });
 
       /// send message to `chat/message/roomId` with protocol roomCreated
       ///   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
-      await Api.instance.chatMessagesRef(roomId).push().set({
+      await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
         'senderId': Api.instance.id,
         'senderDisplayName': Api.instance.nickname,
-        'senderprofilePhotoUrl': Api.instance.profilePhotoUrl,
+        'senderProfilePhotoUrl': Api.instance.profilePhotoUrl,
         'protocol': ChatProtocol.roomCreated
       });
     }
 
-    chatRoomInfo = await Api.instance.getRoomInformation(roomId);
+    chatRoomInfo = await myRoom(roomId);
 
     // // fetch latest messages
     fetchMessages();
@@ -119,8 +173,11 @@ class ChatRoom {
   }
 
   // /// Notify chat room listener to re-render the screen.
+  /// Render may happen too much. Reduce it.
   _notify() {
-    if (_render != null) _render();
+    if (_render != null) {
+      _notifySubject.add(null);
+    }
   }
 
   /// Fetch previous messages
@@ -129,38 +186,73 @@ class ChatRoom {
     loading = true;
     _throttling = true;
 
-    page++;
-    if (page == 1) {
-      Api.instance.myRoom(roomId).set({'newMessages': 0});
+    pageNo++;
+    if (pageNo == 1) {
+      myRoomRef(roomId).set({'newMessages': 0});
     }
 
     /// Get messages for the chat room
-    Query q = Api.instance
-        .chatMessagesRef(roomId)
-        // .orderByChild('createdAt')
-        .limitToLast(10);
+    Query q = messagesRef(roomId).orderByKey();
+
+    if (pageNo > 1) {
+      print('endAt: ${messages[0]}');
+      q = q.endAt(messages.first['id']);
+    }
+
+    // q = q.endAt('-MTFIMxxZQ4y0F9cT9kU');
+
+    q = q.limitToLast(_limit);
 
     // if (messages.isNotEmpty) {
     //   q = q.endAt(messages.first['createdAt']);
     // }
 
-    _chatRoomSubscription = q.onChildAdded.listen((Event event) {
+    _childChangedSubscription = q.onChildChanged.listen((Event event) {
+      // @todo update message
+    });
+    _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
+      // @todo delete message
+    });
+
+    _childAddedSubscription = q.onChildAdded.listen((Event event) {
       loading = false;
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
-      // print(event.snapshot);
+      // print(event.snapshot.value);
       final message = event.snapshot.value;
       message['id'] = event.snapshot.key;
 
-      /// if it's new message, add at bottom.
-      if (messages.length > 0 &&
-          messages[0]['createdAt'] != null &&
-          message['createdAt'] > messages[0]['createdAt']) {
+      /// On first page, just add chats at the bottom.
+      if (pageNo == 1) {
+        messages.add(message);
+      } else if (message['createdAt'] >= messages.last['createdAt']) {
+        /// On new chat, just add at bottom.
         messages.add(message);
       } else {
-        // if it's old message, add on top.
-        messages.insert(0, message);
+        /// On previous chat, add chat messages on top, but with the order of chat messages.
+        for (int i = 0; i < messages.length; i++) {
+          if (message['createdAt'] <= messages[i]['createdAt']) {
+            messages.insert(i, message);
+            break;
+          }
+        }
       }
+
+      // if (pageNo == 1) {
+      //   messages.add(message);
+      // } else {
+      //   messages.insert(0, message);
+      // }
+
+      // /// if it's new message, add at bottom.
+      // if (messages.length > 0 &&
+      //     messages[0]['createdAt'] != null &&
+      //     message['createdAt'] > messages[0]['createdAt']) {
+      //   messages.add(message);
+      // } else {
+      //   // if it's old message, add on top.
+      //   messages.insert(0, message);
+      // }
 
       // if it is loading old messages
       // check if it is the very first message.
@@ -176,8 +268,11 @@ class ChatRoom {
   }
 
   unsubscribe() {
-    _chatRoomSubscription.cancel();
+    _childAddedSubscription.cancel();
+    _childChangedSubscription.cancel();
+    _childRemovedSubscription.cancel();
     _currentRoomSubscription.cancel();
+    _notifySubjectSubscription.cancel();
   }
 
   /// Send chat message to the users in the room
@@ -205,8 +300,8 @@ class ChatRoom {
       if (extra != null) ...extra,
     };
 
-    await Api.instance.chatMessagesRef(roomId).push().set(message);
-    await Api.instance.userRoomRef(otherUser.md5, roomId).update({
+    await messagesRef(roomId).push().set(message);
+    await roomsRef(otherUserUid, roomId: roomId).update({
       'newMessages': ServerValue.increment(1),
       'updatedAt': ServerValue.timestamp,
     });
@@ -229,7 +324,7 @@ class ChatRoom {
     }
 
     /// Display `no more messages` only when user scrolled up to see more messages.
-    else if (page > 1 && noMoreMessage) {
+    else if (pageNo > 1 && noMoreMessage) {
       text = 'No more messages. ';
     } else if (text == ChatProtocol.enter) {
       // print(message);

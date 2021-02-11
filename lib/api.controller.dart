@@ -175,7 +175,7 @@ class Api extends GetxController {
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
-    // _initSettings();
+    _initSettings();
   }
 
   /// Firebase Initialization
@@ -870,66 +870,6 @@ class Api extends GetxController {
   ///     CHAT FUNCTIONALTY
   ///
   /// -------------------------------------------------------------------------------
-
-  /// [talkingTo] is the other user's document key that the login user is talking to.
-  String talkingTo;
-  ApiUser otherUser;
-
-  /// Returns login user's room list collection `/chat/my-room-list/my-uid` reference.
-  DatabaseReference get myRoomList {
-    return userRoomListRef(Api.instance.md5);
-  }
-
-  /// Return the collection of messages of the room id.
-  DatabaseReference chatMessagesRef(String roomId) {
-    return database.reference().child('chat/messages').child(roomId);
-  }
-
-  /// Returns my room list collection `/chat/rooms/{user-id}` reference.
-  DatabaseReference userRoomListRef(String userId) {
-    return database.reference().child('chat/rooms').child(userId);
-  }
-
-  /// Returns my room (that has last message of the room) document
-  DatabaseReference userRoomRef(String userId, String roomId) {
-    return userRoomListRef(userId).child(roomId);
-  }
-
-  /// Returns reference of my room (that has last message of the room)
-  /// `/chat/rooms/my-id/{roomId}`
-  DatabaseReference myRoom(String roomId) {
-    return myRoomList.child(roomId);
-  }
-
-  /// Returns the room list info `/chat/room/list/{roomId}` document.
-  /// If the room does exists, it returns null.
-  /// The return value has `id` as its room id.
-  Future<ChatRoomInfo> getRoomInformation(String roomId) async {
-    DataSnapshot snapshot = await myRoom(roomId).once();
-    return ChatRoomInfo.fromSnapshot(snapshot);
-  }
-
-  chatEnter({@required String userId}) async {
-    // otherUser = await Api.instance.otherUserProfile(userId);
-
-    // userRoomRef(md5, otherUser.data['roomId']).once().then((DataSnapshot snapshot) {
-    //   print('userRoomRef($md5, ${otherUser.data['roomId']})');
-    //   print(snapshot);
-    //   if (snapshot.value == null) return;
-    //   userRoomRef(md5, otherUser.data['roomId']).set({});
-    // });
-
-    /// @todo send message to `chat/message/myId/otherId` with protocol roomCreated
-    /// @todo send message to `chat/message/otherId/myId` with protocol roomCreated
-    /// @todo update chat room `chat/rooms/myId/otherId`. increase newMessage and stamp.
-    /// @todo update chat room `chat/rooms/otherId/myId`. increase newMessage and stamp.
-
-    talkingTo = otherUser.md5;
-
-    // print('I am talking to: $talkingTo');
-
-    /// @todo send push notification
-  }
 
   /// -------------------------------------------------------------------------------
   ///

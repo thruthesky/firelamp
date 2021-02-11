@@ -2,7 +2,7 @@ part of '../firelamp.dart';
 
 /// [ChatRoom] is a model (extending [ChatBase]) that represents the chat room under `/chat-global` collection.
 /// All the chat room resides under this collection.
-class ChatRoomInfo {
+class ApiRoom {
   String roomId;
   String title;
   List<String> users;
@@ -12,15 +12,15 @@ class ChatRoomInfo {
   /// [newMessages] has the number of new messages for that room.
   int newMessages;
 
-  String get otherUserId {
-    // If there is no other user.
-    return users.firstWhere(
-      (el) => el != Api.instance.id,
-      orElse: () => null,
-    );
-  }
+  // String get otherUserId {
+  //   // If there is no other user.
+  //   return users.firstWhere(
+  //     (el) => el != Api.instance.id,
+  //     orElse: () => null,
+  //   );
+  // }
 
-  ChatRoomInfo({
+  ApiRoom({
     this.roomId,
     this.title,
     this.users,
@@ -28,16 +28,16 @@ class ChatRoomInfo {
     this.newMessages,
   });
 
-  factory ChatRoomInfo.fromSnapshot(DataSnapshot snapshot) {
+  factory ApiRoom.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot == null) return null;
     Map<dynamic, dynamic> info = snapshot.value;
-    return ChatRoomInfo.fromData(info, snapshot.key);
+    return ApiRoom.fromData(info, snapshot.key);
   }
 
-  factory ChatRoomInfo.fromData(Map<dynamic, dynamic> info, String id) {
-    if (info == null) return ChatRoomInfo();
+  factory ApiRoom.fromData(Map<dynamic, dynamic> info, String id) {
+    if (info == null) return ApiRoom();
 
-    return ChatRoomInfo(
+    return ApiRoom(
       roomId: id,
       title: info['title'],
       users: List<String>.from(info['users'] ?? []),
