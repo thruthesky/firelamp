@@ -100,9 +100,6 @@ class ChatRoom {
       });
     }
 
-    //   /// @todo update chat room `chat/rooms/myId/otherId`. increase newMessage and stamp.
-    //   /// @todo update chat room `chat/rooms/otherId/myId`. increase newMessage and stamp.
-
     chatRoomInfo = await Api.instance.getRoomInformation(roomId);
 
     // // fetch latest messages
@@ -127,7 +124,7 @@ class ChatRoom {
   }
 
   /// Fetch previous messages
-  fetchMessages() {
+  fetchMessages() async {
     if (_throttling || noMoreMessage) return;
     loading = true;
     _throttling = true;
@@ -138,80 +135,39 @@ class ChatRoom {
     }
 
     /// Get messages for the chat room
-    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToLast(_limit);
+    Query q = Api.instance.chatMessagesRef(roomId).orderByChild('createdAt').limitToLast(10);
 
     if (messages.isNotEmpty) {
-      q = q.startAt([messages.first['createdAt']]);
+      q = q.endAt(messages.first['createdAt']);
     }
 
-    // q.once().then((value) {
-    //   print(value);
-    // });
-
-    _chatRoomSubscription = q.onValue.listen((Event event) {
-      // print('fetchMessage() -> done: _page: $_page');
-      // Block loading previous messages for some time.
-
+    _chatRoomSubscription = q.onChildAdded.listen((Event event) {
       loading = false;
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
-      print(event.snapshot);
-      event.snapshot.value.forEach((key, data) {
-        final message = data;
+      // print(event.snapshot);
+      final message = event.snapshot.value;
+      message['id'] = event.snapshot.key;
 
-        message['id'] = key;
-
+      /// if it's new message, add at bottom.
+      if (messages.length > 0 &&
+          messages[0]['createdAt'] != null &&
+          message['createdAt'] > messages[0]['createdAt']) {
         messages.add(message);
+      } else {
+        // if it's old message, add on top.
+        messages.insert(0, message);
+      }
 
-        // print(message['text'] ?? '');
-        print(message['createdAt']);
-        // // print('type: ${documentChange.type}. ${message['text']}');
+      // if it is loading old messages
+      // check if it is the very first message.
+      if (message['createdAt'] != null) {
+        if (message['protocol'] == ChatProtocol.roomCreated) {
+          noMoreMessage = true;
+          print('-----> noMoreMessage: $noMoreMessage');
+        }
+      }
 
-        // /// 새로 채팅을 하거나, 이전 글을 가져 올 때, 새 채팅(생성)뿐만 아니라, 이전 채팅 글을 가져올 때에도 added 이벤트 발생.
-        // if (documentChange.type == DocumentChangeType.added) {
-        //   // Two events will be fired on the sender's device.
-        //   // First event has null of FieldValue.serverTimestamp()
-        //   // Only one event will be fired on other user's devices.
-        // if (message['createdAt'] == null) {
-        //   messages.add(message);
-        // }
-
-        //   /// if it's new message, add at bottom.
-        //   else if (messages.length > 0 &&
-        //       messages[0]['createdAt'] != null &&
-        //       message['createdAt'].microsecondsSinceEpoch >
-        //           messages[0]['createdAt'].microsecondsSinceEpoch) {
-        //     messages.add(message);
-        //   } else {
-        //     // if it's old message, add on top.
-        //     messages.insert(0, message);
-        //   }
-
-        //   // if it is loading old messages
-        //   // and if it has less messages than the limit
-        //   // check if it is the very first message.
-        //   if (message['createdAt'] != null) {
-        //     if (snapshot.docs.length < _limit) {
-        //       if (message['text'] == ChatProtocol.roomCreated) {
-        //         noMoreMessage = true;
-        //         // print('-----> noMoreMessage: $noMoreMessage');
-        //       }
-        //     }
-        //   }
-        // } else if (documentChange.type == DocumentChangeType.modified) {
-        //   final int i = messages.indexWhere((r) => r['id'] == message['id']);
-        //   if (i > -1) {
-        //     messages[i] = message;
-        //   }
-        // } else if (documentChange.type == DocumentChangeType.removed) {
-        //   final int i = messages.indexWhere((r) => r['id'] == message['id']);
-        //   if (i > -1) {
-        //     messages.removeAt(i);
-        //   }
-        // } else {
-        //   assert(false, 'This is error');
-        // }
-      });
       _notify();
     });
   }
@@ -247,10 +203,10 @@ class ChatRoom {
     };
 
     await Api.instance.chatMessagesRef(roomId).push().set(message);
-    await Api.instance
-        .userRoomRef(otherUser.md5, roomId)
-        .child('newMessages')
-        .set(ServerValue.increment(1));
+    await Api.instance.userRoomRef(otherUser.md5, roomId).update({
+      'newMessages': ServerValue.increment(1),
+      'updatedAt': ServerValue.timestamp,
+    });
 
     // TODO: Sending notification should be handled outside of firechat.
     // await __ff.sendNotification(
