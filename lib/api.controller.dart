@@ -608,7 +608,19 @@ class Api extends GetxController {
     return forumContainer[forum.category];
   }
 
+  /// Fetch posts with the [forum]
+  ///
+  /// You can change the settings(options) of [forum] right before calling [fetchPosts].
+  /// You may do `forum.category='abc'` for the first call and change `forum.category='def'`
+  /// and `forum.author=5` on second call. You can change merely all the fetch options before
+  /// calling it.
+  ///
+  /// The [pageNo] is increased automatically.
   Future<void> fetchPosts({ApiForum forum, String category}) async {
+    if (forum.post != null && forum.posts.length == 0) {
+      forum.posts.add(forum.post);
+      forum.render();
+    }
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
       // print(
@@ -638,12 +650,9 @@ class Api extends GetxController {
       forum.pageNo++;
     }
 
-    // If keySearch is not null, remove existing posts from list.
-    if (forum.searchKey != null) {
-      forum.posts = [];
-    }
-
     _posts.forEach((ApiPost p) {
+      // Don't show same post twice if forum.post is set.
+      if (forum.post != null && forum.post.id == p.id) return;
       forum.posts.add(p);
     });
 
@@ -793,7 +802,7 @@ class Api extends GetxController {
   _loadSettings() async {
     // print('Update on APP SETTINGS');
     final _settings = await request({'route': 'app.settings'});
-    settings = { ...settings, ..._settings };
+    settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
 

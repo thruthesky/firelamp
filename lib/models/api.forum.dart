@@ -9,10 +9,28 @@ part of '../firelamp.dart';
 ///
 /// [Forum] only manages the data of a category.
 class ApiForum {
+  /// The [category] is used on fetching posts.
   String category;
+
+  /// The [author] is used on fetching to get the user's posts only.
   String author;
+
+  /// The [searchKey] is used on fetching to search posts
   String searchKey;
-  List<ApiPost> posts;
+
+  /// The post of [postIdOnTop] will be shown on top of the post list with other posts.
+  /// Use this when user want to see(view) a post. It may serve as a view page.
+  /// The following posts is coming same category if [category] is not set.
+  /// It is ignored when [searchKey] is set.
+  int postIdOnTop;
+
+  /// The post to be shown on top of the list.
+  /// This may also serve as a post view page. Since it has a complete post information,
+  /// it will be immediately available before getting data from backend.
+  /// When [fetchPost] is being called, [render] will be immidately called with this post.
+  ApiPost post;
+
+  List<ApiPost> posts = [];
   bool loading = false;
   bool noMorePosts = false;
   int pageNo = 1;
@@ -24,7 +42,6 @@ class ApiForum {
 
   Function render;
 
-  
   bool get showLike => showVoteButton('forum_like');
   bool get showDislike => showVoteButton('forum_dislike');
 
@@ -42,8 +59,8 @@ class ApiForum {
     this.searchKey,
     this.limit = 10,
     @required this.render,
-    posts,
-  }) : this.posts = posts ?? [];
+    post,
+  }) : this.posts = post != null ? [post] : [];
 
   /// Edit post or comment
   ///
