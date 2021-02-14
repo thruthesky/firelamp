@@ -126,8 +126,8 @@ class ApiChatRoom {
     ///create `chat/rooms/otherId/roomId` if not exists.
     final value = await myRoom(roomId);
     // print('userRoomRef(${myUid}, ${otherUser.data['roomId']})');
-    // print(value);
-    if (value == null) {
+    print(value);
+    if (value == null || value.createdAt == null) {
       await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
@@ -148,10 +148,10 @@ class ApiChatRoom {
       await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
         'senderId': Api.instance.id,
-        'senderDisplayName': Api.instance.nickname,
-        'senderProfilePhotoUrl': Api.instance.profilePhotoUrl,
         'protocol': ChatProtocol.roomCreated
       });
+
+      print('nawala??');
     }
 
     chatRoomInfo = await myRoom(roomId);
@@ -188,7 +188,7 @@ class ApiChatRoom {
 
     pageNo++;
     if (pageNo == 1) {
-      myRoomRef(roomId).set({'newMessages': 0});
+      myRoomRef(roomId).update({'newMessages': 0});
     }
 
     /// Get messages for the chat room
@@ -238,22 +238,6 @@ class ApiChatRoom {
         }
       }
 
-      // if (pageNo == 1) {
-      //   messages.add(message);
-      // } else {
-      //   messages.insert(0, message);
-      // }
-
-      // /// if it's new message, add at bottom.
-      // if (messages.length > 0 &&
-      //     messages[0]['createdAt'] != null &&
-      //     message['createdAt'] > messages[0]['createdAt']) {
-      //   messages.add(message);
-      // } else {
-      //   // if it's old message, add on top.
-      //   messages.insert(0, message);
-      // }
-
       // if it is loading old messages
       // check if it is the very first message.
       if (message['createdAt'] != null) {
@@ -294,7 +278,7 @@ class ApiChatRoom {
     // }
 
     Map<String, dynamic> message = {
-      'senderUid': id,
+      'senderUid': Api.instance.id,
       'text': text,
       'createdAt': ServerValue.timestamp,
       if (extra != null) ...extra,

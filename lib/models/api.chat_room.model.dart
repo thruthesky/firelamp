@@ -60,3 +60,49 @@ class ApiRoom {
     return data.toString();
   }
 }
+
+class ChatMessage {
+  int createdAt;
+  List<dynamic> newUsers;
+  String senderDisplayName;
+  String senderPhotoURL;
+  String senderUid;
+  String text;
+  String protocol;
+  bool isMine;
+  bool isImage;
+
+  ChatMessage({
+    this.createdAt,
+    this.newUsers,
+    this.senderDisplayName,
+    this.senderPhotoURL,
+    this.senderUid,
+    this.text,
+    this.isMine,
+    this.isImage,
+    this.protocol,
+  });
+  factory ChatMessage.fromData(Map<dynamic, dynamic> data) {
+    bool isImage = false;
+    if (data['text'] != null) {
+      String t = data['text'];
+      if (t.startsWith('http://') || t.startsWith('https://')) {
+        if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
+          isImage = true;
+        }
+      }
+    }
+    return ChatMessage(
+      createdAt: data['createdAt'],
+      newUsers: data['newUsers'],
+      senderDisplayName: data['senderDisplayName'],
+      senderPhotoURL: data['senderPhotoURL'],
+      senderUid: data['senderUid'],
+      text: data['text'],
+      protocol: data['protocol'],
+      isMine: data['senderUid'] == Api.instance.id,
+      isImage: isImage,
+    );
+  }
+}
