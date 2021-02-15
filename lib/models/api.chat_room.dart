@@ -1,7 +1,7 @@
 part of '../firelamp.dart';
 
 /// Chat room message list helper class.
-class ApiChatRoom {
+class ApiChatRoom extends ChatHelper {
   /// [render] will be called to notify chat room listener to re-render the screen.
   ///
   /// For one chat message sending,
@@ -29,13 +29,6 @@ class ApiChatRoom {
 
   /// push notification topic name
   String get topic => 'notifyChat_${this.roomId}';
-
-  /// [noMoreMessage] becomes true when there is no more old messages to view.
-  /// The app should display 'no more message' to user.
-  bool noMoreMessage = false;
-
-  int pageNo = 0;
-  int _limit = 20;
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event
   /// too much, so it fetches too many batches(pageNos) at one time.
@@ -73,46 +66,8 @@ class ApiChatRoom {
   List<String> get users => chatRoomInfo?.users;
   Timestamped get createdAt => chatRoomInfo.createdAt;
 
-  String get myUid => Api.instance.md5;
-
   PublishSubject _notifySubject = PublishSubject();
   StreamSubscription _notifySubjectSubscription;
-
-  /// Returns login user's room list collection `/chat/rooms` reference.
-  /// Or, returns reference of my room (that has last message of the room)
-  DatabaseReference myRoomsRef({String roomId}) {
-    final ref = roomsRef(myUid);
-    if (roomId == null)
-      return ref;
-    else
-      return ref.child(roomId);
-  }
-
-  /// Return the reference of `/chat/messages/roomId` under which lots are messages are stored.
-  DatabaseReference messagesRef(String roomId) {
-    return Api.instance.database.reference().child('chat/messages').child(roomId);
-  }
-
-  /// Returns `/chat/rooms/{user-id}` reference.
-  ///
-  /// if [roomId] is given, it returns a reference of a room. Not the list.
-  DatabaseReference roomsRef(String userId, {String roomId}) {
-    final chatRoomsUserIdRef = Api.instance.database.reference().child('chat/rooms').child(userId);
-    if (roomId == null)
-      return chatRoomsUserIdRef;
-    else
-      return chatRoomsUserIdRef.child(roomId);
-  }
-
-  /// Returns one of login user's room document. Not reference.
-  Future<ApiRoom> myRoom(String roomId) async {
-    DataSnapshot snapshot = await myRoomsRef(roomId: roomId).once();
-    return ApiRoom.fromSnapshot(snapshot);
-  }
-
-  myRoomRef(String roomId) {
-    return myRoomsRef(roomId: roomId);
-  }
 
   /// Enter chat room
   Future<void> enter(String userId) async {
@@ -131,27 +86,25 @@ class ApiChatRoom {
       await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
-        'senderId': otherUser.id,
-        'senderDisplayName': otherUser.nickname,
-        'senderProfilePhotoUrl': otherUser.profilePhotoUrl,
+        'userId': otherUser.id,
+        'displayName': otherUser.nickname,
+        'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
       await roomsRef(otherUserUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
-        'senderId': Api.instance.id,
-        'senderDisplayName': Api.instance.nickname,
-        'senderProfilePhotoUrl': Api.instance.profilePhotoUrl,
+        'userId': Api.instance.id,
+        'displayName': Api.instance.nickname,
+        'profilePhotoUrl': Api.instance.profilePhotoUrl,
       });
 
       /// send message to `chat/message/roomId` with protocol roomCreated
       ///   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
       await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
-        'senderId': Api.instance.id,
+        'userId': Api.instance.id,
         'protocol': ChatProtocol.roomCreated
       });
-
-      print('nawala??');
     }
 
     chatRoomInfo = await myRoom(roomId);
@@ -199,13 +152,7 @@ class ApiChatRoom {
       q = q.endAt(messages.first['id']);
     }
 
-    // q = q.endAt('-MTFIMxxZQ4y0F9cT9kU');
-
     q = q.limitToLast(_limit);
-
-    // if (messages.isNotEmpty) {
-    //   q = q.endAt(messages.first['createdAt']);
-    // }
 
     _childChangedSubscription = q.onChildChanged.listen((Event event) {
       // @todo update message
@@ -278,7 +225,7 @@ class ApiChatRoom {
     // }
 
     Map<String, dynamic> message = {
-      'senderUid': Api.instance.id,
+      'userId': Api.instance.id,
       'text': text,
       'createdAt': ServerValue.timestamp,
       if (extra != null) ...extra,
@@ -299,21 +246,5 @@ class ApiChatRoom {
     //   topic: topic,
     // );
     return message;
-  }
-
-  text(Map<String, dynamic> message) {
-    String text = message['text'] ?? '';
-    if (text == ChatProtocol.roomCreated) {
-      text = 'Chat room created. ';
-    }
-
-    /// Display `no more messages` only when user scrolled up to see more messages.
-    else if (pageNo > 1 && noMoreMessage) {
-      text = 'No more messages. ';
-    } else if (text == ChatProtocol.enter) {
-      // print(message);
-      text = "${message['senderDisplayName']} invited ${message['newUsers']}";
-    }
-    return text;
   }
 }
