@@ -244,6 +244,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
+      // _printDebugUrl(data);
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
       _printDebugUrl(data);
