@@ -31,7 +31,7 @@ class ApiPost {
     this.point,
     this.volume,
     this.deliveryFee,
-    this.stroageMethod,
+    this.storageMethod,
     this.expiry,
     this.itemPrimaryPhoto,
     this.itemWidgetPhoto,
@@ -76,7 +76,7 @@ class ApiPost {
   int point;
   int volume;
   int deliveryFee;
-  String stroageMethod;
+  String storageMethod;
   String expiry;
   String itemPrimaryPhoto;
   String itemWidgetPhoto;
@@ -161,7 +161,7 @@ class ApiPost {
       point: _parseInt(json["point"]),
       volume: _parseInt(json["volume"]),
       deliveryFee: _parseInt(json["delivery_fee"]),
-      stroageMethod: json["stroage_method"],
+      storageMethod: json["storage_method"],
       expiry: json["expiry"],
       itemPrimaryPhoto: json["item_primary_photo"],
       itemWidgetPhoto: json["item_widget_photo"],
@@ -197,7 +197,7 @@ class ApiPost {
         "point": point,
         "volume": volume,
         "deliveryFee": deliveryFee,
-        "stroageMethod": stroageMethod,
+        "storageMethod": storageMethod,
         "expiry": expiry,
         "itemPrimaryPhoto": itemPrimaryPhoto,
         "itemWidgetPhoto": itemWidgetPhoto,
