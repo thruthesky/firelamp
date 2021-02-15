@@ -36,6 +36,8 @@ class ApiPost {
     this.itemPrimaryPhoto,
     this.itemWidgetPhoto,
     this.itemDetailPhoto,
+    this.keywords,
+    this.options,
   }) {
     if (files == null) files = [];
     if (postTitle == null) postTitle = '';
@@ -80,10 +82,15 @@ class ApiPost {
   String itemWidgetPhoto;
   String itemDetailPhoto;
 
+  /// The [keywords] has multiple keywords separated by comma
+  String keywords;
+
+  /// The [options] has multiple options separated by comma
+  String options;
+
   ///
   bool get isMine => postAuthor == Api.instance.id;
   bool get isNotMine => !isMine;
-
 
   insertOrUpdateComment(ApiComment comment) {
     // print(comment.commentParent);
@@ -159,6 +166,8 @@ class ApiPost {
       itemPrimaryPhoto: json["item_primary_photo"],
       itemWidgetPhoto: json["item_widget_photo"],
       itemDetailPhoto: json["item_detail_photo"],
+      keywords: json['keywords'] ?? '',
+      options: json['options'] ?? '',
     );
   }
 
@@ -193,6 +202,8 @@ class ApiPost {
         "itemPrimaryPhoto": itemPrimaryPhoto,
         "itemWidgetPhoto": itemWidgetPhoto,
         "itemDetailPhoto": itemDetailPhoto,
+        "keywords": keywords,
+        "options": options,
       };
 
   @override
