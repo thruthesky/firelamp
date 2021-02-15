@@ -53,6 +53,7 @@ class Api extends GetxController {
   String get fullName => user?.name;
   String get nickname => user?.nickname;
   String get profilePhotoUrl => user?.profilePhotoUrl;
+  String get md5 => user?.md5;
   bool get profileComplete =>
       loggedIn &&
       primaryPhotoUrl != null &&
@@ -400,9 +401,9 @@ class Api extends GetxController {
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get it from server.
   Future<ApiUser> otherUserProfile(String id) async {
     final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
-    user = ApiUser.fromJson(res);
+    ApiUser otherUser = ApiUser.fromJson(res);
     update();
-    return user;
+    return otherUser;
   }
 
   /// Refresh user profile
@@ -879,36 +880,6 @@ class Api extends GetxController {
   ///     CHAT FUNCTIONALTY
   ///
   /// -------------------------------------------------------------------------------
-
-  /// [talkingTo] is the other user's document key that the login user is talking to.
-  String talkingTo;
-
-  chatEnter({@required String userId}) async {
-    final user = await Api.instance.otherUserProfile(userId);
-    final String otherId = user.md5;
-
-    /// @todo create `chat/rooms/myId/otherId` if not exists.
-    /// @todo create `chat/rooms/otherId/myId` if not exists.
-    /// @todo send message to `chat/message/myId/otherId` with protocol roomCreated
-    /// @todo send message to `chat/message/otherId/myId` with protocol roomCreated
-    /// @todo update chat room `chat/rooms/myId/otherId`. increase newMessage and stamp.
-    /// @todo update chat room `chat/rooms/otherId/myId`. increase newMessage and stamp.
-
-    talkingTo = otherId;
-
-    // print('I am talking to: $talkingTo');
-
-    /// @todo send push notification
-  }
-
-  ///
-  chatSend({
-    @required String text,
-    String url,
-    String urlType,
-  }) {
-    ///
-  }
 
   /// -------------------------------------------------------------------------------
   ///
