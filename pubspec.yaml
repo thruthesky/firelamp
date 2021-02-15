@@ -4,7 +4,7 @@ version: 0.0.2
 homepage: https://github.com/thruthesky/firelamp
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
@@ -22,6 +22,14 @@ dependencies:
   dio: ^3.0.10
 
   scrollable_positioned_list: ^0.1.8
+
+  # patch version for prevening app crash on iOS.
+  image_picker:
+    git:
+      url: https://github.com/cpboyd/plugins.git
+      ref: image_picker_workaround
+      path: packages/image_picker/image_picker
+  flutter_image_compress: ^0.7.0
 
   age: ^0.0.1
 
