@@ -45,11 +45,16 @@ class ApiForum {
   bool get showLike => showVoteButton('forum_like');
   bool get showDislike => showVoteButton('forum_dislike');
 
+  // categories separated by comma.
+  String get searchCategories => Api.instance.settings['search_categories'];
+
   bool get canSearch {
     if (postInEdit != null) return false;
     if (author != null) return false;
     return true;
   }
+
+  bool get canCreate => author == null && category != null;
 
   bool showVoteButton(String str) {
     if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
