@@ -85,6 +85,29 @@ class Api extends GetxController {
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
 
+  /// [chat] is the chat room instance.
+  ///
+  /// The reason why it is declared in global scope is that; the app needs to know if the login user is
+  /// in a chat room. So, when he gets a push notification from the chat room where he is in,
+  /// the push messge will be ignored.
+  ApiChatRoom chat;
+
+  /// [roomList] is the instance of ChatMyRoomList.
+  ///
+  /// The reason why it is declared in global scope is to listen all incoming message of the user's chat rooms
+  /// And display it as toast, and display the total number of new chat message as badge on menu icon.
+  ///
+  /// This will be instanciated in main.dart.
+  ChatRoomList roomList;
+
+  /// [roomListChanges] will be fired whenever/whatever events posted from the login user's chat rooms.
+  /// When there are changes(events) on login user's chat room list,
+  /// notify to listeners by posting `rxdart BehaviorSubject`.
+  /// Use case of this event is to display no of new messages on chat menu icon (as a badge).
+  /// - To achieve this, on the header, subscribe this event and display no of new messages.
+  BehaviorSubject roomListChanges = BehaviorSubject.seeded(null);
+
+  /// Api Singleton
   static Api _instance;
   static Api get instance {
     if (_instance == null) {
@@ -156,6 +179,7 @@ class Api extends GetxController {
     Function onForegroundMessage,
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
+    bool enableChat = false,
   }) async {
     if (enableMessaging) {
       assert(onForegroundMessage != null,
@@ -176,6 +200,28 @@ class Api extends GetxController {
     if (enableMessaging) _initMessaging();
     _initTranslation();
     _initSettings();
+    if (enableChat) _initChat();
+  }
+
+  _initChat() {
+    authChanges.listen((user) {
+      // when user login or logout, or change accounts.
+      if (roomList != null) {
+        roomList.leave();
+        roomList = null;
+      }
+
+      // * Begin to listen login user's chat room event if user has logged in.
+      // The reason that this code stated here is listen new messages outside from chat screens.
+      // Reset room list, when user just logs in.
+      if (roomList == null) {
+        roomList = ChatRoomList(
+          onChange: () {
+            roomListChanges.add(roomList.rooms);
+          },
+        );
+      }
+    });
   }
 
   /// Firebase Initialization

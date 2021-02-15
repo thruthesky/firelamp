@@ -4,8 +4,8 @@ part of '../firelamp.dart';
 ///
 /// This is a completely independent helper class to help to list login user's room list.
 /// You may rewrite your own helper class.
-class ChatMyRoomList extends ChatHelper {
-  Function __render;
+class ChatRoomList extends ChatHelper {
+  Function onChange;
 
   StreamSubscription _myRoomListSubscription;
   List<StreamSubscription> _roomSubscriptions = [];
@@ -20,24 +20,14 @@ class ChatMyRoomList extends ChatHelper {
 
   /// My room list including room id.
   List<ChatUserRoom> rooms = [];
-  String _order = "";
-  ChatMyRoomList({
-    @required Function render,
-    String order = "createdAt",
-  })  : __render = render,
-        _order = order {
+
+  ChatRoomList({
+    @required Function onChange,
+  }) {
     listenRoomList();
   }
 
-  _notify() {
-    if (__render != null) __render();
-  }
-
-  reset({String order}) {
-    if (order != null) {
-      _order = order;
-    }
-
+  reset() {
     rooms = [];
     _myRoomListSubscription.cancel();
     listenRoomList();
@@ -50,14 +40,15 @@ class ChatMyRoomList extends ChatHelper {
   /// - users array changes,
   /// - and other properties change.
   listenRoomList() {
+    ///
     _myRoomListSubscription = myRoomsRef().onValue.listen((event) {
       fetched = true;
       Map<dynamic, dynamic> res = event.snapshot.value;
+      rooms = [];
       res.forEach((key, data) {
-        final roomInfo = ChatUserRoom.fromData(data, key);
-        rooms.add(roomInfo);
+        rooms.add(ChatUserRoom.fromData(data, key));
       });
-      _notify();
+      onChange();
     });
   }
 
