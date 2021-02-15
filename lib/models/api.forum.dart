@@ -45,6 +45,12 @@ class ApiForum {
   bool get showLike => showVoteButton('forum_like');
   bool get showDislike => showVoteButton('forum_dislike');
 
+  bool get canSearch {
+    if (postInEdit != null) return false;
+    if (author != null) return false;
+    return true;
+  }
+
   bool showVoteButton(String str) {
     if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
       return true;
