@@ -15,7 +15,7 @@ dependencies:
   firebase_database: "^6.0.0"
   firebase_messaging: "^8.0.0-dev.14"
 
-  get: ^3.24.0
+  get: ^3.25.4
   get_storage: ^1.4.0
 
   rxdart: ^0.25.0
