@@ -665,6 +665,8 @@ class Api extends GetxController {
       forum.posts.add(forum.post);
       forum.render();
     }
+
+    /// ?
     if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
       // print(
