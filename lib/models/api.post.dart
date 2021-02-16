@@ -92,6 +92,19 @@ class ApiPost {
   bool get isMine => postAuthor == Api.instance.id;
   bool get isNotMine => !isMine;
 
+  /// Display options
+  ///
+  /// The [display] flag tells whether to show or hide the post in list.
+  /// [display] 는 클라이언트에서만 사용되는 것으로, true 이면 글(내용)을 보여주는 것이다.
+  bool display = false;
+
+  /// Update mode
+  ///
+  /// The [mode] has one of the following status: null, 'edit'
+  /// - when it is 'edit', the post is in edit mode.
+  String mode;
+
+  ///
   insertOrUpdateComment(ApiComment comment) {
     // print(comment.commentParent);
 
@@ -174,18 +187,19 @@ class ApiPost {
   Map<String, dynamic> toJson() => {
         "ID": id,
         "post_author": postAuthor,
-        "post_date": postDate.toIso8601String(),
+        if (postDate != null) "post_date": postDate.toIso8601String(),
         "post_content": postContent,
         "post_title": postTitle,
-        "post_modified": postModified.toIso8601String(),
+        if (postModified != null) "post_modified": postModified.toIso8601String(),
         "post_parent": postParent,
         "guid": guid,
         "comment_count": commentCount,
-        "post_category": List<dynamic>.from(postCategory.map((x) => x)),
+        if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         "author_name": authorName,
         "short_date_time": shortDateTime,
-        "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        if (comments != null)
+          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "category": category,
         "featured_image_url": featuredImageUrl,
         "featured_image_thumbnail_url": featuredImageThumbnailUrl,
