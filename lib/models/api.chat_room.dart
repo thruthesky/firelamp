@@ -110,24 +110,21 @@ class ApiChatRoom extends ChatHelper {
     // fetch latest messages
     fetchMessages();
 
-    // // Listening current room in my room list.
-    // // This will be notify chat room listener when chat room title changes, or new users enter, etc.
-    // if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
-    // _currentRoomSubscription = Api.instance.myRoom(roomId).onValue.listen((Event event) {
-    //   // If the user got a message from a chat room where the user is currently in,
-    //   // then, set `newMessages` to 0.
-    //   final data = ChatRoomInfo.fromSnapshot(event.snapshot);
-    //   if (data.newMessages > 0 && data.createdAt != null) {
-    //     Api.instance.myRoom(roomId).update({'newMessages': 0});
-    //   }
-    // });
+    // Listening current room in my room list.
+    // This will be notify chat room listener when chat room title changes, or new users enter, etc.
+    if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
+    _currentRoomSubscription =
+        roomsRef(Api.instance.md5, roomId: roomId).onValue.listen((Event event) {
+      // If the user got a message from a chat room where the user is currently in,
+      // then, set `newMessages` to 0.
+      final data = ApiRoom.fromSnapshot(event.snapshot);
+      if (data.newMessages != null && data.newMessages > 0 && data.createdAt != null) {
+        roomsRef(Api.instance.md5, roomId: roomId).update({'newMessages': 0});
+      }
+    });
   }
 
-  leave() {
-    otherUser = null;
-  }
-
-  // /// Notify chat room listener to re-render the screen.
+  /// Notify chat room listener to re-render the screen.
   /// Render may happen too much. Reduce it.
   _notify() {
     if (_render != null) {
@@ -206,6 +203,7 @@ class ApiChatRoom extends ChatHelper {
     _childRemovedSubscription.cancel();
     _currentRoomSubscription.cancel();
     _notifySubjectSubscription.cancel();
+    otherUser = null;
   }
 
   /// Send chat message to the users in the room
