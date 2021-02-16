@@ -46,7 +46,7 @@ class ApiForum {
   bool get showDislike => showVoteButton('forum_dislike');
 
   // categories separated by comma.
-  String get searchCategories => Api.instance.settings['search_categories'];
+  String get searchCategories => Api.instance.settings['search_categories'] ?? '';
 
   bool get canSearch {
     if (postInEdit != null) return false;
