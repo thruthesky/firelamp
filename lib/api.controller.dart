@@ -414,6 +414,10 @@ class Api extends GetxController {
     return userProfile(sessionId);
   }
 
+  /// edit(create or update) post
+  ///
+  /// If [post] is given, the id, category, title, content and files will be used from it instead.
+  /// [post] 에 값이 있으면, 그 값을 사용한다.
   Future<ApiPost> editPost({
     int id,
     String category,
@@ -421,10 +425,12 @@ class Api extends GetxController {
     String content,
     List<ApiFile> files,
     Map<String, dynamic> data,
+    ApiPost post,
   }) async {
     if (data == null) data = {};
-    if (id != null) data['ID'] = id;
     data['route'] = 'forum.editPost';
+
+    if (id != null) data['ID'] = id;
     if (category != null) data['category'] = category;
     if (title != null) data['post_title'] = title;
     if (content != null) data['post_content'] = content;
@@ -432,6 +438,20 @@ class Api extends GetxController {
       Set ids = files.map((file) => file.id).toSet();
       data['files'] = ids.join(',');
     }
+
+    ///
+    if (post != null) {
+      if (post.id != null) data['ID'] = post.id;
+      if (post.category != null) data['category'] = post.category;
+      if (post.postTitle != null && post.postTitle != '') data['post_title'] = post.postTitle;
+      if (post.postContent != null && post.postContent != '')
+        data['post_content'] = post.postContent;
+      if (post.files.length > 0) {
+        Set ids = post.files.map((file) => file.id).toSet();
+        data['files'] = ids.join(',');
+      }
+    }
+
     final json = await request(data);
     return ApiPost.fromJson(json);
   }
@@ -569,6 +589,28 @@ class Api extends GetxController {
       throw res.data['code'];
     }
     return ApiFile.fromJson(res.data['data']);
+  }
+
+  /// 사진업로드
+  ///
+  /// 이미지를 카메라 또는 갤러리로 부터 가져와서, 이미지 누어서 찍힌 이미지를 바로 보정을 하고, 압축을 하고, 서버에 업로드
+  Future<ApiFile> takeUploadFile(
+      {@required ImageSource source, int quality = 90, @required Function onProgress}) async {
+    /// Pick image
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.getImage(source: source);
+    if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
+
+    String localFile = await getAbsoluteTemporaryFilePath(getRandomString() + '.jpeg');
+    File file = await FlutterImageCompress.compressAndGetFile(
+      pickedFile.path, // source file
+      localFile, // target file. Overwrite the source with compressed.
+      quality: quality,
+    );
+
+    /// Upload
+    return await uploadFile(file: file, onProgress: onProgress);
   }
 
   /// Deletes a file.
