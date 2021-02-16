@@ -873,7 +873,15 @@ class Api extends GetxController {
       'topic': topic,
     };
     final res = await request(req);
-    // api.user.data[topic] = subscribe ? 'Y' : 'N';
+    return res;
+  }
+
+  subscribeOrUnsubscribeChat(String topic) async {
+    Map<String, dynamic> req = {
+      'route': 'notification.chatSubscription',
+      'topic': topic,
+    };
+    final res = await request(req);
     return res;
   }
 

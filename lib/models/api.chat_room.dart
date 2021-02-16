@@ -123,6 +123,10 @@ class ApiChatRoom extends ChatHelper {
     // });
   }
 
+  leave() {
+    otherUser = null;
+  }
+
   // /// Notify chat room listener to re-render the screen.
   /// Render may happen too much. Reduce it.
   _notify() {
@@ -235,13 +239,13 @@ class ApiChatRoom extends ChatHelper {
       'updatedAt': ServerValue.timestamp,
     });
 
-    // TODO: Sending notification should be handled outside of firechat.
-    // await __ff.sendNotification(
-    //   '$displayName send you message.',
-    //   text,
-    //   id: id,
-    //   screen: 'chatRoom',
-    //   topic: topic,
+    // ///Sending pushnotification after updating the chat
+    // Api.instance.sendMessageToUsers(
+    //   users: [otherUser.id],
+    //   title: 'chat message',
+    //   subscription: "notifyChat_" + Api.instance.id,
+    //   body: text,
+    //   data: {'type': 'chat'},
     // );
     return message;
   }

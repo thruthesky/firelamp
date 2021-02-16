@@ -3,6 +3,7 @@ part of 'firelamp.dart';
 const String ERROR_EMPTY_SESSION_ID = 'ERROR_EMPTY_SESSION_ID';
 
 const String ERROR_IMAGE_NOT_SELECTED = 'ERROR_IMAGE_NOT_SELECTED';
+const String ERROR_EMPTY_TOKENS = 'ERROR_EMPTY_TOKENS';
 
 /// todo put chat protocol into { protocol: ... }, not in { text: ... }
 class ChatProtocol {
