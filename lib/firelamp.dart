@@ -28,5 +28,7 @@ part 'models/api.file.dart';
 part 'models/api.post.dart';
 part 'models/api.user.dart';
 part 'models/api.forum.dart';
+part 'models/api.chat_helper.dart';
 part 'models/api.chat_room.dart';
-part 'models/api.chat_room.model.dart';
+part 'models/api.chat_room_list.dart';
+part 'models/api.chat.model.dart';
