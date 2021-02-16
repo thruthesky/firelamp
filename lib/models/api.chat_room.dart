@@ -80,8 +80,6 @@ class ApiChatRoom extends ChatHelper {
     ///create `chat/rooms/myId/roomId` if not exists.
     ///create `chat/rooms/otherId/roomId` if not exists.
     final value = await myRoom(roomId);
-    // print('userRoomRef(${myUid}, ${otherUser.data['roomId']})');
-    print(value);
     if (value == null || value.createdAt == null) {
       await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
@@ -109,7 +107,7 @@ class ApiChatRoom extends ChatHelper {
 
     chatRoomInfo = await myRoom(roomId);
 
-    // // fetch latest messages
+    // fetch latest messages
     fetchMessages();
 
     // // Listening current room in my room list.

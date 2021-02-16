@@ -61,7 +61,7 @@ class ApiRoom {
   }
 }
 
-class ChatMessage {
+class ApiChatMessage {
   int createdAt;
   String displayName;
   String profilePhotoUrl;
@@ -71,7 +71,7 @@ class ChatMessage {
   bool isMine;
   bool isImage;
 
-  ChatMessage({
+  ApiChatMessage({
     this.createdAt,
     this.displayName,
     this.profilePhotoUrl,
@@ -81,7 +81,7 @@ class ChatMessage {
     this.isImage,
     this.protocol,
   });
-  factory ChatMessage.fromData(Map<dynamic, dynamic> data) {
+  factory ApiChatMessage.fromData(Map<dynamic, dynamic> data) {
     bool isImage = false;
     if (data['text'] != null) {
       String t = data['text'];
@@ -91,7 +91,7 @@ class ChatMessage {
         }
       }
     }
-    return ChatMessage(
+    return ApiChatMessage(
       createdAt: data['createdAt'],
       displayName: data['displayName'],
       profilePhotoUrl: data['profilePhotoUrl'],
@@ -104,8 +104,8 @@ class ChatMessage {
   }
 }
 
-/// [ChatUserRoom] is the record reference of `/chat/rooms/{user.md5}` information.
-class ChatUserRoom {
+/// [ApiChatUserRoom] is the record reference of `/chat/rooms/{user.md5}` information.
+class ApiChatUserRoom {
   String id;
   String userId;
   String displayName;
@@ -119,7 +119,7 @@ class ChatUserRoom {
   /// [newMessages] has the number of new messages for that room.
   int newMessages;
 
-  ChatUserRoom({
+  ApiChatUserRoom({
     this.id,
     this.userId,
     this.displayName,
@@ -129,17 +129,17 @@ class ChatUserRoom {
     this.text,
   });
 
-  factory ChatUserRoom.fromSnapshot(DataSnapshot snapshot) {
+  factory ApiChatUserRoom.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot == null) return null;
     Map<dynamic, dynamic> info = snapshot.value;
-    return ChatUserRoom.fromData(info, snapshot.key);
+    return ApiChatUserRoom.fromData(info, snapshot.key);
   }
 
-  factory ChatUserRoom.fromData(Map<dynamic, dynamic> info, [String id]) {
-    if (info == null) return ChatUserRoom();
+  factory ApiChatUserRoom.fromData(Map<dynamic, dynamic> info, [String id]) {
+    if (info == null) return ApiChatUserRoom();
 
     String _text = info['text'];
-    return ChatUserRoom(
+    return ApiChatUserRoom(
       id: id,
       userId: info['userId'],
       displayName: info['displayName'],

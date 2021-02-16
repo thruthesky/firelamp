@@ -214,7 +214,7 @@ class Api extends GetxController {
       // * Begin to listen login user's chat room event if user has logged in.
       // The reason that this code stated here is listen new messages outside from chat screens.
       // Reset room list, when user just logs in.
-      if (roomList == null) {
+      if (loggedIn && roomList == null) {
         roomList = ChatRoomList(
           onChange: () {
             roomListChanges.add(roomList.rooms);

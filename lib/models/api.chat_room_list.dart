@@ -19,11 +19,12 @@ class ChatRoomList extends ChatHelper {
   bool fetched = false;
 
   /// My room list including room id.
-  List<ChatUserRoom> rooms = [];
+  List<ApiChatUserRoom> rooms = [];
 
   ChatRoomList({
     @required Function onChange,
   }) {
+    this.onChange = onChange;
     listenRoomList();
   }
 
@@ -46,9 +47,9 @@ class ChatRoomList extends ChatHelper {
       Map<dynamic, dynamic> res = event.snapshot.value;
       rooms = [];
       res.forEach((key, data) {
-        rooms.add(ChatUserRoom.fromData(data, key));
+        rooms.add(ApiChatUserRoom.fromData(data, key));
       });
-      onChange();
+      if (onChange != null) onChange();
     });
   }
 
