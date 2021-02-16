@@ -804,6 +804,7 @@ class Api extends GetxController {
   _loadSettings() async {
     // print('Update on APP SETTINGS');
     final _settings = await request({'route': 'app.settings'});
+    // print("$_settings");
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
