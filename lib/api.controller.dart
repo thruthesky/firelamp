@@ -697,28 +697,6 @@ class Api extends GetxController {
     return data['ID'];
   }
 
-  /// Forum data model container
-  ///
-  /// App can list/view multiple forum category at the same time.
-  /// That's why it manages the container for each category.
-  Map<String, ApiForum> forumContainer = {};
-
-  @Deprecated('user attachForum')
-  ApiForum initForum({@required String category, @required Function render}) {
-    forumContainer[category] = ApiForum(category: category, render: render);
-    return forumContainer[category];
-  }
-
-  /// Put the forum setting into a container. The container manages different categories.
-  /// An app may open many forum list page at once. For instance, a user opens qna forum,
-  /// then, opens discussion forum. So, there are two forums. And this handles the two forums
-  /// and its settings, posts, and other meta information nicely.
-  /// Without this, the developer must handle it himself.
-  ApiForum attachForum(ApiForum forum) {
-    forumContainer[forum.category] = forum;
-    return forumContainer[forum.category];
-  }
-
   /// Fetch posts with the [forum]
   ///
   /// You can change the settings(options) of [forum] right before calling [fetchPosts].
@@ -727,14 +705,14 @@ class Api extends GetxController {
   /// calling it.
   ///
   /// The [pageNo] is increased automatically.
-  Future<void> fetchPosts({ApiForum forum, String category}) async {
+  ///
+  /// The [forum] setting should be declared in each forum list screen.
+  Future<void> fetchPosts(ApiForum forum) async {
     if (forum.post != null && forum.posts.length == 0) {
       forum.posts.add(forum.post);
       forum.render();
     }
 
-    /// ?
-    if (category != null) forum = forumContainer[category];
     if (forum.canLoad == false) {
       // print(
       //   'Can not load anymore: loading: ${forum.loading},'
