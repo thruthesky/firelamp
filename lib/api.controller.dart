@@ -600,6 +600,27 @@ class Api extends GetxController {
     return _posts;
   }
 
+  Future<List<ApiComment>> searchComments({
+    String author,
+    int limit = 20,
+    int paged = 0,
+    String order = 'DESC',
+  }) async {
+    final Map<String, dynamic> data = {};
+    data['route'] = 'forum.searchComments';
+    data['number'] = limit;
+    data['offset'] = paged * limit;
+    data['order'] = order;
+    if (author != null) data['user_id'] = author;
+    final jsonList = await request(data);
+
+    List<ApiComment> _comments = [];
+    for (int i = 0; i < jsonList.length; i++) {
+      _comments.add(ApiComment.fromJson(jsonList[i]));
+    }
+    return _comments;
+  }
+
   /// [getPosts] is an alias of [searchPosts]
   Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
     return searchPost(category: category, limit: limit, paged: paged, author: author);
