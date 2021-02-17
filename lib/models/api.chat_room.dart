@@ -214,13 +214,6 @@ class ApiChatRoom extends ChatHelper {
   }
 
   /// Send chat message to the users in the room
-  ///
-  /// [displayName] is the name that the sender will use. The default is
-  /// `ff.user.displayName`.
-  ///
-  /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
-  ///
-  /// [type] is the type of the message. It can be `image` or `text` if string only.
   Future<Map<String, dynamic>> sendMessage({
     @required String text,
     Map<String, dynamic> extra,
