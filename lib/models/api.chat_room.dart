@@ -220,10 +220,6 @@ class ApiChatRoom extends ChatHelper {
     String url,
     String urlType,
   }) async {
-    // if (displayName == null || displayName.trim() == '') {
-    //   throw CHAT_DISPLAY_NAME_IS_EMPTY;
-    // }
-
     Map<String, dynamic> message = {
       'userId': Api.instance.id,
       'text': text,
