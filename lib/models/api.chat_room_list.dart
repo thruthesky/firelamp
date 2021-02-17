@@ -41,7 +41,6 @@ class ChatRoomList extends ChatHelper {
   /// - users array changes,
   /// - and other properties change.
   listenRoomList() {
-    ///
     _myRoomListSubscription = myRoomsRef().onValue.listen((event) {
       fetched = true;
       Map<dynamic, dynamic> res = event.snapshot.value;

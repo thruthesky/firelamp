@@ -21,10 +21,10 @@ class ApiChatRoom extends ChatHelper {
 
   ApiUser otherUser;
 
-  /// [otherUserUid] is the other user's document key that the login user is talking to.
+  /// [otherUserUid] is the other user's reference key that the login user is talking to.
   String get otherUserUid => otherUser.md5;
 
-  /// Room id
+  /// [roomId] is the combination of the User A md5 and user B md5 which is return when you get the other user profile.
   String roomId;
 
   /// push notification topic name
@@ -52,19 +52,13 @@ class ApiChatRoom extends ChatHelper {
 
   /// [loading] becomes true while the app is fetching more messages.
   /// The app should display loader while it is fetching.
-  bool loading = false;
+  bool loading = true;
 
   /// Global room info (of current room)
   /// Use this to dipplay title or other information about the room.
   /// When `/chat/global/room-list/{roomId}` changes, it will be updated and calls render handler.
   ///
-  ApiRoom chatRoomInfo;
-
-  /// Chat room properties
-  String get id => chatRoomInfo?.roomId;
-  String get title => chatRoomInfo?.title;
-  List<String> get users => chatRoomInfo?.users;
-  Timestamped get createdAt => chatRoomInfo.createdAt;
+  ApiChatUserRoom chatRoomInfo;
 
   PublishSubject _notifySubject = PublishSubject();
   StreamSubscription _notifySubjectSubscription;
@@ -73,14 +67,17 @@ class ApiChatRoom extends ChatHelper {
   Future<void> enter(String userId) async {
     otherUser = await Api.instance.otherUserProfile(userId);
 
-    // print('otherUser: $otherUser');
-
+    /// roomID is included when you get the other user profile.
+    /// Combination of User A and User B md5
     roomId = otherUser.data['roomId'];
 
-    ///create `chat/rooms/myId/roomId` if not exists.
-    ///create `chat/rooms/otherId/roomId` if not exists.
-    final value = await myRoom(roomId);
+    /// get room information
+    ApiChatUserRoom value = await myRoom(roomId);
+
+    /// check if room exist, create other if not exist.
     if (value == null || value.createdAt == null) {
+      ///create `chat/rooms/myUid/roomId` if not exists.
+      /// LoggedIn User copy of Other User Room Information
       await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
@@ -88,6 +85,9 @@ class ApiChatRoom extends ChatHelper {
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
+
+      ///create `chat/rooms/otherUid/roomId` if not exists.
+      /// Other user copy of LoggedIn User Room Information
       await roomsRef(otherUserUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
@@ -103,6 +103,13 @@ class ApiChatRoom extends ChatHelper {
         'userId': Api.instance.id,
         'protocol': ChatProtocol.roomCreated
       });
+    } else {
+      ///Update your copy of other User and update the Room Information
+      ///Update your copy of
+      await roomsRef(myUid, roomId: roomId).update({
+        'displayName': otherUser.nickname,
+        'profilePhotoUrl': otherUser.profilePhotoUrl,
+      });
     }
 
     chatRoomInfo = await myRoom(roomId);
@@ -117,7 +124,7 @@ class ApiChatRoom extends ChatHelper {
         roomsRef(Api.instance.md5, roomId: roomId).onValue.listen((Event event) {
       // If the user got a message from a chat room where the user is currently in,
       // then, set `newMessages` to 0.
-      final data = ApiRoom.fromSnapshot(event.snapshot);
+      final data = ApiChatUserRoom.fromSnapshot(event.snapshot);
       if (data.newMessages != null && data.newMessages > 0 && data.createdAt != null) {
         roomsRef(Api.instance.md5, roomId: roomId).update({'newMessages': 0});
       }
@@ -137,6 +144,7 @@ class ApiChatRoom extends ChatHelper {
     if (_throttling || noMoreMessage) return;
     loading = true;
     _throttling = true;
+    // _notify();
 
     pageNo++;
     if (pageNo == 1) {
@@ -192,7 +200,6 @@ class ApiChatRoom extends ChatHelper {
           print('-----> noMoreMessage: $noMoreMessage');
         }
       }
-
       _notify();
     });
   }
@@ -207,23 +214,12 @@ class ApiChatRoom extends ChatHelper {
   }
 
   /// Send chat message to the users in the room
-  ///
-  /// [displayName] is the name that the sender will use. The default is
-  /// `ff.user.displayName`.
-  ///
-  /// [photoURL] is the sender's photo url. Default is `ff.user.photoURL`.
-  ///
-  /// [type] is the type of the message. It can be `image` or `text` if string only.
   Future<Map<String, dynamic>> sendMessage({
     @required String text,
     Map<String, dynamic> extra,
-    String url,
-    String urlType,
+    // String url,
+    // String urlType,
   }) async {
-    // if (displayName == null || displayName.trim() == '') {
-    //   throw CHAT_DISPLAY_NAME_IS_EMPTY;
-    // }
-
     Map<String, dynamic> message = {
       'userId': Api.instance.id,
       'text': text,
