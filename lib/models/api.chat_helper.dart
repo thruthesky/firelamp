@@ -25,7 +25,8 @@ class ChatHelper {
     return Api.instance.database.reference().child('chat/messages').child(roomId);
   }
 
-  /// Returns `/chat/rooms/{user-id}` reference.
+  /// Returns  DatabaseReference of  `/chat/rooms/{user-id}`
+  /// Or `/chat/rooms/{user-id}/roomId`
   ///
   /// if [roomId] is given, it returns a reference of a room. Not the list.
   DatabaseReference roomsRef(String userId, {String roomId}) {
@@ -37,33 +38,33 @@ class ChatHelper {
   }
 
   /// Returns one of login user's room document. Not reference.
-  Future<ApiRoom> myRoom(String roomId) async {
+  Future<ApiChatUserRoom> myRoom(String roomId) async {
     DataSnapshot snapshot = await myRoomsRef(roomId: roomId).once();
-    return ApiRoom.fromSnapshot(snapshot);
+    return ApiChatUserRoom.fromSnapshot(snapshot);
   }
 
   myRoomRef(String roomId) {
     return myRoomsRef(roomId: roomId);
   }
 
-  text(Map<String, dynamic> message) {
-    String text = message['text'] ?? '';
-    if (text == ChatProtocol.roomCreated) {
-      text = 'Chat room created. ';
-    }
+  // text(Map<String, dynamic> message) {
+  //   String text = message['text'] ?? '';
+  //   if (text == ChatProtocol.roomCreated) {
+  //     text = 'Chat room created. ';
+  //   }
 
-    /// Display `no more messages` only when user scrolled up to see more messages.
-    else if (pageNo > 1 && noMoreMessage) {
-      text = 'No more messages. ';
-    } else if (text == ChatProtocol.enter) {
-      // print(message);
-      text = "${message['displayName']} invited ${message['newUsers']}";
-    }
-    return text;
-  }
+  //   /// Display `no more messages` only when user scrolled up to see more messages.
+  //   else if (pageNo > 1 && noMoreMessage) {
+  //     text = 'No more messages. ';
+  //   } else if (text == ChatProtocol.enter) {
+  //     // print(message);
+  //     text = "${message['displayName']} invited ${message['newUsers']}";
+  //   }
+  //   return text;
+  // }
 
   /// Translate text if it is chat protocol.
-  /// ! @todo translate
+  /// ! @TODO translate
   translateIfChatProtocol(String text) {
     if (text == null) return '';
     if (text.indexOf('ChatProtocol.') != -1) {
