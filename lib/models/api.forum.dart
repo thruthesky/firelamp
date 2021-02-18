@@ -54,7 +54,7 @@ class ApiForum {
     return true;
   }
 
-  bool get canCreate => author == null && category != null;
+  bool get canCreate => author == null && category != null && postInEdit == null;
 
   bool showVoteButton(String str) {
     if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
