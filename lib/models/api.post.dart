@@ -86,7 +86,7 @@ class ApiPost {
   String keywords;
 
   /// The [options] has multiple options separated by comma
-  String options;
+  List<String> options;
 
   ///
   bool get isMine => postAuthor == Api.instance.id;
@@ -136,7 +136,6 @@ class ApiPost {
   }
 
   factory ApiPost.fromJson(Map<String, dynamic> json) {
-    // print(json);
     return ApiPost(
       data: json,
       id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
@@ -180,7 +179,7 @@ class ApiPost {
       itemWidgetPhoto: json["item_widget_photo"],
       itemDetailPhoto: json["item_detail_photo"],
       keywords: json['keywords'] ?? '',
-      options: json['options'] ?? '',
+      options: json['options'] == null ? [] : splitByComma(json['options']),
     );
   }
 
@@ -217,7 +216,7 @@ class ApiPost {
         "itemWidgetPhoto": itemWidgetPhoto,
         "itemDetailPhoto": itemDetailPhoto,
         "keywords": keywords,
-        "options": options,
+        "options": options.toString,
       };
 
   @override
@@ -231,5 +230,13 @@ class ApiPost {
       return int.parse(n);
     }
     return 0;
+  }
+
+  static List<String> splitByComma(String str) {
+    if (str == null) return [];
+    str = str.trim();
+    if (str == '') return [];
+
+    return str.split(',').map((s) => s.trim()).takeWhile((s) => s != '').toList();
   }
 }

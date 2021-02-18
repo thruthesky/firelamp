@@ -33,8 +33,6 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
   return p.join(directory.path, relativePath);
 }
 
-
-
 onError(dynamic e, [String message]) {
   print('=> error(e): ');
   print(e);
@@ -125,6 +123,7 @@ Future<bool> confirm(String title, String message) async {
   );
 }
 
+///
 Future alert(String message) async {
   await Get.defaultDialog(
     title: '알림',
