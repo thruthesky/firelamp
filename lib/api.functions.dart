@@ -136,3 +136,7 @@ Future alert(String message) async {
     confirmTextColor: Colors.white,
   );
 }
+
+String moneyFormat(dynamic no) {
+  return NumberFormat.currency(locale: 'ko_KR', symbol: '').format(no);
+}

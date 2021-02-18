@@ -3,6 +3,7 @@ library firelamp;
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:intl/intl.dart';
 
 import 'package:dio/dio.dart' as Prefix;
 import 'package:firebase_core/firebase_core.dart';

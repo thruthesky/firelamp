@@ -1,5 +1,12 @@
 part of '../firelamp.dart';
 
+class PostItemOptions {
+  PostItemOptions({@required this.price, this.discountRate, @required this.text});
+  int price;
+  int discountRate;
+  Widget text;
+}
+
 /// [ApiPost] is a model for a post.
 ///
 /// Post can be used for many purpose like blog, messaging, shopping mall, etc.
@@ -26,6 +33,7 @@ class ApiPost {
     this.featuredImageId,
     this.shortTitle,
     this.price,
+    this.leastPrice,
     this.discountRate,
     this.stop,
     this.point,
@@ -71,6 +79,7 @@ class ApiPost {
   ///
   String shortTitle;
   int price;
+  bool leastPrice;
   int discountRate;
   bool stop;
   int point;
@@ -86,7 +95,7 @@ class ApiPost {
   String keywords;
 
   /// The [options] has multiple options separated by comma
-  List<String> options;
+  Map<String, PostItemOptions> options;
 
   ///
   bool get isMine => postAuthor == Api.instance.id;
@@ -164,6 +173,7 @@ class ApiPost {
               : int.parse(json["featured_image_ID"]),
       shortTitle: json["short_title"],
       price: _parseInt(json["price"]),
+      leastPrice: json["least_price"] == '1' ? true : false,
       discountRate: _parseInt(json["discount_rate"]),
       stop: json["stop"] == null || json["stop"] == ""
           ? false
@@ -179,7 +189,9 @@ class ApiPost {
       itemWidgetPhoto: json["item_widget_photo"],
       itemDetailPhoto: json["item_detail_photo"],
       keywords: json['keywords'] ?? '',
-      options: json['options'] == null ? [] : splitByComma(json['options']),
+      options: json['options'] == null
+          ? {}
+          : _prepareOptions(json['options'], json["least_price"] == '1' ? true : false),
     );
   }
 
@@ -205,6 +217,7 @@ class ApiPost {
         "featured_image_ID": featuredImageId,
         "shortTitle": shortTitle,
         "price": price,
+        "leastPrice": leastPrice.toString(),
         "discountRate": discountRate,
         "stop": stop,
         "point": point,
@@ -232,11 +245,45 @@ class ApiPost {
     return 0;
   }
 
-  static List<String> splitByComma(String str) {
-    if (str == null) return [];
+  static Map<String, PostItemOptions> _prepareOptions(String str, bool leastPrice) {
+    if (str == null) return {};
     str = str.trim();
-    if (str == '') return [];
+    if (str == '') return {};
 
-    return str.split(',').map((s) => s.trim()).takeWhile((s) => s != '').toList();
+    Map<String, PostItemOptions> _options = {};
+    List<String> options = str.split(',');
+    for (String option in options) {
+      option = option.trim();
+      if (option == '') continue;
+      int discountRate = 0;
+      if (option.indexOf('=') > 0) {
+        List<String> kv = option.split('=');
+        option = kv[0].split('(').first.trim();
+        Widget text;
+        int _price = int.parse(kv[1]);
+        if (leastPrice) {
+          discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
+          text = RichText(
+              text: TextSpan(
+            style: TextStyle(color: Colors.black),
+            children: [
+              TextSpan(text: "$option 할인 "),
+              TextSpan(text: "($discountRate%)", style: TextStyle(color: Colors.red)),
+              TextSpan(
+                  text: " ${moneyFormat(_price)} ",
+                  style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
+              WidgetSpan(child: Icon(Icons.arrow_right_alt)),
+              TextSpan(text: " => ${moneyFormat(_price)}원"),
+            ],
+          ));
+        } else {
+          text = Text("$option +${moneyFormat(_price)}원 추가");
+        }
+        _options[option] = PostItemOptions(discountRate: discountRate, price: _price, text: text);
+      } else {
+        _options[option] = PostItemOptions(discountRate: 0, price: 0, text: Text(option));
+      }
+    }
+    return _options;
   }
 }
