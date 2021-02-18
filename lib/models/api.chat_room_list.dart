@@ -44,6 +44,7 @@ class ChatRoomList extends ChatHelper {
     _myRoomListSubscription = myRoomsRef().onValue.listen((event) {
       fetched = true;
       Map<dynamic, dynamic> res = event.snapshot.value;
+      if (res == null) return;
       rooms = [];
       res.forEach((key, data) {
         rooms.add(ApiChatUserRoom.fromData(data, key));
