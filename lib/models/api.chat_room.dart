@@ -155,7 +155,7 @@ class ApiChatRoom extends ChatHelper {
     Query q = messagesRef(roomId).orderByKey();
 
     if (pageNo > 1) {
-      print('endAt: ${messages[0]}');
+      // print('endAt: ${messages[0]}');
       q = q.endAt(messages.first['id']);
     }
 
@@ -197,7 +197,7 @@ class ApiChatRoom extends ChatHelper {
       if (message['createdAt'] != null) {
         if (message['protocol'] == ChatProtocol.roomCreated) {
           noMoreMessage = true;
-          print('-----> noMoreMessage: $noMoreMessage');
+          // print('-----> noMoreMessage: $noMoreMessage');
         }
       }
       _notify();

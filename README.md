@@ -44,7 +44,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
     a.init(apiUrl: 'https://flutterkorea.com/wp-content/themes/sonub/api/index.php');
     a.version().then((res) {
-      print('res: $res');
+      // print('res: $res');
     });
     a.translationChanges.listen((trs) {
       // print('trs: $trs');

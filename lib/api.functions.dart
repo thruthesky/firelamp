@@ -34,9 +34,9 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
 }
 
 onError(dynamic e, [String message]) {
-  print('=> error(e): ');
-  print(e);
-  print('=> e.runtimeType: ${e.runtimeType}');
+  // print('=> error(e): ');
+  // print(e);
+  // print('=> e.runtimeType: ${e.runtimeType}');
 
   String title = 'Ooh'.tr;
   String msg = '';
@@ -139,4 +139,8 @@ Future alert(String message) async {
 
 String moneyFormat(dynamic no) {
   return NumberFormat.currency(locale: 'ko_KR', symbol: '').format(no);
+}
+
+int discount(int price, int rate) {
+  return (price * (100 - rate) / 100).round();
 }

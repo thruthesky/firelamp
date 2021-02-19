@@ -280,8 +280,13 @@ class Api extends GetxController {
       params[k] = v;
     });
 
-    String queryString = Uri(queryParameters: params).query;
-    print("_printDebugUrl: $_apiUrl?$queryString");
+    try {
+      String queryString = Uri(queryParameters: params).query;
+      print("_printDebugUrl: $_apiUrl?$queryString");
+    } catch (e) {
+      print("Caught error on _printDebug() with data: ");
+      print(data);
+    }
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -903,7 +908,7 @@ class Api extends GetxController {
     // print('Update on APP SETTINGS');
     // print("$_settings");
     settings = {...settings, ..._settings};
-    print("$settings");
+    // print("$settings");
     settingChanges.add(settings);
   }
 
