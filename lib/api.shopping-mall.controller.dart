@@ -23,23 +23,22 @@ class Cart extends GetxController {
   }
 
   increase(ApiPost item, String option) {
-    item.optionCount[option]++;
+    item.options[option].count++;
     update();
-    print('count: ${item.optionCount[option]}');
+    // print('count: ${item.options[option]}');
   }
 
   decrease(ApiPost item, String option) {
-    if (item.optionCount[option] > 1) {
-      item.optionCount[option]--;
+    if (item.options[option].count > 1) {
+      item.options[option].count--;
     } else {
-      item.optionCount[option] = 1;
+      item.options[option].count = 1;
     }
     update();
   }
 
   delete(ApiPost item, String option) {
-    // ? 기본 옵션을 삭제해야하나?
-    item.optionCount.remove(option);
+    item.options[option].count = 0;
     update();
   }
 
@@ -65,5 +64,31 @@ class Cart extends GetxController {
       str += '${item.id} => $item, ';
     }
     return str;
+  }
+
+  Map<dynamic, dynamic> toMap() {
+    final Map m = {};
+    for (final item in items) {
+      Map selected = {};
+      // 주문 옵션. 기본 옵션을 추가한다.
+      // '옵션에 금액 추가' 방식에서는 DEFAULT_OPTION 의 개 수가, 상품 구매 개수 이다. 이 때, 옵션을 선택하면, "해당 옵션 가격 * DEFAULT_OPTION 개 수" 를 하면 된다.
+      for (final option in item.options.keys) {
+        if (item.options[option].count == 0) continue;
+        selected[option] = {
+          'count': item.options[option].count,
+          'price': item.options[option].price,
+          'discountRate': item.options[option].discountRate,
+        };
+      }
+      m[item.id] = {
+        // 상품(게시글) 번호
+        'postTitle': item.postTitle,
+        'price': item.price, // 해당 상품 가격
+        'discountRate': item.discountRate, // 해당 상품의 할인 율
+        'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
+        'selectedOptions': selected,
+      };
+    }
+    return m;
   }
 }

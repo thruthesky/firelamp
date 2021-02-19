@@ -203,18 +203,21 @@ class Api extends GetxController {
     if (enableChat) _initChat();
   }
 
+  /// Initialize chat functionalities
+  ///
+  /// When chat is enabled, room messages will be observed for the login user.
   _initChat() {
+    // when user login or logout, or change accounts.
     authChanges.listen((user) {
-      // when user login or logout, or change accounts.
+      // remove(leave) room list where user logged in or not.
       if (roomList != null) {
         roomList.leave();
         roomList = null;
       }
 
-      // * Begin to listen login user's chat room event if user has logged in.
-      // The reason that this code stated here is listen new messages outside from chat screens.
-      // Reset room list, when user just logs in.
-      if (loggedIn && roomList == null) {
+      // Begin to listen login user's chat room event if user has logged in.
+      //
+      if (user != null) {
         roomList = ChatRoomList(
           onChange: () {
             roomListChanges.add(roomList.rooms);
@@ -280,8 +283,13 @@ class Api extends GetxController {
       params[k] = v;
     });
 
-    String queryString = Uri(queryParameters: params).query;
-    print("_printDebugUrl: $_apiUrl?$queryString");
+    try {
+      String queryString = Uri(queryParameters: params).query;
+      print("_printDebugUrl: $_apiUrl?$queryString");
+    } catch (e) {
+      print("Caught error on _printDebug() with data: ");
+      print(data);
+    }
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
@@ -903,7 +911,7 @@ class Api extends GetxController {
     // print('Update on APP SETTINGS');
     // print("$_settings");
     settings = {...settings, ..._settings};
-    print("$settings");
+    // print("$settings");
     settingChanges.add(settings);
   }
 

@@ -9,7 +9,13 @@ part of '../firelamp.dart';
 const String DEFAULT_OPTION = 'Default Option';
 
 class ApiItemOption {
-  ApiItemOption({@required this.price, this.discountRate, @required this.text});
+  ApiItemOption({
+    this.count = 0,
+    @required this.price,
+    this.discountRate,
+    @required this.text,
+  });
+  int count;
   int price;
   int discountRate;
   Widget text;
@@ -77,7 +83,7 @@ class ApiPost {
   DateTime postModified;
   int postParent;
   String guid;
-  String commentCount;
+  int commentCount;
   List<int> postCategory;
   List<ApiFile> files;
   String authorName;
@@ -110,9 +116,23 @@ class ApiPost {
 
   /// [options] 는 백엔드로 부터 오는 값은 코마로 나누어진 옵션 문자열인데, Client 에서 파싱을 해서, 맵으로 보관한다.
   Map<String, ApiItemOption> options;
+  int count(String option) {
+    return options[option].count;
+  }
+
+  /// 여러 옵션 중에서 사용자가 선택한 옵션만 리턴한다. 기본 옵션은 제외.
+  List<String> get selectedOptions {
+    List<String> rets = [];
+    for (String option in options.keys) {
+      if (option != DEFAULT_OPTION && count(option) > 0) {
+        rets.add(option);
+      }
+    }
+    return rets;
+  }
 
   /// [optionCount] 는 각 옵션 별로 몇 개를 구매하는지 개 수 정보를 가지고 있다.
-  Map<String, int> optionCount = {};
+  // Map<String, int> optionCount = {};
 
   ///
   bool get isMine => postAuthor == Api.instance.id;
@@ -166,24 +186,34 @@ class ApiPost {
     // print('error on comment add:');
   }
 
+  /// Return [ApiPost] instance from json that comes from backend.
+  ///
+  /// ```dart
+  /// ApiPost.fromJson({}) // This works for test
+  /// ```
   factory ApiPost.fromJson(Map<String, dynamic> json) {
     return ApiPost(
       data: json,
       id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
       postAuthor: json["post_author"],
-      postDate: DateTime.parse(json["post_date"]),
+      postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
       profilePhotoUrl: json['profile_photo_url'],
-      postContent: json["post_content"],
-      postTitle: json["post_title"],
-      postModified: DateTime.parse(json["post_modified"]),
-      postParent: json["post_parent"],
-      guid: json["guid"],
-      commentCount: json["comment_count"],
-      postCategory: List<int>.from(json["post_category"].map((x) => x)),
-      files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      authorName: json["author_name"],
-      shortDateTime: json["short_date_time"],
-      comments: List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+      postContent: json["post_content"] ?? '',
+      postTitle: json["post_title"] ?? '',
+      postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
+      postParent: json["post_parent"] ?? 0,
+      guid: json["guid"] ?? '',
+      commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
+      postCategory:
+          json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
+      files: json["files"] == null
+          ? []
+          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      authorName: json["author_name"] ?? '',
+      shortDateTime: json["short_date_time"] ?? '',
+      comments: json["comments"] == null
+          ? []
+          : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
       category: json["category"],
       featuredImageUrl: json["featured_image_url"],
       featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
@@ -195,7 +225,7 @@ class ApiPost {
               /// Fix bug here, parse and return int if not as int already.
               : int.parse(json["featured_image_ID"]),
       shortTitle: json["short_title"],
-      price: _parseInt(json["price"]),
+      price: _parseInt(json["price"]) ?? 0,
       optionItemPrice: json["option_item_price"] == '1' ? true : false,
       discountRate: _parseInt(json["discount_rate"]),
       stop: json["stop"] == null || json["stop"] == ""
@@ -203,7 +233,7 @@ class ApiPost {
           : int.parse(json["stop"]) == 1
               ? true
               : false,
-      point: _parseInt(json["point"]),
+      point: json["point"] == null ? 0 : _parseInt(json["point"]),
       volume: _parseInt(json["volume"]),
       deliveryFee: _parseInt(json["delivery_fee"]),
       storageMethod: json["storage_method"],
@@ -272,9 +302,14 @@ class ApiPost {
   int get discountedPrice {
     int discounted = price;
     if (discountRate > 0) {
-      discounted = (price * (100 - discountRate) / 100).round();
+      discounted = discount(price, discountRate);
     }
     return discounted;
+  }
+
+  // '옵션에 상품가격지정' 방식에서, 옵션의 할인된 가격을 리턴한다.
+  int optionDiscountedPrice(String option) {
+    return options[option].count * discount(options[option].price, options[option].discountRate);
   }
 
   /// Sanitize shopping options
@@ -314,6 +349,8 @@ class ApiPost {
           String optionName = kv[0].split('(').first.trim(); // 옵션 이름
           discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
 
+          String _discountedPrice = moneyFormat(discount(_price, discountRate));
+
           text = RichText(
               text: TextSpan(
             style: TextStyle(color: Colors.black),
@@ -324,7 +361,7 @@ class ApiPost {
                   text: " ${moneyFormat(_price)} ",
                   style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
               WidgetSpan(child: Icon(Icons.arrow_right_alt)),
-              TextSpan(text: " => ${moneyFormat(_price)}원"),
+              TextSpan(text: " => $_discountedPrice원"),
             ],
           ));
         } else {
@@ -352,20 +389,28 @@ class ApiPost {
   int get priceWithOptions {
     int _price = 0;
     if (optionItemPrice) {
-      for (final option in optionCount.keys) {
-        _price += optionCount[option] * options[option].price;
+      // '옵션에 상품가격지정' 방식. 옵션마다 가격이 다르고, 옵션마다 각각의 할인율이 있다. 그래서 옵션별로 할인 계산을 따로 해야 한다.
+      for (final option in options.keys) {
+        _price += optionDiscountedPrice(option);
       }
     } else {
-      for (final option in optionCount.keys) {
-        _price += options[option].price * optionCount[DEFAULT_OPTION];
+      // 기본 상품 가격에 옵션 가격을 추가하는 경우, 기본 옵션이 있어야 한다. 테스트 하는 경우에도 추가를 해 줘야 함.
+      assert(options[DEFAULT_OPTION] != null, "Default Option not exists.");
+      if (options[DEFAULT_OPTION] == null) return 0; // 에러. 기본 옵션이 존재해야 한다.
+
+      for (final option in options.keys) {
+        // 옵션이 선택된 경우, 구매 개수 만큼 곱해서, 옵션 가격 추가
+        if (options[option].count == 1) {
+          _price += options[option].price * options[DEFAULT_OPTION].count;
+        }
       }
-      _price += discountedPrice * optionCount[DEFAULT_OPTION];
+      _price += discountedPrice * options[DEFAULT_OPTION].count;
     }
     return _price;
   }
 
   addOption(String option) {
-    optionCount[option] = 1;
+    options[option].count = 1;
   }
 
   /// '옵션에 상품 가격 지정'이 아닌 경우, 즉, '옵션에 추가 금액 지정'인 경우, 옵션 없이 바로 구매 할 수 있도록 기본(DEFAULT_OPTION) 옵션 추가
@@ -378,15 +423,18 @@ class ApiPost {
     }
   }
 
+  /// 옵션의 개 수 증가. '옵션에 상품가격지정방식'만 가능.
   increaseItemOption(String option) {
-    optionCount[option]++;
+    assert(optionItemPrice || option == DEFAULT_OPTION, "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");
+    options[option].count++;
   }
 
   decreaseItemOption(String option) {
-    if (optionCount[option] > 1) optionCount[option]--;
+    if (options[option].count > 1) options[option].count--;
   }
 
   delete(String option) {
-    optionCount.remove(option);
+    options[option].count = 0;
+    // optionCount.remove(option);
   }
 }
