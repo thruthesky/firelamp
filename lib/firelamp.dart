@@ -23,6 +23,7 @@ import 'package:path/path.dart' as p;
 part 'api.defines.dart';
 part 'api.functions.dart';
 part 'api.controller.dart';
+part 'api.shopping-mall.controller.dart';
 
 part 'models/api.comment.dart';
 part 'models/api.file.dart';
