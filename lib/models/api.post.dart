@@ -1,5 +1,11 @@
 part of '../firelamp.dart';
 
+/// The [PostItemOptions] is for shopping mall function.
+///
+/// Option(or item) has its price and discount rate.
+/// The [text] is a widget to display how to explain about the option.
+///
+/// @see https://docs.google.com/document/d/1JnEIoytM1MgS35emOju90qeDoIH963VeMHLaqvOhA7o/edit#heading=h.t9yy0z10h3rp
 class PostItemOptions {
   PostItemOptions({@required this.price, this.discountRate, @required this.text});
   int price;
@@ -245,6 +251,7 @@ class ApiPost {
     return 0;
   }
 
+  /// Sanitize shopping options
   static Map<String, PostItemOptions> _prepareOptions(String str, bool leastPrice) {
     if (str == null) return {};
     str = str.trim();
