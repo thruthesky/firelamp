@@ -132,7 +132,7 @@ class ApiPost {
 
   /// Get short name for display
   String get displayName {
-    return authorName.length <= 10 ? authorName : authorName.substring(1, 10);
+    return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
   }
 
   ///
