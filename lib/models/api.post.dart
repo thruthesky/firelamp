@@ -33,6 +33,7 @@ class ApiPost {
     this.data,
     this.id,
     this.postAuthor,
+    this.profilePhotoUrl,
     this.postDate,
     this.postContent,
     this.postTitle,
@@ -75,6 +76,7 @@ class ApiPost {
   dynamic data;
   int id;
   String postAuthor;
+  String profilePhotoUrl;
   DateTime postDate;
   String postContent;
   String postTitle;
@@ -148,6 +150,11 @@ class ApiPost {
   /// - when it is 'edit', the post is in edit mode.
   String mode;
 
+  /// Get short name for display
+  String get displayName {
+    return authorName.length <= 10 ? authorName : authorName.substring(1, 10);
+  }
+
   ///
   insertOrUpdateComment(ApiComment comment) {
     // print(comment.commentParent);
@@ -190,6 +197,7 @@ class ApiPost {
       id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
       postAuthor: json["post_author"],
       postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
+      profilePhotoUrl: json['profile_photo_url'],
       postContent: json["post_content"] ?? '',
       postTitle: json["post_title"] ?? '',
       postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
