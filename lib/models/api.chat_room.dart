@@ -21,11 +21,14 @@ class ApiChatRoom extends ChatHelper {
 
   ApiUser otherUser;
 
+  /// [otherUserId] is the other user profile id
+  String get otherUserId => otherUser.id;
+
   /// [otherUserUid] is the other user's reference key that the login user is talking to.
   String get otherUserUid => otherUser.md5;
 
   /// [roomId] is the combination of the User A md5 and user B md5 which is return when you get the other user profile.
-  String roomId;
+  String get roomId => otherUser.data['roomId'];
 
   /// push notification topic name
   String get topic => 'notifyChat_${this.roomId}';
@@ -57,7 +60,6 @@ class ApiChatRoom extends ChatHelper {
   /// Global room info (of current room)
   /// Use this to dipplay title or other information about the room.
   /// When `/chat/global/room-list/{roomId}` changes, it will be updated and calls render handler.
-  ///
   ApiChatUserRoom chatRoomInfo;
 
   PublishSubject _notifySubject = PublishSubject();
@@ -66,10 +68,6 @@ class ApiChatRoom extends ChatHelper {
   /// Enter chat room
   Future<void> enter(String userId) async {
     otherUser = await Api.instance.otherUserProfile(userId);
-
-    /// roomID is included when you get the other user profile.
-    /// Combination of User A and User B md5
-    roomId = otherUser.data['roomId'];
 
     /// get room information
     ApiChatUserRoom value = await myRoom(roomId);
@@ -97,7 +95,7 @@ class ApiChatRoom extends ChatHelper {
       });
 
       /// send message to `chat/message/roomId` with protocol roomCreated
-      ///   await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
+      /// await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
       await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
         'userId': Api.instance.id,
@@ -105,7 +103,6 @@ class ApiChatRoom extends ChatHelper {
       });
     } else {
       ///Update your copy of other User and update the Room Information
-      ///Update your copy of
       await roomsRef(myUid, roomId: roomId).update({
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
@@ -163,9 +160,11 @@ class ApiChatRoom extends ChatHelper {
 
     _childChangedSubscription = q.onChildChanged.listen((Event event) {
       // @todo update message
+      print(event);
     });
     _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
       // @todo delete message
+      print(event);
     });
 
     _childAddedSubscription = q.onChildAdded.listen((Event event) {
@@ -205,11 +204,11 @@ class ApiChatRoom extends ChatHelper {
   }
 
   unsubscribe() {
-    _childAddedSubscription.cancel();
-    _childChangedSubscription.cancel();
-    _childRemovedSubscription.cancel();
-    _currentRoomSubscription.cancel();
-    _notifySubjectSubscription.cancel();
+    if (_childAddedSubscription != null) _childAddedSubscription.cancel();
+    if (_childChangedSubscription != null) _childChangedSubscription.cancel();
+    if (_childRemovedSubscription != null) _childRemovedSubscription.cancel();
+    if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
+    if (_notifySubjectSubscription != null) _notifySubjectSubscription.cancel();
     otherUser = null;
   }
 
@@ -233,14 +232,18 @@ class ApiChatRoom extends ChatHelper {
       'updatedAt': ServerValue.timestamp,
     });
 
-    // ///Sending pushnotification after updating the chat
-    // Api.instance.sendMessageToUsers(
-    //   users: [otherUser.id],
-    //   title: 'chat message',
-    //   subscription: "notifyChat_" + Api.instance.id,
-    //   body: text,
-    //   data: {'type': 'chat'},
-    // );
     return message;
+  }
+
+  sendChatPushMessage(String body) {
+    return Api.instance.sendMessageToUsers(
+      users: [otherUser.id],
+      title: 'chat message',
+      subscription: topic,
+      body: body,
+      data: {
+        'type': 'chat',
+      },
+    );
   }
 }
