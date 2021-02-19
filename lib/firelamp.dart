@@ -3,6 +3,7 @@ library firelamp;
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:intl/intl.dart';
 
 import 'package:dio/dio.dart' as Prefix;
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +23,7 @@ import 'package:path/path.dart' as p;
 part 'api.defines.dart';
 part 'api.functions.dart';
 part 'api.controller.dart';
+part 'api.shopping-mall.controller.dart';
 
 part 'models/api.comment.dart';
 part 'models/api.file.dart';
