@@ -1,16 +1,22 @@
 part of '../firelamp.dart';
 
-/// The [PostItemOptions] is for shopping mall function.
+/// The [ApiItemOption] is for shopping mall function.
 ///
 /// Option(or item) has its price and discount rate.
 /// The [text] is a widget to display how to explain about the option.
 ///
 /// @see https://docs.google.com/document/d/1JnEIoytM1MgS35emOju90qeDoIH963VeMHLaqvOhA7o/edit#heading=h.t9yy0z10h3rp
-class PostItemOptions {
-  PostItemOptions({@required this.price, this.discountRate, @required this.text});
+const String DEFAULT_OPTION = 'Default Option';
+
+class ApiItemOption {
+  ApiItemOption({@required this.price, this.discountRate, @required this.text});
   int price;
   int discountRate;
   Widget text;
+  @override
+  String toString() {
+    return "price: $price, discountRate: $discountRate";
+  }
 }
 
 /// [ApiPost] is a model for a post.
@@ -21,6 +27,7 @@ class ApiPost {
     this.data,
     this.id,
     this.postAuthor,
+    this.profilePhotoUrl,
     this.postDate,
     this.postContent,
     this.postTitle,
@@ -39,7 +46,7 @@ class ApiPost {
     this.featuredImageId,
     this.shortTitle,
     this.price,
-    this.leastPrice,
+    this.optionItemPrice,
     this.discountRate,
     this.stop,
     this.point,
@@ -63,6 +70,7 @@ class ApiPost {
   dynamic data;
   int id;
   String postAuthor;
+  String profilePhotoUrl;
   DateTime postDate;
   String postContent;
   String postTitle;
@@ -85,7 +93,7 @@ class ApiPost {
   ///
   String shortTitle;
   int price;
-  bool leastPrice;
+  bool optionItemPrice;
   int discountRate;
   bool stop;
   int point;
@@ -100,8 +108,11 @@ class ApiPost {
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
 
-  /// The [options] has multiple options separated by comma
-  Map<String, PostItemOptions> options;
+  /// [options] 는 백엔드로 부터 오는 값은 코마로 나누어진 옵션 문자열인데, Client 에서 파싱을 해서, 맵으로 보관한다.
+  Map<String, ApiItemOption> options;
+
+  /// [optionCount] 는 각 옵션 별로 몇 개를 구매하는지 개 수 정보를 가지고 있다.
+  Map<String, int> optionCount = {};
 
   ///
   bool get isMine => postAuthor == Api.instance.id;
@@ -118,6 +129,11 @@ class ApiPost {
   /// The [mode] has one of the following status: null, 'edit'
   /// - when it is 'edit', the post is in edit mode.
   String mode;
+
+  /// Get short name for display
+  String get displayName {
+    return authorName.length <= 10 ? authorName : authorName.substring(1, 10);
+  }
 
   ///
   insertOrUpdateComment(ApiComment comment) {
@@ -156,6 +172,7 @@ class ApiPost {
       id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
       postAuthor: json["post_author"],
       postDate: DateTime.parse(json["post_date"]),
+      profilePhotoUrl: json['profile_photo_url'],
       postContent: json["post_content"],
       postTitle: json["post_title"],
       postModified: DateTime.parse(json["post_modified"]),
@@ -179,7 +196,7 @@ class ApiPost {
               : int.parse(json["featured_image_ID"]),
       shortTitle: json["short_title"],
       price: _parseInt(json["price"]),
-      leastPrice: json["least_price"] == '1' ? true : false,
+      optionItemPrice: json["option_item_price"] == '1' ? true : false,
       discountRate: _parseInt(json["discount_rate"]),
       stop: json["stop"] == null || json["stop"] == ""
           ? false
@@ -197,7 +214,7 @@ class ApiPost {
       keywords: json['keywords'] ?? '',
       options: json['options'] == null
           ? {}
-          : _prepareOptions(json['options'], json["least_price"] == '1' ? true : false),
+          : _prepareOptions(json['options'], json["option_item_price"] == '1' ? true : false),
     );
   }
 
@@ -223,7 +240,7 @@ class ApiPost {
         "featured_image_ID": featuredImageId,
         "shortTitle": shortTitle,
         "price": price,
-        "leastPrice": leastPrice.toString(),
+        "optionItemPrice": optionItemPrice.toString(),
         "discountRate": discountRate,
         "stop": stop,
         "point": point,
@@ -251,30 +268,57 @@ class ApiPost {
     return 0;
   }
 
-  /// Sanitize shopping options
-  static Map<String, PostItemOptions> _prepareOptions(String str, bool leastPrice) {
-    if (str == null) return {};
-    str = str.trim();
-    if (str == '') return {};
+  /// 상품 가격을 할인하여 가격으로 리턴
+  int get discountedPrice {
+    int discounted = price;
+    if (discountRate > 0) {
+      discounted = (price * (100 - discountRate) / 100).round();
+    }
+    return discounted;
+  }
 
-    Map<String, PostItemOptions> _options = {};
+  /// Sanitize shopping options
+  static Map<String, ApiItemOption> _prepareOptions(String str, bool optionItemPrice) {
+    Map<String, ApiItemOption> _options = {};
+
+    /// 옵션이 없는 경우, 기본(DEFAULT_OPTION) 옵션을 하나 두어서, 사용자가
+    /// 옵션을 선택하지 않고 주문을 할 수 있도록 해 준다.
+    /// 이 것은, 나중에 사용자가 상품 페이지를 볼 때, 해당 상품 주문 로직에서, 기본(DEFAULT_OPTION) 옵션을 하나 추가 해 주어야 한다.
+    if (str == null || str.trim() == '') {
+      _options[DEFAULT_OPTION] = ApiItemOption(price: 0, discountRate: 0, text: Text(''));
+      return _options;
+    }
+
+    /// '옵션에 추가금액지정' 방식의 경우도 옵션이 없는 것과 마찬가지로 로직 처리.
+    if (optionItemPrice == false) {
+      _options[DEFAULT_OPTION] = ApiItemOption(price: 0, discountRate: 0, text: Text(''));
+    }
+
+    // 콤마로 분리
     List<String> options = str.split(',');
+    // 여러개 옵션
     for (String option in options) {
       option = option.trim();
       if (option == '') continue;
       int discountRate = 0;
+      int _price = 0;
+      Widget text;
+      // 옵션에 = 기호가 있으면,
       if (option.indexOf('=') > 0) {
+        // = 로 분리
         List<String> kv = option.split('=');
-        option = kv[0].split('(').first.trim();
-        Widget text;
-        int _price = int.parse(kv[1]);
-        if (leastPrice) {
+        _price = int.parse(kv[1]);
+        // 옵션 이름에 괄호가 있으면 할인율 지정, 없으면, 할인율 지정하지 않음.
+        if (kv[0].indexOf('(') > 0) {
+          // 할인율 지정
+          String optionName = kv[0].split('(').first.trim(); // 옵션 이름
           discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
+
           text = RichText(
               text: TextSpan(
             style: TextStyle(color: Colors.black),
             children: [
-              TextSpan(text: "$option 할인 "),
+              TextSpan(text: "$optionName 할인 "),
               TextSpan(text: "($discountRate%)", style: TextStyle(color: Colors.red)),
               TextSpan(
                   text: " ${moneyFormat(_price)} ",
@@ -284,13 +328,65 @@ class ApiPost {
             ],
           ));
         } else {
-          text = Text("$option +${moneyFormat(_price)}원 추가");
+          // 할인율 지정 없음
+          if (optionItemPrice) {
+            // 옵션이 완전한 개별 상품인 경우,
+            text = Text("${kv[0]} ${moneyFormat(_price)}원");
+          } else {
+            // '옵션에 추가금액지정' 방식인 경우,
+            text = Text("${kv[0]} +${moneyFormat(_price)}원 추가");
+          }
         }
-        _options[option] = PostItemOptions(discountRate: discountRate, price: _price, text: text);
       } else {
-        _options[option] = PostItemOptions(discountRate: 0, price: 0, text: Text(option));
+        // 옵션에 = 기호가 없는 경우, 무료 옵션
+        text = Text("$option");
       }
+      _options[option] = ApiItemOption(discountRate: discountRate, price: _price, text: text);
     }
     return _options;
+  }
+
+  /// 현재 상품(아이템)의 (옵션 포함) 주문 가격을 리턴한다.
+  ///
+  /// 현재 상품 페이지에서 주문 할 때 또는 장바구니에서 각 상품의 소계를 출력 할 때 사용 가능하다.
+  int get priceWithOptions {
+    int _price = 0;
+    if (optionItemPrice) {
+      for (final option in optionCount.keys) {
+        _price += optionCount[option] * options[option].price;
+      }
+    } else {
+      for (final option in optionCount.keys) {
+        _price += options[option].price * optionCount[DEFAULT_OPTION];
+      }
+      _price += discountedPrice * optionCount[DEFAULT_OPTION];
+    }
+    return _price;
+  }
+
+  addOption(String option) {
+    optionCount[option] = 1;
+  }
+
+  /// '옵션에 상품 가격 지정'이 아닌 경우, 즉, '옵션에 추가 금액 지정'인 경우, 옵션 없이 바로 구매 할 수 있도록 기본(DEFAULT_OPTION) 옵션 추가
+  ///
+  /// 주의: static 이 아니어서, 생성자에서 이 함수를 호출 할 수 없다.
+  /// 따라서, 쇼핑몰 상품 페이지에서, 이 함수를 한번 호출해 주어야 한다.
+  addDefaultOption() {
+    if (optionItemPrice == false) {
+      addOption(DEFAULT_OPTION);
+    }
+  }
+
+  increaseItemOption(String option) {
+    optionCount[option]++;
+  }
+
+  decreaseItemOption(String option) {
+    if (optionCount[option] > 1) optionCount[option]--;
+  }
+
+  delete(String option) {
+    optionCount.remove(option);
   }
 }
