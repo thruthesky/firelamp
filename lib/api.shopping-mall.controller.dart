@@ -4,6 +4,11 @@ class Cart extends GetxController {
   ApiPost currentItem;
   List<ApiPost> items = [];
 
+  empty() {
+    items = [];
+    update();
+  }
+
   setCurrentItem(ApiPost item) {
     currentItem = item;
     currentItem.addDefaultOption();
@@ -80,9 +85,11 @@ class Cart extends GetxController {
           'discountRate': item.options[option].discountRate,
         };
       }
+      // 상품 정보.
+      // (게시글) 번호 및 상품에 대한 정보 저장.
       m[item.id] = {
-        // 상품(게시글) 번호
-        'postTitle': item.postTitle,
+        'optionItemPrice': item.optionItemPrice,
+        'postTitle': item.postTitle, // 상품 제목
         'price': item.price, // 해당 상품 가격
         'discountRate': item.discountRate, // 해당 상품의 할인 율
         'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
@@ -90,5 +97,44 @@ class Cart extends GetxController {
       };
     }
     return m;
+  }
+
+  /// 호환성을 위해서 orderItems 를 입력 받음.
+  ///
+  /// orderItems 가 없으면, [items] 를 가지고 Json 문자열을 만드는데,
+  /// toJson([item]) 와 같이 하나의 아이템만 전달해서, Json 문자열을 만들 수 있다. 특히, 바로 구매를 할 때 1개만 주문 할 때 편하다.
+  toJson({List<ApiPost> orderItems}) {
+    if (orderItems == null) orderItems = items;
+    final Map m = {};
+    for (final item in orderItems) {
+      // 상품 정보.
+      // (게시글) 번호 및 상품에 대한 정보 저장.
+      m[item.id.toString()] = serializeItem(item);
+    }
+    return jsonEncode(m);
+  }
+
+  serializeItem(dynamic item) {
+    Map selected = {};
+    // 주문 옵션. 기본 옵션을 추가한다.
+    // '옵션에 금액 추가' 방식에서는 DEFAULT_OPTION 의 개 수가, 상품 구매 개수 이다. 이 때, 옵션을 선택하면, "해당 옵션 가격 * DEFAULT_OPTION 개 수" 를 하면 된다.
+    for (final option in item.options.keys) {
+      if (item.options[option].count == 0) continue;
+      selected[option] = jsonEncode({
+        'count': item.options[option].count,
+        'price': item.options[option].price,
+        'discountRate': item.options[option].discountRate,
+      });
+    }
+    // 상품 정보.
+    // (게시글) 번호 및 상품에 대한 정보 저장.
+    return jsonEncode({
+      'optionItemPrice': item.optionItemPrice,
+      'postTitle': item.postTitle, // 상품 제목
+      'price': item.price, // 해당 상품 가격
+      'discountRate': item.discountRate, // 해당 상품의 할인 율
+      'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
+      'selectedOptions': selected,
+    });
   }
 }
