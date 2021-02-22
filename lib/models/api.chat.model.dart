@@ -85,6 +85,7 @@ class ApiChatMessage {
     this.protocol,
   });
   factory ApiChatMessage.fromData(Map<dynamic, dynamic> data) {
+    ///
     bool isImage = false;
     if (data['text'] != null) {
       String t = data['text'];
@@ -94,6 +95,8 @@ class ApiChatMessage {
         }
       }
     }
+
+    ///
     return ApiChatMessage(
       createdAt: data['createdAt'],
       displayName: data['displayName'],
