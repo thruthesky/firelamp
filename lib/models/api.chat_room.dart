@@ -13,12 +13,15 @@ class ApiChatRoom extends ChatHelper {
     Function render,
   }) : _render = render {
     /// If it renders too much, reduce it.
+    ///
+    /// `onChildAdded` event fires to often.
     _notifySubjectSubscription =
         _notifySubject.debounceTime(Duration(milliseconds: 50)).listen((x) {
       _render();
     });
   }
 
+  /// Other user
   ApiUser otherUser;
 
   /// [otherUserId] is the other user profile id
@@ -72,9 +75,11 @@ class ApiChatRoom extends ChatHelper {
     /// get room information
     ApiChatUserRoom value = await myRoom(roomId);
 
-    /// check if room exist, create other if not exist.
+    /// If the room does not exists, create one.
     if (value == null || value.createdAt == null) {
-      ///create `chat/rooms/myUid/roomId` if not exists.
+      /// Create my room
+      ///
+      /// Create `chat/rooms/myUid/roomId` if not exists.
       /// LoggedIn User copy of Other User Room Information
       await roomsRef(myUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
@@ -84,7 +89,9 @@ class ApiChatRoom extends ChatHelper {
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
 
-      ///create `chat/rooms/otherUid/roomId` if not exists.
+      /// Create the other room
+      ///
+      /// Create `chat/rooms/otherUid/roomId` if not exists.
       /// Other user copy of LoggedIn User Room Information
       await roomsRef(otherUserUid, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
@@ -94,6 +101,8 @@ class ApiChatRoom extends ChatHelper {
         'profilePhotoUrl': Api.instance.profilePhotoUrl,
       });
 
+      /// Save the first message on message document.
+      ///
       /// send message to `chat/message/roomId` with protocol roomCreated
       /// await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
       await messagesRef(roomId).push().set({
@@ -102,13 +111,16 @@ class ApiChatRoom extends ChatHelper {
         'protocol': ChatProtocol.roomCreated
       });
     } else {
-      ///Update your copy of other User and update the Room Information
+      /// Update latest name and photo of mine.
+      ///
+      /// Update your copy of other User and update the Room Information
       await roomsRef(myUid, roomId: roomId).update({
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
     }
 
+    // Get room info
     chatRoomInfo = await myRoom(roomId);
 
     // fetch latest messages
@@ -216,8 +228,6 @@ class ApiChatRoom extends ChatHelper {
   Future<Map<String, dynamic>> sendMessage({
     @required String text,
     Map<String, dynamic> extra,
-    // String url,
-    // String urlType,
   }) async {
     Map<String, dynamic> message = {
       'userId': Api.instance.id,
