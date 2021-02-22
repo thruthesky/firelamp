@@ -586,6 +586,7 @@ class Api extends GetxController {
   /// You can use this to display some posts from the forum category. You may use this for displaying
   /// latest posts.
   Future<List<ApiPost>> searchPost({
+    int postIdOnTop,
     String category,
     int limit = 20,
     int paged = 1,
@@ -594,6 +595,7 @@ class Api extends GetxController {
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
+    data['postIdOnTop'] = postIdOnTop;
     data['category_name'] = category;
     data['paged'] = paged;
     data['numberposts'] = limit;
@@ -705,12 +707,15 @@ class Api extends GetxController {
     return data['ID'];
   }
 
-  /// Fetch posts with the [forum]
+  /// Fetch posts based on the options of [forum]
   ///
   /// You can change the settings(options) of [forum] right before calling [fetchPosts].
   /// You may do `forum.category='abc'` for the first call and change `forum.category='def'`
   /// and `forum.author=5` on second call. You can change merely all the fetch options before
   /// calling it.
+  ///
+  /// If [postIdOnTop] is set, it will get the post on the top of the list following the posts of the same category of the post.
+  ///   - And if it gets the next page of it, then [forum.postIdOnTop] should be removed and [forum.category] should be the `category` of [forum.postIdOnTop].
   ///
   /// The [pageNo] is increased automatically.
   ///
@@ -734,6 +739,7 @@ class Api extends GetxController {
     // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await searchPost(
+      postIdOnTop: forum.postIdOnTop,
       category: forum.category,
       paged: forum.pageNo,
       limit: forum.limit,

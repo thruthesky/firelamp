@@ -33,6 +33,7 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
   return p.join(directory.path, relativePath);
 }
 
+/// @todo change this name to api.error();
 onError(dynamic e, [String message]) {
   // print('=> error(e): ');
   // print(e);
