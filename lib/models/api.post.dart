@@ -21,7 +21,7 @@ class ApiItemOption {
   Widget text;
   @override
   String toString() {
-    return "price: $price, discountRate: $discountRate";
+    return "cont: $count, price: $price, discountRate: $discountRate";
   }
 }
 
@@ -190,6 +190,26 @@ class ApiPost {
   ///
   /// ```dart
   /// ApiPost.fromJson({}) // This works for test
+  /// ```
+  ///
+  /// You may want to clone a post. Then do the following;
+  /// ```dart
+  /// ApiPost clone = ApiPost.fromJson(this.posts.first.data);
+  /// ```
+  ///
+  /// When you want to put a post into cart, the post must not be referenced. In that case,
+  /// ```dart
+  ///  / 아이템 복사. 카트에 들어간 아이템은 변경이 되면 안되고, 동일한 상품도 중복으로 넣을 수 있어야 히기 때문에, 현재 아이템을 복사해서 카트에 넣어야 한다.
+  ///  ApiPost clone = ApiPost.fromJson(item.data);
+  ///  item.options.keys.forEach((k) {
+  ///  / ApiItemOption 도 레퍼런스로 연결되기 때문에, 복제를 해야 한다.
+  ///    clone.options[k] = ApiItemOption(
+  ///      count: item.options[k].count,
+  ///      discountRate: item.options[k].discountRate,
+  ///     price: item.options[k].price,
+  ///     text: item.options[k].text);
+  ///    });
+  ///  }
   /// ```
   factory ApiPost.fromJson(Map<String, dynamic> json) {
     return ApiPost(
