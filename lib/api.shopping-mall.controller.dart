@@ -1,6 +1,6 @@
 part of './firelamp.dart';
 
-class Receiver {
+class CartForm {
   String name;
   String phoneNo1;
   String phoneNo2;
@@ -8,12 +8,27 @@ class Receiver {
   String address1;
   String address2;
   String memo;
+
+  @override
+  String toString() {
+    return "name: $name, phone: $phoneNo1 $phoneNo2 $phoneNo3, address1: $address1, address2: $address2, memo: $memo";
+  }
+
+  Map<String, dynamic> get toMap {
+    return {
+      'name': name,
+      'phoneNo': '$phoneNo1-$phoneNo2-$phoneNo3',
+      'address1': address1,
+      'address2': address2,
+      'memo': memo,
+    };
+  }
 }
 
 class Cart extends GetxController {
   ApiPost currentItem;
   List<ApiPost> items = [];
-  Receiver receiver = Receiver();
+  CartForm form = CartForm();
 
   empty() {
     items = [];
