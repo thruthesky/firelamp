@@ -2,7 +2,9 @@ part of './firelamp.dart';
 
 class Receiver {
   String name;
-  String phoneNo;
+  String phoneNo1;
+  String phoneNo2;
+  String phoneNo3;
   String address1;
   String address2;
   String memo;
