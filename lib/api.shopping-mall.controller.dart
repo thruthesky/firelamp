@@ -67,9 +67,13 @@ class Cart extends GetxController {
   /// 옵션 또는 상품 자체를 카트에서 삭제한다.
   ///
   /// 동일한 상품이 카트에 여러개 들어가 있을 수 있으니, 상품(글) 번호로 삭제를 하기 어려워서, 제목을 null 로 해 놓고, 삭제를 한다.
+  /// 옵션에 상품가격지정을 하는 경우, 옵션을 다 삭제했으면, 상품 자체를 카트에서 삭제한다.
   delete(ApiPost item, [String option]) {
     if (option != null) {
       item.options[option].count = 0;
+      if (item.selectedOptions.length == 0) {
+        items.removeWhere((item) => item.priceWithOptions == 0);
+      }
     } else {
       item.postTitle = null;
       items.removeWhere((i) => i.postTitle == null);
