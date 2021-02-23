@@ -26,6 +26,11 @@ class ChatHelper {
     return Api.instance.database.reference().child('chat/messages').child(roomId);
   }
 
+  /// Return the reference of `/chat/messages/roomId/id` under which lots are messages are stored.
+  DatabaseReference messageRef(String roomId, String id) {
+    return messagesRef(roomId).child(id);
+  }
+
   /// Returns  DatabaseReference of  `/chat/rooms/{user-id}`
   /// Or `/chat/rooms/{user-id}/roomId`
   ///

@@ -193,7 +193,7 @@ class ApiChatRoom extends ChatHelper {
       loading = false;
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
-      // print(event.snapshot.value);
+      print(event.snapshot.value);
       final message = event.snapshot.value;
       message['id'] = event.snapshot.key;
 
@@ -274,5 +274,28 @@ class ApiChatRoom extends ChatHelper {
         'type': 'chat',
       },
     );
+  }
+
+  deleteMessage(ApiChatMessage message) {
+    messageRef(roomId, message.id).remove();
+  }
+
+  editMessage(
+    ApiChatMessage message, {
+    Map<String, dynamic> extra,
+  }) async {
+    Map<String, dynamic> newData = {
+      'text': message.text,
+      'updateAt': ServerValue.timestamp,
+      if (extra != null) ...extra,
+    };
+
+    await messageRef(roomId, message.id).update(newData);
+    // await roomsRef(otherUserUid, roomId: roomId).update({
+    //   'newMessages': ServerValue.increment(1),
+    //   'updatedAt': ServerValue.timestamp,
+    // });
+
+    return newData;
   }
 }

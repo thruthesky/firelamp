@@ -65,6 +65,7 @@ class ApiChatUserRoom {
 }
 
 class ApiChatMessage {
+  String id;
   int createdAt;
   String displayName;
   String profilePhotoUrl;
@@ -75,6 +76,7 @@ class ApiChatMessage {
   bool isImage;
 
   ApiChatMessage({
+    this.id,
     this.createdAt,
     this.displayName,
     this.profilePhotoUrl,
@@ -87,6 +89,7 @@ class ApiChatMessage {
   factory ApiChatMessage.fromData(Map<dynamic, dynamic> data) {
     ///
     return ApiChatMessage(
+      id: data['id'],
       createdAt: data['createdAt'],
       displayName: data['displayName'],
       profilePhotoUrl: data['profilePhotoUrl'],
