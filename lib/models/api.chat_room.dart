@@ -182,23 +182,29 @@ class ApiChatRoom extends ChatHelper {
       // @todo update message
       print('onChildChanged');
       print(event);
+      print(event.snapshot.value);
+      int i = messages.indexWhere((m) => m['id'] == event.snapshot.key);
+// messages[i]['text'] = event.snapshot.value['text'];
     });
     _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
       // @todo delete message
-      print('onChildRemoved');
-      print(event);
+      print('onChildRemoved;');
+      print(event.snapshot.value);
+      messages.removeWhere((m) => m['id'] == event.snapshot.key);
     });
 
     _childAddedSubscription = q.onChildAdded.listen((Event event) {
       loading = false;
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
-      print(event.snapshot.value);
+      // print(event.snapshot.value);
       final message = event.snapshot.value;
       message['id'] = event.snapshot.key;
 
       /// On first page, just add chats at the bottom.
-      if (pageNo == 1) {
+      if (messages.length > 0 && message['createdAt'] < messages.first['createdAt']) {
+        messages.insert(0, message);
+      } else if (pageNo == 1) {
         addMessageAtBottom(message);
       } else if (message['createdAt'] >= messages.last['createdAt']) {
         /// On new chat, just add at bottom.
