@@ -86,17 +86,6 @@ class ApiChatMessage {
   });
   factory ApiChatMessage.fromData(Map<dynamic, dynamic> data) {
     ///
-    bool isImage = false;
-    if (data['text'] != null) {
-      String t = data['text'];
-      if (t.startsWith('http://') || t.startsWith('https://')) {
-        if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
-          isImage = true;
-        }
-      }
-    }
-
-    ///
     return ApiChatMessage(
       createdAt: data['createdAt'],
       displayName: data['displayName'],
@@ -105,7 +94,7 @@ class ApiChatMessage {
       text: data['text'],
       protocol: data['protocol'],
       isMine: data['userId'] == Api.instance.id,
-      isImage: isImage,
+      isImage: isImageUrl(data['text']),
     );
   }
 }

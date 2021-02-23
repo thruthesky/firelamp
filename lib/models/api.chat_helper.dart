@@ -7,6 +7,7 @@ class ChatHelper {
   /// The app should display 'no more message' to user.
   bool noMoreMessage = false;
 
+  /// The [pageNo] is based on no. 1. The first page is 1.
   int pageNo = 0;
   int _limit = 20;
 
@@ -46,22 +47,6 @@ class ChatHelper {
   myRoomRef(String roomId) {
     return myRoomsRef(roomId: roomId);
   }
-
-  // text(Map<String, dynamic> message) {
-  //   String text = message['text'] ?? '';
-  //   if (text == ChatProtocol.roomCreated) {
-  //     text = 'Chat room created. ';
-  //   }
-
-  //   /// Display `no more messages` only when user scrolled up to see more messages.
-  //   else if (pageNo > 1 && noMoreMessage) {
-  //     text = 'No more messages. ';
-  //   } else if (text == ChatProtocol.enter) {
-  //     // print(message);
-  //     text = "${message['displayName']} invited ${message['newUsers']}";
-  //   }
-  //   return text;
-  // }
 
   /// Translate text if it is chat protocol.
   /// ! @TODO translate

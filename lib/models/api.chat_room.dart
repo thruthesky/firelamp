@@ -60,6 +60,14 @@ class ApiChatRoom extends ChatHelper {
   /// The app should display loader while it is fetching.
   bool loading = true;
 
+  /// The [lastImage] is the last image of the chat room.
+  ///
+  /// Flutter rebuilds the screen whenever list(or any scroll) view shows images into screen.
+  /// And same images will be rendered over again.
+  /// If you want to scroll down(to the bottom) for new image only, then this might be a solution.
+  /// Whenever images are rendered on screen, scroll down only if the image is the last image.
+  String lastImage = '';
+
   /// Global room info (of current room)
   /// Use this to dipplay title or other information about the room.
   /// When `/chat/global/room-list/{roomId}` changes, it will be updated and calls render handler.
@@ -172,10 +180,12 @@ class ApiChatRoom extends ChatHelper {
 
     _childChangedSubscription = q.onChildChanged.listen((Event event) {
       // @todo update message
+      print('onChildChanged');
       print(event);
     });
     _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
       // @todo delete message
+      print('onChildRemoved');
       print(event);
     });
 
@@ -189,18 +199,13 @@ class ApiChatRoom extends ChatHelper {
 
       /// On first page, just add chats at the bottom.
       if (pageNo == 1) {
-        messages.add(message);
+        addMessageAtBottom(message);
       } else if (message['createdAt'] >= messages.last['createdAt']) {
         /// On new chat, just add at bottom.
-        messages.add(message);
+        addMessageAtBottom(message);
       } else {
         /// On previous chat, add chat messages on top, but with the order of chat messages.
-        for (int i = 0; i < messages.length; i++) {
-          if (message['createdAt'] <= messages[i]['createdAt']) {
-            messages.insert(i, message);
-            break;
-          }
-        }
+        insertMessageAtFront(message);
       }
 
       // if it is loading old messages
@@ -213,6 +218,20 @@ class ApiChatRoom extends ChatHelper {
       }
       _notify();
     });
+  }
+
+  addMessageAtBottom(dynamic message) {
+    messages.add(message);
+    if (isImageUrl(message['text'])) lastImage = message['text'];
+  }
+
+  insertMessageAtFront(dynamic message) {
+    for (int i = 0; i < messages.length; i++) {
+      if (message['createdAt'] <= messages[i]['createdAt']) {
+        messages.insert(i, message);
+        break;
+      }
+    }
   }
 
   unsubscribe() {

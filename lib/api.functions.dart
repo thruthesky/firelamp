@@ -33,7 +33,6 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
   return p.join(directory.path, relativePath);
 }
 
-
 /// 예/아니오를 선택하게 하는 다이얼로그를 표시한다.
 ///
 /// 예를 선택하면 true, 아니오를 선택하면 false 를 리턴한다.
@@ -85,4 +84,14 @@ String moneyFormat(dynamic no) {
 
 int discount(int price, int rate) {
   return (price * (100 - rate) / 100).round();
+}
+
+bool isImageUrl(t) {
+  if (t == null || t == '') return false;
+  if (t.startsWith('http://') || t.startsWith('https://')) {
+    if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
+      return true;
+    }
+  }
+  return false;
 }
