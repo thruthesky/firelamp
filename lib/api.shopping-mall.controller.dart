@@ -1,8 +1,17 @@
 part of './firelamp.dart';
 
+class Receiver {
+  String name;
+  String phoneNo;
+  String address1;
+  String address2;
+  String memo;
+}
+
 class Cart extends GetxController {
   ApiPost currentItem;
   List<ApiPost> items = [];
+  Receiver receiver = Receiver();
 
   empty() {
     items = [];
@@ -53,8 +62,16 @@ class Cart extends GetxController {
     update();
   }
 
-  delete(ApiPost item, String option) {
-    item.options[option].count = 0;
+  /// 옵션 또는 상품 자체를 카트에서 삭제한다.
+  ///
+  /// 동일한 상품이 카트에 여러개 들어가 있을 수 있으니, 상품(글) 번호로 삭제를 하기 어려워서, 제목을 null 로 해 놓고, 삭제를 한다.
+  delete(ApiPost item, [String option]) {
+    if (option != null) {
+      item.options[option].count = 0;
+    } else {
+      item.postTitle = null;
+      items.removeWhere((i) => i.postTitle == null);
+    }
     update();
   }
 
@@ -81,34 +98,6 @@ class Cart extends GetxController {
     }
     return str;
   }
-
-  // Map<dynamic, dynamic> toMap() {
-  //   final Map m = {};
-  //   for (final item in items) {
-  //     Map selected = {};
-  //     // 주문 옵션. 기본 옵션을 추가한다.
-  //     // '옵션에 금액 추가' 방식에서는 DEFAULT_OPTION 의 개 수가, 상품 구매 개수 이다. 이 때, 옵션을 선택하면, "해당 옵션 가격 * DEFAULT_OPTION 개 수" 를 하면 된다.
-  //     for (final option in item.options.keys) {
-  //       if (item.options[option].count == 0) continue;
-  //       selected[option] = {
-  //         'count': item.options[option].count,
-  //         'price': item.options[option].price,
-  //         'discountRate': item.options[option].discountRate,
-  //       };
-  //     }
-  //     // 상품 정보.
-  //     // (게시글) 번호 및 상품에 대한 정보 저장.
-  //     m[item.id] = {
-  //       'optionItemPrice': item.optionItemPrice,
-  //       'postTitle': item.postTitle, // 상품 제목
-  //       'price': item.price, // 해당 상품 가격
-  //       'discountRate': item.discountRate, // 해당 상품의 할인 율
-  //       'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
-  //       'selectedOptions': selected,
-  //     };
-  //   }
-  //   return m;
-  // }
 
   /// 호환성을 위해서 orderItems 를 입력 받음.
   ///

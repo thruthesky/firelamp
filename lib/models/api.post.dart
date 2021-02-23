@@ -103,7 +103,7 @@ class ApiPost {
   int discountRate;
   bool stop;
   int point;
-  int volume;
+  String volume;
   int deliveryFee;
   String storageMethod;
   String expiry;
@@ -131,8 +131,12 @@ class ApiPost {
     return rets;
   }
 
+  bool get hasOption => data['options'] != null && data['options'] != '';
+
   /// [optionCount] 는 각 옵션 별로 몇 개를 구매하는지 개 수 정보를 가지고 있다.
   // Map<String, int> optionCount = {};
+
+  /// EO Shopping Mall ----------------------------------------------------
 
   ///
   bool get isMine => postAuthor == Api.instance.id;
@@ -254,7 +258,7 @@ class ApiPost {
               ? true
               : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
-      volume: _parseInt(json["volume"]),
+      volume: json["volume"],
       deliveryFee: _parseInt(json["delivery_fee"]),
       storageMethod: json["storage_method"],
       expiry: json["expiry"],
@@ -262,9 +266,7 @@ class ApiPost {
       itemWidgetPhoto: json["item_widget_photo"],
       itemDetailPhoto: json["item_detail_photo"],
       keywords: json['keywords'] ?? '',
-      options: json['options'] == null
-          ? {}
-          : _prepareOptions(json['options'], json["option_item_price"] == '1' ? true : false),
+      options: _prepareOptions(json['options'], json["option_item_price"] == '1' ? true : false),
     );
   }
 
@@ -332,14 +334,17 @@ class ApiPost {
     return options[option].count * discount(options[option].price, options[option].discountRate);
   }
 
-  /// Sanitize shopping options
-  static Map<String, ApiItemOption> _prepareOptions(String str, bool optionItemPrice) {
+  /// 상품의 옵션 정리(손질)
+  ///
+  /// [optionString] 은 DB(게시글)에 있는 옵션 문자열이다. 한 문자열에 여러개의 옵션이 들어가 있는데 이를 파싱하는 것이다.
+  ///
+  static Map<String, ApiItemOption> _prepareOptions(String optionString, bool optionItemPrice) {
     Map<String, ApiItemOption> _options = {};
 
     /// 옵션이 없는 경우, 기본(DEFAULT_OPTION) 옵션을 하나 두어서, 사용자가
     /// 옵션을 선택하지 않고 주문을 할 수 있도록 해 준다.
     /// 이 것은, 나중에 사용자가 상품 페이지를 볼 때, 해당 상품 주문 로직에서, 기본(DEFAULT_OPTION) 옵션을 하나 추가 해 주어야 한다.
-    if (str == null || str.trim() == '') {
+    if (optionString == null || optionString.trim() == '') {
       _options[DEFAULT_OPTION] = ApiItemOption(price: 0, discountRate: 0, text: Text(''));
       return _options;
     }
@@ -350,7 +355,7 @@ class ApiPost {
     }
 
     // 콤마로 분리
-    List<String> options = str.split(',');
+    List<String> options = optionString.split(',');
     // 여러개 옵션
     for (String option in options) {
       option = option.trim();
