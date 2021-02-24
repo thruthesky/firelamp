@@ -92,6 +92,9 @@ class Api extends GetxController {
   /// the push messge will be ignored.
   ApiChatRoom chat;
 
+  /// Return number of message the current ApiChatRoom has
+  int get getChatMessagesCount => chat?.messages?.length ?? 0;
+
   /// [roomList] is the instance of ChatMyRoomList.
   ///
   /// The reason why it is declared in global scope is to listen all incoming message of the user's chat rooms
@@ -99,6 +102,8 @@ class Api extends GetxController {
   ///
   /// This will be instanciated in main.dart.
   ChatRoomList roomList;
+
+  int get getChatRoomCount => roomList?.rooms?.length ?? 0;
 
   /// [roomListChanges] will be fired whenever/whatever events posted from the login user's chat rooms.
   /// When there are changes(events) on login user's chat room list,
@@ -843,7 +848,7 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToUsers(
+  Future<dynamic> sendMessageToUsers(
       {List<String> users,
       String subscription,
       String title,

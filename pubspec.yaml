@@ -30,6 +30,10 @@ dependencies:
   age: ^0.0.1
 
   
+  # Chat room. Scroll adjustment when keypad is open.
+  flutter_keyboard_visibility: ^4.0.3
+
+  
 
 dev_dependencies:
   flutter_test:

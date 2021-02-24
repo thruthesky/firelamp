@@ -17,6 +17,16 @@ class ApiChatRoom extends ChatHelper {
     /// `onChildAdded` event fires to often.
     _notifySubjectSubscription =
         _notifySubject.debounceTime(Duration(milliseconds: 50)).listen((x) {
+      /// Scroll down for new message(s)
+      ///
+      /// For image, it will be scrolled down again(one more time) after image had completely loaded.
+      if (messages.isNotEmpty) {
+        if (pageNo == 1) {
+          scrollToBottom(ms: 10);
+        } else if (atBottom) {
+          scrollToBottom();
+        }
+      }
       _render();
     });
   }
@@ -75,6 +85,32 @@ class ApiChatRoom extends ChatHelper {
 
   PublishSubject _notifySubject = PublishSubject();
   StreamSubscription _notifySubjectSubscription;
+
+  /// [textController] is the same textcontroller that was use in bottom_actions widget
+  /// this can be use when you want to replace the text on bottom_action like when you want to edit
+  final textController = TextEditingController();
+
+  final scrollController = ScrollController();
+
+  /// When keyboard(keypad) is open, the app needs to adjust the scroll.
+  final keyboardVisibilityController = KeyboardVisibilityController();
+  StreamSubscription keyboardSubscription;
+
+  /// Scrolls down to the bottom when,
+  /// * chat room is loaded (only one time.)
+  /// * when I chat,
+  /// * when new chat is coming and the page is scrolled near to bottom. Logically it should not scroll down when the page is scrolled far from the bottom.
+  /// * when keyboard is open and the page scroll is near to bottom. Locally it should not scroll down when the user is reading message that is far from the bottom.
+  scrollToBottom({int ms = 100}) {
+    /// This is needed to safely scroll to bottom after chat messages has been added.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients)
+        scrollController.animateTo(scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: ms), curve: Curves.ease);
+    });
+  }
+
+  ApiChatMessage isMessageEdit;
 
   /// Enter chat room
   Future<void> enter(String userId) async {
@@ -146,11 +182,25 @@ class ApiChatRoom extends ChatHelper {
         roomsRef(Api.instance.md5, roomId: roomId).update({'newMessages': 0});
       }
     });
+
+    // fetch previous chat when user scrolls up
+    scrollController.addListener(() {
+      if (scrollUp && atTop) {
+        Api.instance.chat.fetchMessages();
+      }
+    });
+
+    // scroll to bottom only if needed when user open/hide keyboard.
+    keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
+      if (visible && atBottom) {
+        scrollToBottom(ms: 10);
+      }
+    });
   }
 
   /// Notify chat room listener to re-render the screen.
   /// Render may happen too much. Reduce it.
-  _notify() {
+  notify() {
     if (_render != null) {
       _notifySubject.add(null);
     }
@@ -161,7 +211,7 @@ class ApiChatRoom extends ChatHelper {
     if (_throttling || noMoreMessage) return;
     loading = true;
     _throttling = true;
-    // _notify();
+    // notify();
 
     pageNo++;
     if (pageNo == 1) {
@@ -179,21 +229,19 @@ class ApiChatRoom extends ChatHelper {
     q = q.limitToLast(_limit);
 
     _childChangedSubscription = q.onChildChanged.listen((Event event) {
-      // @todo update message
       print('onChildChanged');
-      print(event);
-      print(event.snapshot.value);
       int i = messages.indexWhere((m) => m['id'] == event.snapshot.key);
-// messages[i]['text'] = event.snapshot.value['text'];
+      messages[i]['text'] = event.snapshot.value['text'];
+      notify();
     });
     _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
-      // @todo delete message
       print('onChildRemoved;');
-      print(event.snapshot.value);
       messages.removeWhere((m) => m['id'] == event.snapshot.key);
+      notify();
     });
 
     _childAddedSubscription = q.onChildAdded.listen((Event event) {
+      // print('onChildAdded');
       loading = false;
       Timer(Duration(milliseconds: _throttle), () => _throttling = false);
 
@@ -222,7 +270,7 @@ class ApiChatRoom extends ChatHelper {
           // print('-----> noMoreMessage: $noMoreMessage');
         }
       }
-      _notify();
+      notify();
     });
   }
 
@@ -240,12 +288,35 @@ class ApiChatRoom extends ChatHelper {
     }
   }
 
+  deleteMessage(ApiChatMessage message) {
+    messageRef(roomId, message.id).remove();
+  }
+
+  editMessage(ApiChatMessage message) {
+    textController.text = message.text;
+    isMessageEdit = message;
+    notify();
+  }
+
+  bool isMessageOnEdit(ApiChatMessage message) {
+    if (isMessageEdit == null) return false;
+    if (!message.isMine) return false;
+    return message.id == isMessageEdit.id;
+  }
+
+  cancelEdit() {
+    textController.text = '';
+    isMessageEdit = null;
+    notify();
+  }
+
   unsubscribe() {
     if (_childAddedSubscription != null) _childAddedSubscription.cancel();
     if (_childChangedSubscription != null) _childChangedSubscription.cancel();
     if (_childRemovedSubscription != null) _childRemovedSubscription.cancel();
     if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
     if (_notifySubjectSubscription != null) _notifySubjectSubscription.cancel();
+    if (keyboardSubscription != null) keyboardSubscription.cancel();
     otherUser = null;
   }
 
@@ -257,20 +328,31 @@ class ApiChatRoom extends ChatHelper {
     Map<String, dynamic> message = {
       'userId': Api.instance.id,
       'text': text,
-      'createdAt': ServerValue.timestamp,
       if (extra != null) ...extra,
     };
 
-    await messagesRef(roomId).push().set(message);
-    await roomsRef(otherUserUid, roomId: roomId).update({
-      'newMessages': ServerValue.increment(1),
-      'updatedAt': ServerValue.timestamp,
-    });
+    /// New Message
+    if (isMessageEdit == null) {
+      message['createdAt'] = ServerValue.timestamp;
+      await messagesRef(roomId).push().set(message);
 
+      await roomsRef(otherUserUid, roomId: roomId).update({
+        'newMessages': ServerValue.increment(1),
+        'updatedAt': ServerValue.timestamp,
+        'text': text,
+      });
+    }
+
+    /// Edit Message
+    else {
+      message['updatedAt'] = ServerValue.timestamp;
+      await messageRef(roomId, isMessageEdit.id).update(message);
+      isMessageEdit = null;
+    }
     return message;
   }
 
-  sendChatPushMessage(String body) {
+  Future<dynamic> sendChatPushMessage(String body) {
     return Api.instance.sendMessageToUsers(
       users: [otherUser.id],
       title: 'chat message',
@@ -282,26 +364,19 @@ class ApiChatRoom extends ChatHelper {
     );
   }
 
-  deleteMessage(ApiChatMessage message) {
-    messageRef(roomId, message.id).remove();
+  bool get atBottom {
+    return scrollController.offset > (scrollController.position.maxScrollExtent - 640);
   }
 
-  editMessage(
-    ApiChatMessage message, {
-    Map<String, dynamic> extra,
-  }) async {
-    Map<String, dynamic> newData = {
-      'text': message.text,
-      'updateAt': ServerValue.timestamp,
-      if (extra != null) ...extra,
-    };
+  bool get atTop {
+    return scrollController.position.pixels < 200;
+  }
 
-    await messageRef(roomId, message.id).update(newData);
-    // await roomsRef(otherUserUid, roomId: roomId).update({
-    //   'newMessages': ServerValue.increment(1),
-    //   'updatedAt': ServerValue.timestamp,
-    // });
+  bool get scrollUp {
+    return scrollController.position.userScrollDirection == ScrollDirection.forward;
+  }
 
-    return newData;
+  bool get scrollDown {
+    return scrollController.position.userScrollDirection == ScrollDirection.reverse;
   }
 }
