@@ -95,6 +95,17 @@ class ApiPost {
   String featuredImageThumbnailUrl;
   int featuredImageId;
 
+  /// Widgets
+  ///
+  String get mobileForumListWidget => data['category_options'] == null
+      ? null
+      : data['category_options']['mobile_forum_list_widget'];
+
+  ///
+  String get mobileForumViewWidget => data['category_options'] == null
+      ? null
+      : data['category_options']['mobile_forum_view_widget'];
+
   /// Shopping mall properties
   ///
   String shortTitle;
