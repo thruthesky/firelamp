@@ -131,7 +131,7 @@ class Cart extends GetxController {
     return _price;
   }
 
-  ////포인트 사용
+  /// 포인트 사용
   usePoint(int point) {
     pointToUse = point;
     print('usePoint: $pointToUse');
