@@ -1007,4 +1007,20 @@ class Api extends GetxController {
     this.token = token;
     return updateToken(token);
   }
+
+  /// 현재 카트 정보를 백업 시켜 놓는다.
+  ///
+  /// 예를 들어, 카트에 상품 A, B, C 3개가 들어가 있을 경우, 사용자가 상품 D 를 '바로 구매' 하는 경우,
+  /// 상품 D 를 카트에 담아야지, 모든 로직이 쉽게 적용된다.
+  /// 그래서, 기존 카트의 정보를 백업해 놓고, 다시 복구 할 수 있도록 한다.
+  Cart _cart;
+  backupCart() {
+    _cart = cart;
+    cart = Cart();
+  }
+
+  /// 장바구니 복구
+  restoreCart() {
+    cart = _cart;
+  }
 }

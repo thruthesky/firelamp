@@ -61,6 +61,8 @@ class Cart extends GetxController {
     update();
   }
 
+  /// ! items.add() 로 바로 하면 안되고, save() 를 통해서 저장해야한다.
+  /// @todo 그래서, items 는 private 으로 되어야 한다.
   save(ApiPost item) {
     /// 아이템 복사. 카트에 들어간 아이템은 변경이 되면 안되고, 동일한 상품도 중복으로 넣을 수 있어야 히기 때문에, 현재 아이템을 복사해서 카트에 넣어야 한다.
     ApiPost clone = ApiPost.fromJson(item.data);
@@ -110,8 +112,12 @@ class Cart extends GetxController {
 
   /// 카트에 저장된 전체 상품의 금액
   ///
-  /// [item] 이 null 이면, 전체 총 주문 금액
+  /// [item] 이 null 이면, 전체 총 주문 금액. 카트에 저장된 상품들의 금액. 배송비나 사용포인트는 적용되지 않은 금액.
   String price({ApiPost item}) {
+    return moneyFormat(priceInt(item: item));
+  }
+
+  int priceInt({ApiPost item}) {
     int _price = 0;
     if (item == null) {
       for (final item in items) {
@@ -120,8 +126,7 @@ class Cart extends GetxController {
     } else {
       _price = item.priceWithOptions;
     }
-    _price -= pointToUse;
-    return moneyFormat(_price);
+    return _price;
   }
 
   loadOptions() async {
