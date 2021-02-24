@@ -448,6 +448,11 @@ class ApiPost {
     }
   }
 
+  /// 기존에 선택된 옵션들을 모두 리젯한다. 옵션 카운트를 0으로 하면 됨.
+  resetOptions() {
+    selectedOptions.forEach((optionName) => options[optionName].count = 0);
+  }
+
   /// 옵션의 개 수 증가. '옵션에 상품가격지정방식'만 가능.
   increaseItemOption(String option) {
     assert(optionItemPrice || option == DEFAULT_OPTION, "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");

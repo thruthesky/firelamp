@@ -30,12 +30,24 @@ class Cart extends GetxController {
   List<ApiPost> items = [];
   CartForm form = CartForm();
 
+  int pointToUse = 0;
+  int deliveryFeeFreeLimit = 0;
+  int deliveryFeePrice = 0;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadOptions();
+  }
+
   empty() {
     items = [];
     update();
   }
 
+  /// 상품 페이지를 열었을 때, 현재 상품을 지정한다. 상품 페이지를 열었을 때만(때 마다) 한번 사용.
   setCurrentItem(ApiPost item) {
+    item.resetOptions();
     currentItem = item;
     currentItem.addDefaultOption();
   }
@@ -108,7 +120,21 @@ class Cart extends GetxController {
     } else {
       _price = item.priceWithOptions;
     }
+    _price -= pointToUse;
     return moneyFormat(_price);
+  }
+
+  loadOptions() async {
+    try {
+      final re = await Api.instance.request({'route': 'mall.options'});
+      deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
+      deliveryFeePrice = int.parse(re['delivery_fee_price']);
+      print(re);
+    } catch (e) {
+      print('앗! 쇼핑몰 설정 정보를 가져오는데 실패했습니다. 에러메시지: ');
+      print(e);
+      rethrow;
+    }
   }
 
   @override

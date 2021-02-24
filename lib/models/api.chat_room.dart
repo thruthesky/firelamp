@@ -180,16 +180,16 @@ class ApiChatRoom extends ChatHelper {
 
     _childChangedSubscription = q.onChildChanged.listen((Event event) {
       // @todo update message
-      print('onChildChanged');
-      print(event);
-      print(event.snapshot.value);
+      // print('onChildChanged');
+      // print(event);
+      // print(event.snapshot.value);
       int i = messages.indexWhere((m) => m['id'] == event.snapshot.key);
 // messages[i]['text'] = event.snapshot.value['text'];
     });
     _childRemovedSubscription = q.onChildRemoved.listen((Event event) {
       // @todo delete message
-      print('onChildRemoved;');
-      print(event.snapshot.value);
+      // print('onChildRemoved;');
+      // print(event.snapshot.value);
       messages.removeWhere((m) => m['id'] == event.snapshot.key);
     });
 
