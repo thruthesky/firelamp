@@ -136,7 +136,7 @@ GetBuilder<Api>(
 import 'package:dalgona/screens/forum/widgets/no_more_posts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:dalgona/services/globals.dart';
-import 'package:dalgona/widgets/app.menu.dart';
+import 'package:dalgona/widgets/app.end_drawer.dart';
 import 'package:dalgona/widgets/spinner.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
@@ -188,7 +188,7 @@ class _ForumListScreenState extends State<ForumListScreen> {
       appBar: AppBar(
         title: Text('Forum list'),
       ),
-      endDrawer: AppMenu(),
+      endDrawer: AppEndDrawer(),
       body: Column(
         children: [
           Expanded(
