@@ -30,6 +30,9 @@ class ApiForum {
   /// When [fetchPost] is being called, [render] will be immidately called with this post.
   ApiPost post;
 
+  String listView = '';
+  String postView = '';
+
   List<ApiPost> posts = [];
   bool loading = false;
   bool noMorePosts = false;
