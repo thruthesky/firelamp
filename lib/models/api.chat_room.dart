@@ -35,20 +35,25 @@ class ApiChatRoom extends ChatHelper {
   ApiUser otherUser;
 
   /// [otherUserId] is the other user profile id
-  String get otherUserId => otherUser.id;
-
-  /// [otherUserUid] is the other user's reference key that the login user is talking to.
-  String get otherUserUid => otherUser.md5;
+  String otherUserId;
 
   /// [roomId] is the combination of the User A md5 and user B md5 which is return when you get the other user profile.
-  String get roomId => otherUser.data['roomId'];
+  String get roomId {
+    if (int.parse(Api.instance.id) < int.parse(otherUserId)) {
+      return "${Api.instance.id}-$otherUserId";
+    } else {
+      return "$otherUserId-${Api.instance.id}";
+    }
+  }
 
   /// push notification topic name
   String get topic => 'notifyChat_${this.roomId}';
-  bool get subscribed =>
-      Api.instance.user.data[topic] == null || Api.instance.user.data[topic] == 'Y';
+  bool get subscribed {
+    return Api.instance.user.data[topic] == null || Api.instance.user.data[topic] == 'Y';
+  }
+
   set subscribed(bool v) {
-    Api.instance.user.data[topic] = v ? 'Y' : 'N';
+    Api.instance.user?.data[topic] = v ? 'Y' : 'N';
   }
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event
@@ -119,6 +124,7 @@ class ApiChatRoom extends ChatHelper {
 
   /// Enter chat room
   Future<void> enter(String userId) async {
+    otherUserId = userId;
     otherUser = await Api.instance.otherUserProfile(userId);
 
     /// get room information
@@ -128,9 +134,9 @@ class ApiChatRoom extends ChatHelper {
     if (value == null || value.createdAt == null) {
       /// Create my room
       ///
-      /// Create `chat/rooms/myUid/roomId` if not exists.
+      /// Create `chat/rooms/myId/roomId` if not exists.
       /// LoggedIn User copy of Other User Room Information
-      await roomsRef(myUid, roomId: roomId).set({
+      await roomsRef(myId, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
         'userId': otherUser.id,
@@ -142,7 +148,7 @@ class ApiChatRoom extends ChatHelper {
       ///
       /// Create `chat/rooms/otherUid/roomId` if not exists.
       /// Other user copy of LoggedIn User Room Information
-      await roomsRef(otherUserUid, roomId: roomId).set({
+      await roomsRef(otherUserId, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
         'userId': Api.instance.id,
@@ -163,7 +169,7 @@ class ApiChatRoom extends ChatHelper {
       /// Update latest name and photo of mine.
       ///
       /// Update your copy of other User and update the Room Information
-      await roomsRef(myUid, roomId: roomId).update({
+      await roomsRef(myId, roomId: roomId).update({
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
@@ -179,12 +185,12 @@ class ApiChatRoom extends ChatHelper {
     // This will be notify chat room listener when chat room title changes, or new users enter, etc.
     if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
     _currentRoomSubscription =
-        roomsRef(Api.instance.md5, roomId: roomId).onValue.listen((Event event) {
+        roomsRef(Api.instance.id, roomId: roomId).onValue.listen((Event event) {
       // If the user got a message from a chat room where the user is currently in,
       // then, set `newMessages` to 0.
       final data = ApiChatUserRoom.fromSnapshot(event.snapshot);
       if (data.newMessages != null && data.newMessages > 0 && data.createdAt != null) {
-        roomsRef(Api.instance.md5, roomId: roomId).update({'newMessages': 0});
+        roomsRef(Api.instance.id, roomId: roomId).update({'newMessages': 0});
       }
     });
 
@@ -224,11 +230,13 @@ class ApiChatRoom extends ChatHelper {
     }
 
     /// Get messages for the chat room
-    Query q = messagesRef(roomId).orderByKey();
+    // Query q = messagesRef(roomId).orderByKey();
+
+    Query q = messagesRef(roomId).orderByChild('createdAt');
 
     if (pageNo > 1) {
-      // print('endAt: ${messages[0]}');
-      q = q.endAt(messages.first['id']);
+      // q = q.endAt(messages.first['id']);
+      q = q.endAt(messages.first['createdAt']);
     }
 
     q = q.limitToLast(_limit);
@@ -341,7 +349,7 @@ class ApiChatRoom extends ChatHelper {
       message['createdAt'] = ServerValue.timestamp;
       await messagesRef(roomId).push().set(message);
 
-      await roomsRef(otherUserUid, roomId: roomId).update({
+      await roomsRef(otherUserId, roomId: roomId).update({
         'newMessages': ServerValue.increment(1),
         'updatedAt': ServerValue.timestamp,
         'text': text,
