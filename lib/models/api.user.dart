@@ -115,7 +115,7 @@ class ApiUser {
     md5 = json['md5'];
     mode = json['mode'];
     profilePhotoUrl = json['profilePhotoUrl'];
-    point = int.parse(json['point'] ?? '0');
+    point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
   }
 
   Map<String, dynamic> toJson() {

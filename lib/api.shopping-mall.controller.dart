@@ -33,11 +33,13 @@ class Cart extends GetxController {
   int pointToUse = 0;
   int deliveryFeeFreeLimit = 0;
   int deliveryFeePrice = 0;
+  int paymentAmount = 0;
 
   @override
   void onInit() {
     super.onInit();
     loadOptions();
+    print('cartLoadOptions');
   }
 
   empty() {
@@ -129,12 +131,29 @@ class Cart extends GetxController {
     return _price;
   }
 
+  ////포인트 사용
+  usePoint(int point) {
+    pointToUse = point;
+    print('usePoint: $pointToUse');
+    update();
+  }
+
+  //결제 금액 계산
+  caculateAmout() {
+    int _deliveryFeePrice = priceInt() >= deliveryFeeFreeLimit ? 0 : deliveryFeePrice;
+
+    paymentAmount = priceInt() + _deliveryFeePrice - pointToUse;
+  }
+
   loadOptions() async {
     try {
       final re = await Api.instance.request({'route': 'mall.options'});
       deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
       deliveryFeePrice = int.parse(re['delivery_fee_price']);
-      print(re);
+      print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
+      print('deliveryFeePrice: $deliveryFeePrice');
+      // print(re);
+
     } catch (e) {
       print('앗! 쇼핑몰 설정 정보를 가져오는데 실패했습니다. 에러메시지: ');
       print(e);
