@@ -32,8 +32,11 @@ class Cart extends GetxController {
 
   int pointToUse = 0;
   int deliveryFeeFreeLimit = 0;
-  int deliveryFeePrice = 0;
-  int paymentAmount = 0;
+  int _deliveryFeePrice = 0;
+  int get deliveryFeePrice => priceInt() >= deliveryFeeFreeLimit ? 0 : _deliveryFeePrice;
+
+  /// 결제(구매) 페이지에서 최종 결제 금액 제시
+  int get paymentAmount => priceInt() + deliveryFeePrice - pointToUse;
 
   @override
   void onInit() {
@@ -42,8 +45,9 @@ class Cart extends GetxController {
     print('cartLoadOptions');
   }
 
-  empty() {
+  clear() {
     items = [];
+    currentItem = null;
     update();
   }
 
@@ -132,6 +136,8 @@ class Cart extends GetxController {
   }
 
   /// 포인트 사용
+  ///
+  /// * 포인트를 사용 한 다음, 회원 정보에서 포인트를 차감해 주어야 한다.
   usePoint(int point) {
     pointToUse = point;
     print('usePoint: $pointToUse');
@@ -139,19 +145,19 @@ class Cart extends GetxController {
   }
 
   //결제 금액 계산
-  caculateAmout() {
-    int _deliveryFeePrice = priceInt() >= deliveryFeeFreeLimit ? 0 : deliveryFeePrice;
+  // caculateAmout() {
+  //   int _deliveryFeePrice = priceInt() >= deliveryFeeFreeLimit ? 0 : deliveryFeePrice;
 
-    paymentAmount = priceInt() + _deliveryFeePrice - pointToUse;
-  }
+  //   paymentAmount = priceInt() + _deliveryFeePrice - pointToUse;
+  // }
 
   loadOptions() async {
     try {
       final re = await Api.instance.request({'route': 'mall.options'});
       deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
-      deliveryFeePrice = int.parse(re['delivery_fee_price']);
+      _deliveryFeePrice = int.parse(re['delivery_fee_price']);
       print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
-      print('deliveryFeePrice: $deliveryFeePrice');
+      print('deliveryFeePrice: $_deliveryFeePrice');
       // print(re);
 
     } catch (e) {
@@ -163,7 +169,7 @@ class Cart extends GetxController {
 
   @override
   String toString() {
-    String str = '';
+    String str = 'Cart.toString() :: ';
     for (final item in items) {
       str += '${item.id} => $item, ';
     }
