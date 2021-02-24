@@ -10,6 +10,7 @@ class ApiUser {
   String autoStatusCheck;
   String plid;
   String agegroup;
+  int point;
 
   String get age {
     if (birthdate == null || birthdate == '') return '0';
@@ -84,6 +85,7 @@ class ApiUser {
     this.md5,
     this.mode,
     this.profilePhotoUrl,
+    this.point,
   });
 
   ApiUser.fromJson(Map<String, dynamic> json) {
@@ -113,6 +115,7 @@ class ApiUser {
     md5 = json['md5'];
     mode = json['mode'];
     profilePhotoUrl = json['profilePhotoUrl'];
+    point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
   }
 
   Map<String, dynamic> toJson() {
@@ -141,6 +144,7 @@ class ApiUser {
     data['md5'] = this.md5;
     data['mode'] = this.mode;
     data['profilePhotoUrl'] = this.profilePhotoUrl;
+    data['point'] = this.point;
 
     return data;
   }

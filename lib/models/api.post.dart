@@ -95,6 +95,17 @@ class ApiPost {
   String featuredImageThumbnailUrl;
   int featuredImageId;
 
+  /// Widgets
+  ///
+  String get mobileForumListWidget => data['category_options'] == null
+      ? null
+      : data['category_options']['mobile_forum_list_widget'];
+
+  ///
+  String get mobileForumViewWidget => data['category_options'] == null
+      ? null
+      : data['category_options']['mobile_forum_view_widget'];
+
   /// Shopping mall properties
   ///
   String shortTitle;
@@ -446,6 +457,11 @@ class ApiPost {
     if (optionItemPrice == false) {
       addOption(DEFAULT_OPTION);
     }
+  }
+
+  /// 기존에 선택된 옵션들을 모두 리젯한다. 옵션 카운트를 0으로 하면 됨.
+  resetOptions() {
+    selectedOptions.forEach((optionName) => options[optionName].count = 0);
   }
 
   /// 옵션의 개 수 증가. '옵션에 상품가격지정방식'만 가능.

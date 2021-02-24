@@ -30,12 +30,30 @@ class Cart extends GetxController {
   List<ApiPost> items = [];
   CartForm form = CartForm();
 
-  empty() {
+  int pointToUse = 0;
+  int deliveryFeeFreeLimit = 0;
+  int _deliveryFeePrice = 0;
+  int get deliveryFeePrice => priceInt() >= deliveryFeeFreeLimit ? 0 : _deliveryFeePrice;
+
+  /// 결제(구매) 페이지에서 최종 결제 금액 제시
+  int get paymentAmount => priceInt() + deliveryFeePrice - pointToUse;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadOptions();
+    print('cartLoadOptions');
+  }
+
+  clear() {
     items = [];
+    currentItem = null;
     update();
   }
 
+  /// 상품 페이지를 열었을 때, 현재 상품을 지정한다. 상품 페이지를 열었을 때만(때 마다) 한번 사용.
   setCurrentItem(ApiPost item) {
+    item.resetOptions();
     currentItem = item;
     currentItem.addDefaultOption();
   }
@@ -49,6 +67,8 @@ class Cart extends GetxController {
     update();
   }
 
+  /// ! items.add() 로 바로 하면 안되고, save() 를 통해서 저장해야한다.
+  /// @todo 그래서, items 는 private 으로 되어야 한다.
   save(ApiPost item) {
     /// 아이템 복사. 카트에 들어간 아이템은 변경이 되면 안되고, 동일한 상품도 중복으로 넣을 수 있어야 히기 때문에, 현재 아이템을 복사해서 카트에 넣어야 한다.
     ApiPost clone = ApiPost.fromJson(item.data);
@@ -98,8 +118,12 @@ class Cart extends GetxController {
 
   /// 카트에 저장된 전체 상품의 금액
   ///
-  /// [item] 이 null 이면, 전체 총 주문 금액
+  /// [item] 이 null 이면, 전체 총 주문 금액. 카트에 저장된 상품들의 금액. 배송비나 사용포인트는 적용되지 않은 금액.
   String price({ApiPost item}) {
+    return moneyFormat(priceInt(item: item));
+  }
+
+  int priceInt({ApiPost item}) {
     int _price = 0;
     if (item == null) {
       for (final item in items) {
@@ -108,12 +132,44 @@ class Cart extends GetxController {
     } else {
       _price = item.priceWithOptions;
     }
-    return moneyFormat(_price);
+    return _price;
+  }
+
+  /// 포인트 사용
+  ///
+  /// * 포인트를 사용 한 다음, 회원 정보에서 포인트를 차감해 주어야 한다.
+  usePoint(int point) {
+    pointToUse = point;
+    print('usePoint: $pointToUse');
+    update();
+  }
+
+  //결제 금액 계산
+  // caculateAmout() {
+  //   int _deliveryFeePrice = priceInt() >= deliveryFeeFreeLimit ? 0 : deliveryFeePrice;
+
+  //   paymentAmount = priceInt() + _deliveryFeePrice - pointToUse;
+  // }
+
+  loadOptions() async {
+    try {
+      final re = await Api.instance.request({'route': 'mall.options'});
+      deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
+      _deliveryFeePrice = int.parse(re['delivery_fee_price']);
+      print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
+      print('deliveryFeePrice: $_deliveryFeePrice');
+      // print(re);
+
+    } catch (e) {
+      print('앗! 쇼핑몰 설정 정보를 가져오는데 실패했습니다. 에러메시지: ');
+      print(e);
+      rethrow;
+    }
   }
 
   @override
   String toString() {
-    String str = '';
+    String str = 'Cart.toString() :: ';
     for (final item in items) {
       str += '${item.id} => $item, ';
     }

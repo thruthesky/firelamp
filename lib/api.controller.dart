@@ -8,6 +8,11 @@ const String BIO_TABLE = 'api_bio';
 /// Error codes
 const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
+/// Loading indicators.
+class Loading {
+  bool profile = false;
+}
+
 /// Api GetX Controller
 ///
 ///
@@ -15,6 +20,7 @@ const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 /// It extends `GetxController` to update when user information changes.
 class Api extends GetxController {
   ApiUser user;
+  Loading loading = Loading();
 
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
   ///
@@ -112,6 +118,13 @@ class Api extends GetxController {
   /// - To achieve this, on the header, subscribe this event and display no of new messages.
   BehaviorSubject roomListChanges = BehaviorSubject.seeded(null);
 
+  /// 쇼핑몰 카트
+  ///
+  /// 쇼핑몰은 [Cart] GetX 컨트롤러에 의해서 관리된다. `init` 함수 안에서 초기화된다. 따라서 `init` 의 동작이 끝난 다음,
+  /// Get.put() 에 집어 넣어야 한다.
+  ///
+  Cart cart;
+
   /// Api Singleton
   static Api _instance;
   static Api get instance {
@@ -206,6 +219,8 @@ class Api extends GetxController {
     _initTranslation();
     _initSettings();
     if (enableChat) _initChat();
+
+    cart = Cart();
   }
 
   /// Initialize chat functionalities
@@ -303,9 +318,11 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      // _printDebugUrl(data);
+      // _printDebugUrl(_apiUrl);
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
+      print('Api.request() got error; _apiUrl: $_apiUrl');
+      print(e);
       _printDebugUrl(data);
       rethrow;
     }
@@ -448,9 +465,11 @@ class Api extends GetxController {
   ///   - return user
   Future<ApiUser> userProfile(String sessionId) async {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
+    loading.profile = true;
     final Map<String, dynamic> res =
         await request({'route': 'user.profile', 'session_id': sessionId});
     user = ApiUser.fromJson(res);
+    loading.profile = false;
     update();
     return user;
   }
@@ -992,5 +1011,23 @@ class Api extends GetxController {
   Future _saveTokenToDatabase(String token) {
     this.token = token;
     return updateToken(token);
+  }
+
+  /// 현재 카트 정보를 백업 시켜 놓는다.
+  ///
+  /// 예를 들어, 카트에 상품 A, B, C 3개가 들어가 있을 경우, 사용자가 상품 D 를 '바로 구매' 하는 경우,
+  /// 상품 D 를 카트에 담아야지, 모든 로직이 쉽게 적용된다.
+  /// 그래서, 기존 카트의 정보를 백업해 놓고, 다시 복구 할 수 있도록 한다.
+  ///
+  /// * 주의: cart 는 Get.put() 이 되었으므로, cart 리퍼런스를 유지한테 데이터만 백업을 해야 한다.
+  List<ApiPost> _items = [];
+  backupCart() {
+    _items = cart.items;
+    cart.items = [];
+  }
+
+  /// 장바구니 복구
+  restoreCart() {
+    cart.items = _items;
   }
 }
