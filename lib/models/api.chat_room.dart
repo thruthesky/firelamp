@@ -354,6 +354,11 @@ class ApiChatRoom extends ChatHelper {
         'updatedAt': ServerValue.timestamp,
         'text': text,
       });
+      await roomsRef(otherUserId, roomId: roomId).update({
+        'newMessages': ServerValue.increment(1),
+        'updatedAt': ServerValue.timestamp,
+        'text': text,
+      });
     }
 
     /// Edit Message
