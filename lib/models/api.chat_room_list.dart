@@ -20,6 +20,7 @@ class ChatRoomList extends ChatHelper {
 
   /// My room list including room id.
   List<ApiChatUserRoom> rooms = [];
+  int newMessages = 0;
 
   ChatRoomList({
     @required Function onChange,
@@ -40,14 +41,23 @@ class ChatRoomList extends ChatHelper {
   /// - title changes,
   /// - users array changes,
   /// - and other properties change.
+  ///
+  /// Logic
+  /// - listen changes of rooms
+  /// - store all room information
+  /// - count new messages
+  /// - notify
   listenRoomList() {
     _myRoomListSubscription = myRoomsRef().onValue.listen((event) {
       fetched = true;
       Map<dynamic, dynamic> res = event.snapshot.value;
       if (res == null) return;
       rooms = [];
+      newMessages = 0;
       res.forEach((key, data) {
-        rooms.add(ApiChatUserRoom.fromData(data, key));
+        final room = ApiChatUserRoom.fromData(data, key);
+        rooms.add(room);
+        newMessages += room.newMessages;
       });
       if (onChange != null) onChange();
     });
