@@ -445,6 +445,24 @@ class ApiPost {
     return _price;
   }
 
+  int pointWithOptions(
+    int itemPoint,
+  ) {
+    print('itemPoint: $itemPoint');
+    int _point = 0;
+
+    if (optionItemPrice) {
+      // '옵션에 상품가격지정' 방식. 옵션마다 가격이 다르고, 옵션마다 각각의 할인율이 있다. 그래서 옵션별로 할인 계산을 따로 해야 한다.
+      for (final option in options.keys) {
+        _point += itemPoint * options[option].count;
+      }
+    } else {
+      _point = itemPoint * options[DEFAULT_OPTION].count;
+    }
+
+    return _point;
+  }
+
   addOption(String option) {
     options[option].count = 1;
   }
