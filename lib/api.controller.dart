@@ -59,7 +59,6 @@ class Api extends GetxController {
   String get fullName => user?.name;
   String get nickname => user?.nickname;
   String get profilePhotoUrl => user?.profilePhotoUrl;
-  String get md5 => user?.md5;
   bool get profileComplete =>
       loggedIn &&
       primaryPhotoUrl != null &&

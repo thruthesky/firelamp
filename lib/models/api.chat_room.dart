@@ -53,7 +53,7 @@ class ApiChatRoom extends ChatHelper {
   }
 
   set subscribed(bool v) {
-    Api.instance.user?.data[topic] = v ? 'Y' : 'N';
+    Api.instance.user.data[topic] = v ? 'Y' : 'N';
   }
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event
