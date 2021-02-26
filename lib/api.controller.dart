@@ -262,8 +262,8 @@ class Api extends GetxController {
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    database.reference().child('notifications').child('translation').onValue.listen((event) {
-      // print('_initTranslation:: updated');
+    database.reference().child('notifications').child('translation').onChildChanged.listen((event) {
+      print('_initTranslation:: updated!');
       _loadTranslations();
     });
     _loadTranslations();
@@ -929,7 +929,7 @@ class Api extends GetxController {
   /// todo: make it one time call.
   _loadTranslations() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    // print('loadTranslations() res: $res');
+    print('loadTranslations() res: $res');
 
     translationChanges.add(res);
   }

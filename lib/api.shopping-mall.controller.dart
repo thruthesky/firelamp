@@ -128,17 +128,17 @@ class Cart extends GetxController {
 
   int priceInt({ApiPost item}) {
     int _price = 0;
-    if (item == null) {
+    if (item != null) {
+      _price = item.priceWithOptions;
+    } else {
       for (final item in items) {
         _price += item.priceWithOptions;
       }
-    } else {
-      _price = item.priceWithOptions;
     }
     return _price;
   }
 
-  int savePoint({ApiPost item}) {
+  int pointToSave({ApiPost item}) {
     int _point = 0;
 
     // _point = item.pointWithOptions(
@@ -147,12 +147,12 @@ class Cart extends GetxController {
     // point = _point;
     // return _point;
 
-    if (item == null) {
+    if (item != null) {
+      _point = item.pointWithOptions(item.point);
+    } else {
       for (final item in items) {
         _point += item.pointWithOptions(item.point);
       }
-    } else {
-      _point = item.pointWithOptions(item.point);
     }
     return _point;
   }
