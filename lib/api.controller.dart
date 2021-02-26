@@ -903,22 +903,30 @@ class Api extends GetxController {
     return request(req);
   }
 
-  subscribeOrUnsubscribeTopic(String topic) async {
-    Map<String, dynamic> req = {
-      'route': 'notification.topicSubscription',
-      'topic': topic,
-    };
-    final res = await request(req);
-    return res;
+  Future<ApiUser> subscribeOrUnsubscribeTopic(String topic) {
+    return subscribeOrUnsubscribe(
+      route: 'notification.topicSubscription',
+      topic: topic,
+    );
   }
 
-  subscribeOrUnsubscribeChat(String topic) async {
+  Future<ApiUser> subscribeOrUnsubscribeChat(String topic) {
+    return subscribeOrUnsubscribe(
+      route: 'notification.chatSubscription',
+      topic: topic,
+    );
+  }
+
+  Future<ApiUser> subscribeOrUnsubscribe({String route, String topic}) async {
     Map<String, dynamic> req = {
-      'route': 'notification.chatSubscription',
+      'route': route,
       'topic': topic,
     };
     final res = await request(req);
-    return res;
+    user = ApiUser.fromJson(res);
+    await _saveUserProfile(user);
+    update();
+    return user;
   }
 
   Future translationList() {
