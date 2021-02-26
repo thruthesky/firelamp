@@ -354,8 +354,7 @@ class ApiChatRoom extends ChatHelper {
         'updatedAt': ServerValue.timestamp,
         'text': text,
       });
-      await roomsRef(otherUserId, roomId: roomId).update({
-        'newMessages': ServerValue.increment(1),
+      await roomsRef(myId, roomId: roomId).update({
         'updatedAt': ServerValue.timestamp,
         'text': text,
       });
