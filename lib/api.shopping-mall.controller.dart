@@ -33,10 +33,13 @@ class Cart extends GetxController {
   int pointToUse = 0;
   int deliveryFeeFreeLimit = 0;
   int _deliveryFeePrice = 0;
+
   int get deliveryFeePrice => priceInt() >= deliveryFeeFreeLimit ? 0 : _deliveryFeePrice;
 
   /// 결제(구매) 페이지에서 최종 결제 금액 제시
   int get paymentAmount => priceInt() + deliveryFeePrice - pointToUse;
+
+  // int get point => _point =
 
   @override
   void onInit() {
@@ -133,6 +136,25 @@ class Cart extends GetxController {
       _price = item.priceWithOptions;
     }
     return _price;
+  }
+
+  int savePoint({ApiPost item}) {
+    int _point = 0;
+
+    // _point = item.pointWithOptions(
+    //   item.point,
+    // );
+    // point = _point;
+    // return _point;
+
+    if (item == null) {
+      for (final item in items) {
+        _point += item.pointWithOptions(item.point);
+      }
+    } else {
+      _point = item.pointWithOptions(item.point);
+    }
+    return _point;
   }
 
   /// 포인트 사용
