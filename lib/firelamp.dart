@@ -20,7 +20,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:age/age.dart';
 import 'package:path/path.dart' as p;
