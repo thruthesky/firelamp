@@ -70,7 +70,8 @@ class Cart extends GetxController {
     update();
   }
 
-  /// ! items.add() 로 바로 하면 안되고, save() 를 통해서 저장해야한다.
+  /// ! call by reference 로 인해서 items.add() 로 바로 하면 안되고, save() 를 통해서 저장해야한다.
+  /// @todo ApiPost.itemClone() 함수를 만들 것.
   /// @todo 그래서, items 는 private 으로 되어야 한다.
   save(ApiPost item) {
     /// 아이템 복사. 카트에 들어간 아이템은 변경이 되면 안되고, 동일한 상품도 중복으로 넣을 수 있어야 히기 때문에, 현재 아이템을 복사해서 카트에 넣어야 한다.

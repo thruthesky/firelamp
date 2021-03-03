@@ -54,7 +54,7 @@ class ApiPost {
     this.price,
     this.optionItemPrice,
     this.discountRate,
-    this.stop,
+    this.pause,
     this.point,
     this.volume,
     this.deliveryFee,
@@ -112,7 +112,9 @@ class ApiPost {
   int price;
   bool optionItemPrice;
   int discountRate;
-  bool stop;
+
+  /// 쇼핑 상품 일시 정지 상태인가?
+  bool pause;
   int point;
   String volume;
   int deliveryFee;
@@ -142,6 +144,7 @@ class ApiPost {
     return rets;
   }
 
+  /// 상품에 옵션이 있는가?
   bool get hasOption => data['options'] != null && data['options'] != '';
 
   /// [optionCount] 는 각 옵션 별로 몇 개를 구매하는지 개 수 정보를 가지고 있다.
@@ -263,9 +266,9 @@ class ApiPost {
       price: _parseInt(json["price"]) ?? 0,
       optionItemPrice: json["option_item_price"] == '1' ? true : false,
       discountRate: _parseInt(json["discount_rate"]),
-      stop: json["stop"] == null || json["stop"] == ""
+      pause: json["pause"] == null || json["pause"] == ""
           ? false
-          : int.parse(json["stop"]) == 1
+          : int.parse(json["pause"]) == 1
               ? true
               : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
@@ -305,7 +308,7 @@ class ApiPost {
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
         "discountRate": discountRate,
-        "stop": stop,
+        "pause": pause,
         "point": point,
         "volume": volume,
         "deliveryFee": deliveryFee,
@@ -331,7 +334,7 @@ class ApiPost {
     return 0;
   }
 
-  /// 상품 가격을 할인하여 가격으로 리턴
+  /// 상품 가격을 할인하여 가격으로 리턴. '옵션에 추가금액지정' 방식에서만 사용 할 필요가 있다.
   int get discountedPrice {
     int discounted = price;
     if (discountRate > 0) {
@@ -340,7 +343,7 @@ class ApiPost {
     return discounted;
   }
 
-  // '옵션에 상품가격지정' 방식에서, 옵션의 할인된 가격을 리턴한다.
+  /// '옵션에 상품가격지정' 방식에서, 옵션의 할인된 가격을 리턴한다.
   int optionDiscountedPrice(String option) {
     return options[option].count * discount(options[option].price, options[option].discountRate);
   }
@@ -419,7 +422,10 @@ class ApiPost {
     return _options;
   }
 
-  /// 현재 상품(아이템)의 (옵션 포함) 주문 가격을 리턴한다.
+  /// 사용자가 선택한 현재 상품(아이템)의 (옵션 포함) 주문 가격을 리턴한다.
+  ///
+  /// 예를 들어, 사용자가, 당근2박스 2만원과 선물포장 옵션 5천원을 선택했다면, 2만5천원이 리턴된다.
+  /// 배송비나, 회원 포인트는 포함되어져 있지 않다.
   ///
   /// 현재 상품 페이지에서 주문 할 때 또는 장바구니에서 각 상품의 소계를 출력 할 때 사용 가능하다.
   int get priceWithOptions {
@@ -445,6 +451,10 @@ class ApiPost {
     return _price;
   }
 
+  /// 상품을 주문 할 때, 얼마의 포인트가 적립되는지, 그 포인트 적립금을 리턴한다.
+  ///
+  /// 상품 1개에 1천원의 포인트가 적립된다면, 그 상품을 5개 주문하면 5천 포인트가 리턴된다.
+  /// 옵션에 상품가격지정 방식에서는 각각의 옵션 선택이 1개의 상품이 된다.
   int pointWithOptions(
     int itemPoint,
   ) {
@@ -463,6 +473,8 @@ class ApiPost {
     return _point;
   }
 
+  /// 현재 상품의 옵션에, 상품 옵션 1개를 추가한다.
+  /// 참고로, 상품 옵션 정보는 현재 상품의 옵션의 [count] 속성에 저장된다.
   addOption(String option) {
     options[option].count = 1;
   }
@@ -471,13 +483,15 @@ class ApiPost {
   ///
   /// 주의: static 이 아니어서, 생성자에서 이 함수를 호출 할 수 없다.
   /// 따라서, 쇼핑몰 상품 페이지에서, 이 함수를 한번 호출해 주어야 한다.
+  ///
+  /// DEFAULT_OPTION 이 혼동될 수 있으니 주의 하고, 이해를 잘 해야 한다.
   addDefaultOption() {
     if (optionItemPrice == false) {
       addOption(DEFAULT_OPTION);
     }
   }
 
-  /// 기존에 선택된 옵션들을 모두 리젯한다. 옵션 카운트를 0으로 하면 됨.
+  /// 기존에 선택된 옵션들을 모두 리젯한다. 모든 옵션 카운트를 0으로 하면 됨.
   resetOptions() {
     selectedOptions.forEach((optionName) => options[optionName].count = 0);
   }
@@ -488,12 +502,13 @@ class ApiPost {
     options[option].count++;
   }
 
+  /// option 의 count 를 감소시킨다. 즉, 주문 개 수 중에서 1을 감소한다.
   decreaseItemOption(String option) {
     if (options[option].count > 1) options[option].count--;
   }
 
+  /// option 의 count 를 0 으로 하면, 장바구니에서 보이지 않도록 한다.
   delete(String option) {
     options[option].count = 0;
-    // optionCount.remove(option);
   }
 }
