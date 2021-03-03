@@ -32,6 +32,19 @@ class ApiPost {
   ApiPost({
     this.data,
     this.idx,
+
+    // updates
+    this.userIdx,
+    this.roodIdx,
+    this.parentIdx,
+    this.categoryIdx,
+    this.subCategory,
+    this.path,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+
+    /// old
     this.postAuthor,
     this.profilePhotoUrl,
     this.postDate,
@@ -50,6 +63,8 @@ class ApiPost {
     this.featuredImageUrl,
     this.featuredImageThumbnailUrl,
     this.featuredImageId,
+
+    // Shopping mall props
     this.shortTitle,
     this.price,
     this.optionItemPrice,
@@ -75,6 +90,19 @@ class ApiPost {
   /// you can access [data] directly.
   dynamic data;
   int idx;
+
+  /// updates
+  String userIdx;
+  String roodIdx;
+  String parentIdx;
+  String categoryIdx;
+  String subCategory;
+  String path;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+
+  /// old
   String postAuthor;
   String profilePhotoUrl;
   DateTime postDate;
@@ -153,7 +181,7 @@ class ApiPost {
   /// EO Shopping Mall ----------------------------------------------------
 
   ///
-  bool get isMine => postAuthor == Api.instance.idx;
+  bool get isMine => userIdx == Api.instance.idx;
   bool get isNotMine => !isMine;
 
   /// Display options
@@ -233,6 +261,19 @@ class ApiPost {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+
+      /// Updates
+      userIdx: json['userIdx'],
+      roodIdx: json['rootIdx'],
+      parentIdx: json['parentIdx'],
+      categoryIdx: json['categoryIdx'],
+      subCategory: json['subCategory'],
+      path: json['path'],
+      createdAt: json["createdAt"],
+      updatedAt: json["updatedAt"],
+      deletedAt: json["deletedAt"],
+
+      /// Old
       postAuthor: json["post_author"],
       postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
       profilePhotoUrl: json['profile_photo_url'],
@@ -244,9 +285,9 @@ class ApiPost {
       commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
       postCategory:
           json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
-      files: json["files"] == null
-          ? []
-          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      // files: json["files"] == null
+      //     ? []
+      //     : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
       authorName: json["author_name"] ?? '',
       shortDateTime: json["short_date_time"] ?? '',
       comments: json["comments"] == null

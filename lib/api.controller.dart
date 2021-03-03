@@ -636,7 +636,7 @@ class Api extends GetxController {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<int> deletePost(ApiPost post, [ApiForum forum]) async {
+  Future<String> deletePost(ApiPost post, [ApiForum forum]) async {
     final dynamic data = await request({
       'route': 'post.delete',
       'idx': post.idx,
@@ -869,7 +869,10 @@ class Api extends GetxController {
     _posts.forEach((ApiPost p) {
       // Don't show same post twice if forum.post is set.
       if (forum.post != null && forum.post.idx == p.idx) return;
-      forum.posts.add(p);
+
+      if (p.deletedAt == '0') {
+        forum.posts.add(p);
+      }
     });
 
     forum.loading = false;
