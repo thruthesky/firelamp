@@ -75,9 +75,9 @@ class ApiPost {
     this.deliveryFee,
     this.storageMethod,
     this.expiry,
-    this.itemPrimaryPhoto,
-    this.itemWidgetPhoto,
-    this.itemDetailPhoto,
+    this.primaryPhoto,
+    this.widgetPhoto,
+    this.detailPhoto,
     this.keywords,
     this.options,
   }) {
@@ -150,9 +150,9 @@ class ApiPost {
   int deliveryFee;
   String storageMethod;
   String expiry;
-  String itemPrimaryPhoto;
-  String itemWidgetPhoto;
-  String itemDetailPhoto;
+  String primaryPhoto;
+  String widgetPhoto;
+  String detailPhoto;
 
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
@@ -310,25 +310,23 @@ class ApiPost {
 
               /// Fix bug here, parse and return int if not as int already.
               // : int.parse(json["featured_image_ID"]),
-      shortTitle: json["short_title"],
+
+      /// Shopping Mall
+      shortTitle: json["shortTitle"],
       price: _parseInt(json["price"]) ?? 0,
-      optionItemPrice: json["option_item_price"] == '1' ? true : false,
-      discountRate: _parseInt(json["discount_rate"]),
-      pause: json["pause"] == null || json["pause"] == ""
-          ? false
-          : int.parse(json["pause"]) == 1
-              ? true
-              : false,
+      optionItemPrice: json["optionItemPrice"] == '1' ? true : false,
+      discountRate: _parseInt(json["discountRate"]),
+      pause: json["pause"] == 'Y' ? true : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
       volume: json["volume"],
-      deliveryFee: _parseInt(json["delivery_fee"]),
+      deliveryFee: _parseInt(json["deliveryFee"]),
       storageMethod: json["storage_method"],
       expiry: json["expiry"],
-      itemPrimaryPhoto: json["item_primary_photo"],
-      itemWidgetPhoto: json["item_widget_photo"],
-      itemDetailPhoto: json["item_detail_photo"],
+      primaryPhoto: json["primaryPhoto"],
+      widgetPhoto: json["widgetPhoto"],
+      detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
-      options: _prepareOptions(json['options'], json["option_item_price"] == '1' ? true : false),
+      options: _prepareOptions(json['options'], json["optionItemPrice"] == '1' ? true : false),
     );
   }
 
@@ -362,9 +360,9 @@ class ApiPost {
         "deliveryFee": deliveryFee,
         "storageMethod": storageMethod,
         "expiry": expiry,
-        "itemPrimaryPhoto": itemPrimaryPhoto,
-        "itemWidgetPhoto": itemWidgetPhoto,
-        "itemDetailPhoto": itemDetailPhoto,
+        "primaryPhoto": primaryPhoto,
+        "widgetPhoto": widgetPhoto,
+        "detailPhoto": detailPhoto,
         "keywords": keywords,
         "options": options.toString,
       };
