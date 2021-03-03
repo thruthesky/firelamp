@@ -527,8 +527,6 @@ class Api extends GetxController {
     if (data == null) data = {};
     data['route'] = 'forum.editPost';
 
-    data['authorName'] = user.nickname ?? user.email;
-
     if (id != null) data['ID'] = id;
     if (category != null) data['category'] = category;
     if (title != null) data['title'] = title;
@@ -567,6 +565,7 @@ class Api extends GetxController {
 
     if (idx == null) {
       data['route'] = 'post.create';
+      data['authorName'] = user.nickname ?? user.email;
     } else {
       data['route'] = 'post.update';
       data['idx'] = idx;

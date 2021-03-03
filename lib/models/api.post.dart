@@ -200,6 +200,7 @@ class ApiPost {
 
   /// Get short name for display
   String get displayName {
+    if (authorName == null) return '';
     return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
   }
 
@@ -278,13 +279,13 @@ class ApiPost {
       updatedAt: json["updatedAt"],
       deletedAt: json["deletedAt"],
 
-      // TODO: 
-      // files: json["files"] == null
-      //     ? []
-      //     : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      // comments: json["comments"] == null
-      //     ? []
-      //     : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+      // TODO:
+      files: json["files"] == null
+          ? []
+          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      comments: json["comments"] == null
+          ? []
+          : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
 
 
       /// Old
