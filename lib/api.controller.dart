@@ -527,6 +527,8 @@ class Api extends GetxController {
     if (data == null) data = {};
     data['route'] = 'forum.editPost';
 
+    data['authorName'] = user.nickname ?? user.email;
+
     if (id != null) data['ID'] = id;
     if (category != null) data['category'] = category;
     if (title != null) data['title'] = title;
@@ -539,7 +541,7 @@ class Api extends GetxController {
     ///
     if (post != null) {
       if (post.idx != null) data['ID'] = post.idx;
-      if (post.category != null) data['category'] = post.category;
+      if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
@@ -580,7 +582,7 @@ class Api extends GetxController {
     ///
     if (post != null) {
       if (post.idx != null) data['idx'] = post.idx;
-      if (post.category != null) data['category'] = post.category;
+      if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {

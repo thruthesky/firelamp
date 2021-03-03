@@ -32,6 +32,12 @@ class ApiPost {
   ApiPost({
     this.data,
     this.idx,
+    this.title,
+    this.content,
+    this.comments,
+    this.files,
+    this.authorName,
+    this.profilePhotoUrl,
 
     // updates
     this.userIdx,
@@ -45,24 +51,18 @@ class ApiPost {
     this.deletedAt,
 
     /// old
-    this.postAuthor,
-    this.profilePhotoUrl,
-    this.postDate,
-    this.content,
-    this.title,
-    this.postModified,
-    this.postParent,
-    this.guid,
-    this.commentCount,
-    this.postCategory,
-    this.files,
-    this.authorName,
-    this.shortDateTime,
-    this.comments,
-    this.category,
-    this.featuredImageUrl,
-    this.featuredImageThumbnailUrl,
-    this.featuredImageId,
+    // this.postAuthor,
+    // this.postDate,
+    // this.postModified,
+    // this.postParent,
+    // this.guid,
+    // this.commentCount,
+    // this.postCategory,
+    // this.shortDateTime,
+    // this.category,
+    // this.featuredImageUrl,
+    // this.featuredImageThumbnailUrl,
+    // this.featuredImageId,
 
     // Shopping mall props
     this.shortTitle,
@@ -90,6 +90,14 @@ class ApiPost {
   /// you can access [data] directly.
   dynamic data;
   int idx;
+  String title;
+  String content;
+  String authorName;
+  String profilePhotoUrl;
+
+  /// TODO:
+  List<ApiFile> files;
+  List<ApiComment> comments;
 
   /// updates
   String userIdx;
@@ -103,25 +111,19 @@ class ApiPost {
   String deletedAt;
 
   /// old
-  String postAuthor;
-  String profilePhotoUrl;
-  DateTime postDate;
-  String content;
-  String title;
-  DateTime postModified;
-  int postParent;
-  String guid;
-  int commentCount;
-  List<int> postCategory;
-  List<ApiFile> files;
-  String authorName;
-  String shortDateTime;
-  List<ApiComment> comments;
-  String category;
+  // String postAuthor;
+  // DateTime postDate;
+  // DateTime postModified;
+  // int postParent;
+  // String guid;
+  // int commentCount;
+  // List<int> postCategory;
+  // String shortDateTime;
+  // String category;
 
-  String featuredImageUrl;
-  String featuredImageThumbnailUrl;
-  int featuredImageId;
+  // String featuredImageUrl;
+  // String featuredImageThumbnailUrl;
+  // int featuredImageId;
 
   /// Widgets
   ///
@@ -261,6 +263,9 @@ class ApiPost {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+      title: json["title"] ?? '',
+      content: json["content"] ?? '',
+      profilePhotoUrl: json['profile_photo_url'],
 
       /// Updates
       userIdx: json['userIdx'],
@@ -273,36 +278,36 @@ class ApiPost {
       updatedAt: json["updatedAt"],
       deletedAt: json["deletedAt"],
 
-      /// Old
-      postAuthor: json["post_author"],
-      postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
-      profilePhotoUrl: json['profile_photo_url'],
-      content: json["content"] ?? '',
-      title: json["title"] ?? '',
-      postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
-      postParent: json["post_parent"] ?? 0,
-      guid: json["guid"] ?? '',
-      commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
-      postCategory:
-          json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
+      // TODO: 
       // files: json["files"] == null
       //     ? []
       //     : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      authorName: json["author_name"] ?? '',
-      shortDateTime: json["short_date_time"] ?? '',
-      comments: json["comments"] == null
-          ? []
-          : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
-      category: json["category"],
-      featuredImageUrl: json["featured_image_url"],
-      featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
-      featuredImageId: json["featured_image_ID"] == null
-          ? 0
-          : json["featured_image_ID"] is int
-              ? json["featured_image_ID"]
+      // comments: json["comments"] == null
+      //     ? []
+      //     : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+
+
+      /// Old
+      // postAuthor: json["post_author"],
+      // postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
+      // postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
+      // postParent: json["post_parent"] ?? 0,
+      // guid: json["guid"] ?? '',
+      // commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
+      // postCategory:
+      //     json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
+      // authorName: json["author_name"] ?? '',
+      // shortDateTime: json["short_date_time"] ?? '',
+      // category: json["category"],
+      // featuredImageUrl: json["featured_image_url"],
+      // featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
+      // featuredImageId: json["featured_image_ID"] == null
+      //     ? 0
+      //     : json["featured_image_ID"] is int
+      //         ? json["featured_image_ID"]
 
               /// Fix bug here, parse and return int if not as int already.
-              : int.parse(json["featured_image_ID"]),
+              // : int.parse(json["featured_image_ID"]),
       shortTitle: json["short_title"],
       price: _parseInt(json["price"]) ?? 0,
       optionItemPrice: json["option_item_price"] == '1' ? true : false,
@@ -327,24 +332,24 @@ class ApiPost {
 
   Map<String, dynamic> toJson() => {
         "idx": idx,
-        "post_author": postAuthor,
-        if (postDate != null) "post_date": postDate.toIso8601String(),
-        "content": content,
-        "title": title,
-        if (postModified != null) "post_modified": postModified.toIso8601String(),
-        "post_parent": postParent,
-        "guid": guid,
-        "comment_count": commentCount,
-        if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
-        "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        "author_name": authorName,
-        "short_date_time": shortDateTime,
-        if (comments != null)
-          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
-        "category": category,
-        "featured_image_url": featuredImageUrl,
-        "featured_image_thumbnail_url": featuredImageThumbnailUrl,
-        "featured_image_ID": featuredImageId,
+        // "post_author": postAuthor,
+        // if (postDate != null) "post_date": postDate.toIso8601String(),
+        // "content": content,
+        // "title": title,
+        // if (postModified != null) "post_modified": postModified.toIso8601String(),
+        // "post_parent": postParent,
+        // "guid": guid,
+        // "comment_count": commentCount,
+        // if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
+        // "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
+        // "author_name": authorName,
+        // "short_date_time": shortDateTime,
+        // if (comments != null)
+        //   "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        // "category": category,
+        // "featured_image_url": featuredImageUrl,
+        // "featured_image_thumbnail_url": featuredImageThumbnailUrl,
+        // "featured_image_ID": featuredImageId,
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
