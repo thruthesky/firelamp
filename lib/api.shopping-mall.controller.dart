@@ -231,7 +231,7 @@ class Cart extends GetxController {
     return jsonEncode({
       'postId': item.idx,
       'optionItemPrice': item.optionItemPrice,
-      'postTitle': item.title, // 상품 제목
+      'title': item.title, // 상품 제목
       'price': item.price, // 해당 상품 가격
       'discountRate': item.discountRate, // 해당 상품의 할인 율
       'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격

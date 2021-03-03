@@ -1,6 +1,6 @@
 part of '../firelamp.dart';
 
-/// [ApiChatUserRoom] is the record reference of `/chat/rooms/{user.id}/roomId` information.
+/// [ApiChatUserRoom] is the record reference of `/chat/rooms/{user.idx/roomId` information.
 class ApiChatUserRoom {
   String id;
   String userId;
