@@ -594,6 +594,7 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
+  @Deprecated('user commentEdit()')
   Future<ApiComment> editComment({
     content = '',
     List<ApiFile> files,
@@ -604,15 +605,50 @@ class Api extends GetxController {
     final data = {
       'route': 'forum.editComment',
       'comment_post_ID': post.idx,
-      if (comment != null && comment.commentId != null && comment.commentId != '')
-        'comment_ID': comment.commentId,
-      if (parent != null) 'comment_parent': parent.commentId,
-      'comment_content': content ?? '',
+      // if (comment != null && comment.commentId != null && comment.commentId != '')
+      //   'comment_ID': comment.commentId,
+      // if (parent != null) 'comment_parent': parent.commentId,
+      // 'comment_content': content ?? '',
     };
     if (files != null) {
       Set ids = files.map((file) => file.id).toSet();
       data['files'] = ids.join(',');
     }
+    final json = await request(data);
+    return ApiComment.fromJson(json);
+  }
+
+  Future<ApiComment> commentEdit({
+    int idx,
+    String rootIdx,
+    String parentIdx,
+    String content,
+    List<ApiFile> files,
+    Map<String, dynamic> data,
+    ApiComment comment,
+  }) async {
+    if (data == null) data = {};
+
+    if (idx == null) {
+      data['route'] = 'comment.create';
+      data['authorName'] = user.nickname ?? user.email;
+      data['rootIdx'] = rootIdx;
+      data['parentIdx'] = parentIdx;
+    } else {
+      data['route'] = 'comment.update';
+      data['idx'] = idx;
+      if (comment.files.length > 0) {
+        Set ids = comment.files.map((file) => file.id).toSet();
+        data['files'] = ids.join(',');
+      }
+    }
+
+    if (content != null) data['content'] = content;
+    if (files != null) {
+      Set ids = files.map((file) => file.id).toSet();
+      data['files'] = ids.join(',');
+    }
+
     final json = await request(data);
     return ApiComment.fromJson(json);
   }
@@ -657,16 +693,15 @@ class Api extends GetxController {
   /// It returns deleted file id.
   Future<int> deleteComment(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
-      'route': 'forum.deleteComment',
-      'comment_ID': comment.commentId,
+      'route': 'comment.delete',
+      'idx': comment.idx,
     });
-    int i = post.comments.indexWhere((c) => c.commentId == comment.commentId);
+    int i = post.comments.indexWhere((c) => c.idx == comment.idx);
     post.comments.removeAt(i);
-    return data['comment_ID'];
+    return data['idx'];
   }
 
   @Deprecated('use postSearch()')
-
   /// Get posts from backend.
   ///
   /// You can use this to display some posts from the forum category. You may use this for displaying

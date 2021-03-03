@@ -44,7 +44,7 @@ class ApiPost {
     this.roodIdx,
     this.parentIdx,
     this.categoryIdx,
-    this.subCategory,
+    this.subcategory,
     this.path,
     this.createdAt,
     this.updatedAt,
@@ -104,7 +104,7 @@ class ApiPost {
   String roodIdx;
   String parentIdx;
   String categoryIdx;
-  String subCategory;
+  String subcategory;
   String path;
   String createdAt;
   String updatedAt;
@@ -209,7 +209,7 @@ class ApiPost {
     // print(comment.commentParent);
 
     // find existing comment and update.
-    int i = comments.indexWhere((c) => c.commentId == comment.commentId);
+    int i = comments.indexWhere((c) => c.idx == comment.idx);
     if (i != -1) {
       comment.depth = comments[i].depth;
       comments[i] = comment;
@@ -217,14 +217,14 @@ class ApiPost {
     }
 
     // if it's new comment right under post, then add at bottom.
-    if (comment.commentParent == '0') {
+    if (comment.parentIdx == idx.toString()) {
       comments.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.commentId == comment.commentParent);
+    int p = comments.indexWhere((c) => c.idx.toString() == comment.parentIdx);
     if (p != -1) {
       comment.depth = comments[p].depth + 1;
       comments.insert(p + 1, comment);
@@ -264,7 +264,8 @@ class ApiPost {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-      title: json["title"] ?? '',
+      authorName: json["authorName"] ?? '',
+      title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',
       profilePhotoUrl: json['profile_photo_url'],
 
@@ -273,14 +274,14 @@ class ApiPost {
       roodIdx: json['rootIdx'],
       parentIdx: json['parentIdx'],
       categoryIdx: json['categoryIdx'],
-      subCategory: json['subCategory'],
+      subcategory: json['subcategory'],
       path: json['path'],
       createdAt: json["createdAt"],
       updatedAt: json["updatedAt"],
       deletedAt: json["deletedAt"],
 
       // TODO:
-      files: json["files"] == null
+      files: json["files"] == null || json["files"] == ''
           ? []
           : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
       comments: json["comments"] == null
