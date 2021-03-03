@@ -177,8 +177,8 @@ class Cart extends GetxController {
   loadOptions() async {
     try {
       final re = await Api.instance.request({'route': 'mall.options'});
-      deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
-      _deliveryFeePrice = int.parse(re['delivery_fee_price']);
+      deliveryFeeFreeLimit = int.parse("${re['deliveryFeeFreeLimit']}");
+      _deliveryFeePrice = int.parse("${re['deliveryFeePrice']}");
       print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
       print('deliveryFeePrice: $_deliveryFeePrice');
       // print(re);
