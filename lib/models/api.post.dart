@@ -31,12 +31,12 @@ class ApiItemOption {
 class ApiPost {
   ApiPost({
     this.data,
-    this.id,
+    this.idx,
     this.postAuthor,
     this.profilePhotoUrl,
     this.postDate,
-    this.postContent,
-    this.postTitle,
+    this.content,
+    this.title,
     this.postModified,
     this.postParent,
     this.guid,
@@ -67,19 +67,19 @@ class ApiPost {
     this.options,
   }) {
     if (files == null) files = [];
-    if (postTitle == null) postTitle = '';
-    if (postContent == null) postContent = '';
+    if (title == null) title = '';
+    if (content == null) content = '';
   }
 
   /// [data] is the original data for the post. When you need to access an extra meta property,
   /// you can access [data] directly.
   dynamic data;
-  int id;
+  int idx;
   String postAuthor;
   String profilePhotoUrl;
   DateTime postDate;
-  String postContent;
-  String postTitle;
+  String content;
+  String title;
   DateTime postModified;
   int postParent;
   String guid;
@@ -150,7 +150,7 @@ class ApiPost {
   /// EO Shopping Mall ----------------------------------------------------
 
   ///
-  bool get isMine => postAuthor == Api.instance.id;
+  bool get isMine => postAuthor == Api.instance.idx;
   bool get isNotMine => !isMine;
 
   /// Display options
@@ -229,12 +229,12 @@ class ApiPost {
   factory ApiPost.fromJson(Map<String, dynamic> json) {
     return ApiPost(
       data: json,
-      id: json["ID"] is String ? int.parse(json["ID"]) : json["ID"],
+      idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
       postAuthor: json["post_author"],
       postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
       profilePhotoUrl: json['profile_photo_url'],
-      postContent: json["post_content"] ?? '',
-      postTitle: json["post_title"] ?? '',
+      content: json["content"] ?? '',
+      title: json["title"] ?? '',
       postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
       postParent: json["post_parent"] ?? 0,
       guid: json["guid"] ?? '',
@@ -282,11 +282,11 @@ class ApiPost {
   }
 
   Map<String, dynamic> toJson() => {
-        "ID": id,
+        "idx": idx,
         "post_author": postAuthor,
         if (postDate != null) "post_date": postDate.toIso8601String(),
-        "post_content": postContent,
-        "post_title": postTitle,
+        "content": content,
+        "title": title,
         if (postModified != null) "post_modified": postModified.toIso8601String(),
         "post_parent": postParent,
         "guid": guid,

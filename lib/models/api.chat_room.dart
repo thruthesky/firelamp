@@ -39,10 +39,10 @@ class ApiChatRoom extends ChatHelper {
 
   /// [roomId] is the combination of the User A md5 and user B md5 which is return when you get the other user profile.
   String get roomId {
-    if (int.parse(Api.instance.id) < int.parse(otherUserId)) {
-      return "${Api.instance.id}-$otherUserId";
+    if (int.parse(Api.instance.idx) < int.parse(otherUserId)) {
+      return "${Api.instance.idx}-$otherUserId";
     } else {
-      return "$otherUserId-${Api.instance.id}";
+      return "$otherUserId-${Api.instance.idx}";
     }
   }
 
@@ -136,10 +136,10 @@ class ApiChatRoom extends ChatHelper {
       ///
       /// Create `chat/rooms/myId/roomId` if not exists.
       /// LoggedIn User copy of Other User Room Information
-      await roomsRef(myId, roomId: roomId).set({
+      await roomsRef(myIdx, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
-        'userId': otherUser.id,
+        'userId': otherUser.idx,
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
@@ -151,7 +151,7 @@ class ApiChatRoom extends ChatHelper {
       await roomsRef(otherUserId, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
-        'userId': Api.instance.id,
+        'userId': Api.instance.idx,
         'displayName': Api.instance.nickname,
         'profilePhotoUrl': Api.instance.profilePhotoUrl,
       });
@@ -162,14 +162,14 @@ class ApiChatRoom extends ChatHelper {
       /// await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
       await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
-        'userId': Api.instance.id,
+        'userId': Api.instance.idx,
         'protocol': ChatProtocol.roomCreated
       });
     } else {
       /// Update latest name and photo of mine.
       ///
       /// Update your copy of other User and update the Room Information
-      await roomsRef(myId, roomId: roomId).update({
+      await roomsRef(myIdx, roomId: roomId).update({
         'displayName': otherUser.nickname,
         'profilePhotoUrl': otherUser.profilePhotoUrl,
       });
@@ -185,12 +185,12 @@ class ApiChatRoom extends ChatHelper {
     // This will be notify chat room listener when chat room title changes, or new users enter, etc.
     if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
     _currentRoomSubscription =
-        roomsRef(Api.instance.id, roomId: roomId).onValue.listen((Event event) {
+        roomsRef(Api.instance.idx, roomId: roomId).onValue.listen((Event event) {
       // If the user got a message from a chat room where the user is currently in,
       // then, set `newMessages` to 0.
       final data = ApiChatUserRoom.fromSnapshot(event.snapshot);
       if (data.newMessages != null && data.newMessages > 0 && data.createdAt != null) {
-        roomsRef(Api.instance.id, roomId: roomId).update({'newMessages': 0});
+        roomsRef(Api.instance.idx, roomId: roomId).update({'newMessages': 0});
       }
     });
 
@@ -339,7 +339,7 @@ class ApiChatRoom extends ChatHelper {
     Map<String, dynamic> extra,
   }) async {
     Map<String, dynamic> message = {
-      'userId': Api.instance.id,
+      'userId': Api.instance.idx,
       'text': text,
       if (extra != null) ...extra,
     };
@@ -354,7 +354,7 @@ class ApiChatRoom extends ChatHelper {
         'updatedAt': ServerValue.timestamp,
         'text': text,
       });
-      await roomsRef(myId, roomId: roomId).update({
+      await roomsRef(myIdx, roomId: roomId).update({
         'updatedAt': ServerValue.timestamp,
         'text': text,
       });
@@ -371,7 +371,7 @@ class ApiChatRoom extends ChatHelper {
 
   Future<dynamic> sendChatPushMessage(String body) {
     return Api.instance.sendMessageToUsers(
-      users: [otherUser.id],
+      users: [otherUser.idx],
       title: 'chat message',
       subscription: topic,
       body: body,

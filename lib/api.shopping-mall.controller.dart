@@ -113,8 +113,8 @@ class Cart extends GetxController {
         items.removeWhere((item) => item.priceWithOptions == 0);
       }
     } else {
-      item.postTitle = null;
-      items.removeWhere((i) => i.postTitle == null);
+      item.title = null;
+      items.removeWhere((i) => i.title == null);
     }
     update();
   }
@@ -193,7 +193,7 @@ class Cart extends GetxController {
   String toString() {
     String str = 'Cart.toString() :: ';
     for (final item in items) {
-      str += '${item.id} => $item, ';
+      str += '${item.idx} => $item, ';
     }
     return str;
   }
@@ -228,9 +228,9 @@ class Cart extends GetxController {
     // 상품 정보.
     // (게시글) 번호 및 상품에 대한 정보 저장.
     return jsonEncode({
-      'postId': item.id,
+      'postId': item.idx,
       'optionItemPrice': item.optionItemPrice,
-      'postTitle': item.postTitle, // 상품 제목
+      'postTitle': item.title, // 상품 제목
       'price': item.price, // 해당 상품 가격
       'discountRate': item.discountRate, // 해당 상품의 할인 율
       'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격

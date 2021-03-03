@@ -204,7 +204,7 @@ class _ForumListScreenState extends State<ForumListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'title: ${post.postTitle}',
+                      'title: ${post.title}',
                       style: TextStyle(fontSize: 34),
                     ),
                     RaisedButton(child: Text('Button'), onPressed: () {}),

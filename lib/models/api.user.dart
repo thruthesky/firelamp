@@ -38,9 +38,8 @@ class ApiUser {
   String name;
   String birthday;
   String birthdate;
-  String id;
-  String userLogin;
-  String userEmail;
+  String idx;
+  String email;
   String userRegistered;
   String sessionId;
 
@@ -76,9 +75,8 @@ class ApiUser {
     this.name,
     this.birthday,
     this.birthdate,
-    this.id,
-    this.userLogin,
-    this.userEmail,
+    this.idx,
+    this.email,
     this.userRegistered,
     this.sessionId,
     this.mode,
@@ -105,11 +103,10 @@ class ApiUser {
     name = json['name'];
     birthday = json['birthday'];
     birthdate = json['birthdate'];
-    id = json['ID'];
-    userLogin = json['user_login'];
-    userEmail = json['user_email'];
+    idx = json['idx'];
+    email = json['email'];
     userRegistered = json['user_registered'];
-    sessionId = json['session_id'];
+    sessionId = json['sessionId'];
     mode = json['mode'];
     profilePhotoUrl = json['profilePhotoUrl'];
     point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
@@ -133,11 +130,10 @@ class ApiUser {
     data['name'] = this.name;
     data['birthday'] = this.birthday;
     data['birthdate'] = this.birthdate;
-    data['ID'] = this.id;
-    data['user_login'] = this.userLogin;
-    data['user_email'] = this.userEmail;
+    data['idx'] = this.idx;
+    data['email'] = this.email;
     data['user_registered'] = this.userRegistered;
-    data['session_id'] = this.sessionId;
+    data['sessionId'] = this.sessionId;
     data['mode'] = this.mode;
     data['profilePhotoUrl'] = this.profilePhotoUrl;
     data['point'] = this.point;

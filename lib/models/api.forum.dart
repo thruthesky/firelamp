@@ -106,9 +106,9 @@ class ApiForum {
   /// - find existing post and replace. Or add new one on top.
   /// - render the view
   /// - scroll to the post
-  insertOrUpdatePost(post) {
+  insertOrUpdatePost(ApiPost post) {
     postInEdit = null;
-    int i = posts.indexWhere((p) => p.id == post.id);
+    int i = posts.indexWhere((p) => p.idx == post.idx);
     int jumpTo = 0;
     if (i == -1) {
       posts.insert(0, post);

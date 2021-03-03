@@ -53,7 +53,7 @@ class Api extends GetxController {
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
-  String get id => user?.id;
+  String get idx => user?.idx;
   String get sessionId => user?.sessionId;
   String get primaryPhotoUrl => user?.profilePhotoUrl;
   String get fullName => user?.name;
@@ -170,9 +170,9 @@ class Api extends GetxController {
       authChanges.add(user);
     });
 
-    authChanges.listen((user) async {
-      // print('authChanges');
-    });
+    // authChanges.listen((user) async {
+    //   // print('authChanges');
+    // });
   }
 
   /// Initialization
@@ -288,10 +288,10 @@ class Api extends GetxController {
   /// If the input [data] does not have `session_id` property and the user had logged in,
   /// then add `session_id`.
   Map<String, dynamic> _addSessionId(Map<String, dynamic> data) {
-    if (data['session_id'] != null) return data;
+    if (data['sessionId'] != null) return data;
     if (notLoggedIn) return data;
 
-    data['session_id'] = user.sessionId;
+    data['sessionId'] = user.sessionId;
 
     return data;
   }
@@ -319,7 +319,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      // _printDebugUrl(_apiUrl);
+      _printDebugUrl(data);
       res = await dio.post(_apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; _apiUrl: $_apiUrl');
@@ -332,15 +332,20 @@ class Api extends GetxController {
       throw ('Response.body is null. Backend might not an API server. Or, Backend URL is wrong.');
     }
 
-    if (res.data is String || res.data['code'] == null) {
-      throw (res.data);
-    } else if (res.data['code'] != 0) {
-      /// If there is error like "ERROR_", then it throws exception.
-      // print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
-      // print(data);
-      throw res.data['code'];
-    }
-    return res.data['data'];
+    if (res.data is String) throw (res.data);
+
+    dynamic response = res.data['response'];
+    if (response is String && response.indexOf('error_') == 0) throw response;
+
+    return response;
+
+    // else if (res.data['code'] != 0) {
+    //   /// If there is error like "ERROR_", then it throws exception.
+    //   // print('api.controller.dart ERROR: code: ${res.data['code']}, requested data:');
+    //   // print(data);
+    //   throw res.data['code'];
+    // }
+    // return res.data['data'];
   }
 
   /// Get version of backend api.
@@ -371,9 +376,9 @@ class Api extends GetxController {
     Map<String, dynamic> data,
   }) async {
     data['route'] = 'user.register';
-    data['user_email'] = email;
-    data['user_pass'] = pass;
-    data['session_id'] = '';
+    data['email'] = email;
+    data['password'] = pass;
+    data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     // print('res: $res');
@@ -393,12 +398,12 @@ class Api extends GetxController {
   }) async {
     if (data == null) data = {};
     data['route'] = 'user.loginOrRegister';
-    data['user_email'] = email;
-    data['user_pass'] = pass;
-    data['session_id'] = '';
+    data['email'] = email;
+    data['password'] = pass;
+    data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
-    // print(res);
+    print(res);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
     authChanges.add(user);
@@ -423,9 +428,9 @@ class Api extends GetxController {
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'user.login';
-    data['user_email'] = email;
-    data['user_pass'] = pass;
-    data['session_id'] = '';
+    data['email'] = email;
+    data['password'] = pass;
+    data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
@@ -442,6 +447,8 @@ class Api extends GetxController {
     update();
   }
 
+  @Deprecated('use userUpdate()')
+
   /// Update user key/value on user meta (Not on wp_users table)
   Future<ApiUser> updateUserMeta(String key, String value) async {
     final Map<String, dynamic> data = {
@@ -454,8 +461,17 @@ class Api extends GetxController {
     return user;
   }
 
+  @Deprecated('use userUpdate()')
   Future<ApiUser> updateProfile(String key, String value) async {
     return updateUserMeta(key, value);
+  }
+
+  Future<ApiUser> userUpdate(Map<String, dynamic> data) async {
+    data['route'] = 'user.update';
+    final Map<String, dynamic> res = await request(data);
+    user = ApiUser.fromJson(res);
+    update();
+    return user;
   }
 
   /// User profile data
@@ -468,7 +484,7 @@ class Api extends GetxController {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     loading.profile = true;
     final Map<String, dynamic> res =
-        await request({'route': 'user.profile', 'session_id': sessionId});
+        await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
     update();
@@ -493,6 +509,8 @@ class Api extends GetxController {
     return userProfile(sessionId);
   }
 
+  @Deprecated('user postEdit()')
+
   /// edit(create or update) post
   ///
   /// If [post] is given, the id, category, title, content and files will be used from it instead.
@@ -511,8 +529,8 @@ class Api extends GetxController {
 
     if (id != null) data['ID'] = id;
     if (category != null) data['category'] = category;
-    if (title != null) data['post_title'] = title;
-    if (content != null) data['post_content'] = content;
+    if (title != null) data['title'] = title;
+    if (content != null) data['content'] = content;
     if (files != null) {
       Set ids = files.map((file) => file.id).toSet();
       data['files'] = ids.join(',');
@@ -520,11 +538,51 @@ class Api extends GetxController {
 
     ///
     if (post != null) {
-      if (post.id != null) data['ID'] = post.id;
+      if (post.idx != null) data['ID'] = post.idx;
       if (post.category != null) data['category'] = post.category;
-      if (post.postTitle != null && post.postTitle != '') data['post_title'] = post.postTitle;
-      if (post.postContent != null && post.postContent != '')
-        data['post_content'] = post.postContent;
+      if (post.title != null && post.title != '') data['title'] = post.title;
+      if (post.content != null && post.content != '') data['content'] = post.content;
+      if (post.files.length > 0) {
+        Set ids = post.files.map((file) => file.id).toSet();
+        data['files'] = ids.join(',');
+      }
+    }
+
+    final json = await request(data);
+    return ApiPost.fromJson(json);
+  }
+
+  Future<ApiPost> postEdit({
+    int idx,
+    String categoryId,
+    String title,
+    String content,
+    List<ApiFile> files,
+    Map<String, dynamic> data,
+    ApiPost post,
+  }) async {
+    if (data == null) data = {};
+
+    if (idx == null) {
+      data['route'] = 'post.create';
+    } else {
+      data['route'] = 'post.update';
+      data['idx'] = idx;
+    }
+    if (categoryId != null) data['categoryId'] = categoryId;
+    if (title != null) data['title'] = title;
+    if (content != null) data['content'] = content;
+    if (files != null) {
+      Set ids = files.map((file) => file.id).toSet();
+      data['files'] = ids.join(',');
+    }
+
+    ///
+    if (post != null) {
+      if (post.idx != null) data['idx'] = post.idx;
+      if (post.category != null) data['category'] = post.category;
+      if (post.title != null && post.title != '') data['title'] = post.title;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.id).toSet();
         data['files'] = ids.join(',');
@@ -544,7 +602,7 @@ class Api extends GetxController {
   }) async {
     final data = {
       'route': 'forum.editComment',
-      'comment_post_ID': post.id,
+      'comment_post_ID': post.idx,
       if (comment != null && comment.commentId != null && comment.commentId != '')
         'comment_ID': comment.commentId,
       if (parent != null) 'comment_parent': parent.commentId,
@@ -566,7 +624,7 @@ class Api extends GetxController {
   Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
-      'ID': post.id,
+      'idx': post.idx,
       'featured_image_ID': file.id,
     });
     return json;
@@ -580,14 +638,14 @@ class Api extends GetxController {
   /// It returns deleted file id.
   Future<int> deletePost(ApiPost post, [ApiForum forum]) async {
     final dynamic data = await request({
-      'route': 'forum.deletePost',
-      'ID': post.id,
+      'route': 'post.delete',
+      'idx': post.idx,
     });
     if (forum != null) {
-      int i = forum.posts.indexWhere((p) => p.id == post.id);
+      int i = forum.posts.indexWhere((p) => p.idx == post.idx);
       forum.posts.removeAt(i);
     }
-    return data['ID'];
+    return data['idx'];
   }
 
   /// Deletes a comment.
@@ -605,6 +663,8 @@ class Api extends GetxController {
     post.comments.removeAt(i);
     return data['comment_ID'];
   }
+
+  @Deprecated('use postSearch()')
 
   /// Get posts from backend.
   ///
@@ -626,6 +686,31 @@ class Api extends GetxController {
     data['numberposts'] = limit;
     if (searchKey != null) data['s'] = searchKey;
     if (author != null) data['author'] = author;
+    final jsonList = await request(data);
+
+    List<ApiPost> _posts = [];
+    for (int i = 0; i < jsonList.length; i++) {
+      _posts.add(ApiPost.fromJson(jsonList[i]));
+    }
+    return _posts;
+  }
+
+  Future<List<ApiPost>> postSearch({
+    int postIdOnTop,
+    String categoryId,
+    int limit = 20,
+    int page = 1,
+    int userIdx,
+    String searchKey,
+  }) async {
+    final Map<String, dynamic> data = {};
+    data['route'] = 'post.search';
+    data['postIdOnTop'] = postIdOnTop;
+    data['where'] = "categoryId=<$categoryId> and parentIdx=0";
+    data['page'] = page;
+    data['limit'] = limit;
+    if (searchKey != null) data['s'] = searchKey;
+    if (userIdx != null) data['userIdx'] = userIdx;
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -666,7 +751,7 @@ class Api extends GetxController {
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
       'route': 'file.upload',
-      'session_id': sessionId,
+      'sessionId': sessionId,
       if (postType != null) 'post_type': postType,
 
       /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
@@ -763,12 +848,13 @@ class Api extends GetxController {
 
     // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
-    _posts = await searchPost(
+    _posts = await postSearch(
       postIdOnTop: forum.postIdOnTop,
-      category: forum.category,
-      paged: forum.pageNo,
+      categoryId: forum.category,
+      page: forum.pageNo,
       limit: forum.limit,
-      author: forum.author,
+      // @todo search by user.idx
+      // author: forum.author,
       searchKey: forum.searchKey,
     );
 
@@ -782,7 +868,7 @@ class Api extends GetxController {
 
     _posts.forEach((ApiPost p) {
       // Don't show same post twice if forum.post is set.
-      if (forum.post != null && forum.post.id == p.id) return;
+      if (forum.post != null && forum.post.idx == p.idx) return;
       forum.posts.add(p);
     });
 
@@ -947,10 +1033,7 @@ class Api extends GetxController {
   /// loadSettings
   _loadSettings() async {
     final _settings = await request({'route': 'app.settings'});
-    // print('Update on APP SETTINGS');
-    // print("$_settings");
     settings = {...settings, ..._settings};
-    // print("$settings");
     settingChanges.add(settings);
   }
 
@@ -1019,7 +1102,8 @@ class Api extends GetxController {
   ///
   Future _saveTokenToDatabase(String token) {
     this.token = token;
-    return updateToken(token);
+    print('------------------- @todo: updateToken()');
+    // return updateToken(token);
   }
 
   /// 현재 카트 정보를 백업 시켜 놓는다.

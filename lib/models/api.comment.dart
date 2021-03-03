@@ -45,7 +45,7 @@ class ApiComment {
   /// - `CommentMode.none` string for nothing.
   CommentMode mode;
 
-  bool get isMine => userId == Api.instance.id;
+  bool get isMine => userId == Api.instance.idx;
   bool get isNotMine => !isMine;
 
   factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(
@@ -57,10 +57,10 @@ class ApiComment {
         commentAuthor: json["comment_author"],
         commentContent: json["comment_content"],
         commentContentAutop: json["comment_content_autop"],
-        commentDate: DateTime.parse(json["comment_date"]),
+        // commentDate: DateTime.parse(json["comment_date"]),
         files: List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
         userPhoto: json["user_photo"] ?? '',
-        shortDateTime: json["short_date_time"],
+        // shortDateTime: json["short_date_time"],
       );
 
   Map<String, dynamic> toJson() => {
