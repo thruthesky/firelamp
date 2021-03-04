@@ -32,37 +32,37 @@ class ApiPost {
   ApiPost({
     this.data,
     this.idx,
+    this.title,
+    this.content,
+    this.comments,
+    this.files,
+    this.authorName,
+    this.profilePhotoUrl,
 
     // updates
     this.userIdx,
     this.roodIdx,
     this.parentIdx,
     this.categoryIdx,
-    this.subCategory,
+    this.subcategory,
     this.path,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
 
     /// old
-    this.postAuthor,
-    this.profilePhotoUrl,
-    this.postDate,
-    this.content,
-    this.title,
-    this.postModified,
-    this.postParent,
-    this.guid,
-    this.commentCount,
-    this.postCategory,
-    this.files,
-    this.authorName,
-    this.shortDateTime,
-    this.comments,
-    this.category,
-    this.featuredImageUrl,
-    this.featuredImageThumbnailUrl,
-    this.featuredImageId,
+    // this.postAuthor,
+    // this.postDate,
+    // this.postModified,
+    // this.postParent,
+    // this.guid,
+    // this.commentCount,
+    // this.postCategory,
+    // this.shortDateTime,
+    // this.category,
+    // this.featuredImageUrl,
+    // this.featuredImageThumbnailUrl,
+    // this.featuredImageId,
 
     // Shopping mall props
     this.shortTitle,
@@ -90,38 +90,40 @@ class ApiPost {
   /// you can access [data] directly.
   dynamic data;
   int idx;
+  String title;
+  String content;
+  String authorName;
+  String profilePhotoUrl;
+
+  /// TODO:
+  List<ApiFile> files;
+  List<ApiComment> comments;
 
   /// updates
   String userIdx;
   String roodIdx;
   String parentIdx;
   String categoryIdx;
-  String subCategory;
+  String subcategory;
   String path;
   String createdAt;
   String updatedAt;
   String deletedAt;
 
   /// old
-  String postAuthor;
-  String profilePhotoUrl;
-  DateTime postDate;
-  String content;
-  String title;
-  DateTime postModified;
-  int postParent;
-  String guid;
-  int commentCount;
-  List<int> postCategory;
-  List<ApiFile> files;
-  String authorName;
-  String shortDateTime;
-  List<ApiComment> comments;
-  String category;
+  // String postAuthor;
+  // DateTime postDate;
+  // DateTime postModified;
+  // int postParent;
+  // String guid;
+  // int commentCount;
+  // List<int> postCategory;
+  // String shortDateTime;
+  // String category;
 
-  String featuredImageUrl;
-  String featuredImageThumbnailUrl;
-  int featuredImageId;
+  // String featuredImageUrl;
+  // String featuredImageThumbnailUrl;
+  // int featuredImageId;
 
   /// Upload file/image
   String thumbnailUrl(src, {int width = 150, int height = 150, int quality = 75}) {
@@ -207,6 +209,7 @@ class ApiPost {
 
   /// Get short name for display
   String get displayName {
+    if (authorName == null) return '';
     return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
   }
 
@@ -215,7 +218,7 @@ class ApiPost {
     // print(comment.commentParent);
 
     // find existing comment and update.
-    int i = comments.indexWhere((c) => c.commentId == comment.commentId);
+    int i = comments.indexWhere((c) => c.idx == comment.idx);
     if (i != -1) {
       comment.depth = comments[i].depth;
       comments[i] = comment;
@@ -223,14 +226,14 @@ class ApiPost {
     }
 
     // if it's new comment right under post, then add at bottom.
-    if (comment.commentParent == '0') {
+    if (comment.parentIdx == idx.toString()) {
       comments.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.commentId == comment.commentParent);
+    int p = comments.indexWhere((c) => c.idx.toString() == comment.parentIdx);
     if (p != -1) {
       comment.depth = comments[p].depth + 1;
       comments.insert(p + 1, comment);
@@ -270,48 +273,52 @@ class ApiPost {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+      authorName: json["authorName"] ?? '',
+      title: json["title"] != '' ? json['title'] : 'No Title',
+      content: json["content"] ?? '',
+      profilePhotoUrl: json['profile_photo_url'],
 
       /// Updates
       userIdx: json['userIdx'],
       roodIdx: json['rootIdx'],
       parentIdx: json['parentIdx'],
       categoryIdx: json['categoryIdx'],
-      subCategory: json['subCategory'],
+      subcategory: json['subcategory'],
       path: json['path'],
       createdAt: json["createdAt"],
       updatedAt: json["updatedAt"],
       deletedAt: json["deletedAt"],
 
-      /// Old
-      postAuthor: json["post_author"],
-      postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
-      profilePhotoUrl: json['profile_photo_url'],
-      content: json["content"] ?? '',
-      title: json["title"] ?? '',
-      postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
-      postParent: json["post_parent"] ?? 0,
-      guid: json["guid"] ?? '',
-      commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
-      postCategory:
-          json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
-      // files: json["files"] == null
-      //     ? []
-      //     : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      authorName: json["author_name"] ?? '',
-      shortDateTime: json["short_date_time"] ?? '',
+      // TODO:
+      files: json["files"] == null || json["files"] == ''
+          ? []
+          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
       comments: json["comments"] == null
           ? []
           : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
-      category: json["category"],
-      featuredImageUrl: json["featured_image_url"],
-      featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
-      featuredImageId: json["featured_image_ID"] == null
-          ? 0
-          : json["featured_image_ID"] is int
-              ? json["featured_image_ID"]
+
+
+      /// Old
+      // postAuthor: json["post_author"],
+      // postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
+      // postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
+      // postParent: json["post_parent"] ?? 0,
+      // guid: json["guid"] ?? '',
+      // commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
+      // postCategory:
+      //     json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
+      // authorName: json["author_name"] ?? '',
+      // shortDateTime: json["short_date_time"] ?? '',
+      // category: json["category"],
+      // featuredImageUrl: json["featured_image_url"],
+      // featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
+      // featuredImageId: json["featured_image_ID"] == null
+      //     ? 0
+      //     : json["featured_image_ID"] is int
+      //         ? json["featured_image_ID"]
 
               /// Fix bug here, parse and return int if not as int already.
-              : int.parse(json["featured_image_ID"]),
+              // : int.parse(json["featured_image_ID"]),
 
       /// Shopping Mall
       shortTitle: json["shortTitle"],
@@ -334,24 +341,24 @@ class ApiPost {
 
   Map<String, dynamic> toJson() => {
         "idx": idx,
-        "post_author": postAuthor,
-        if (postDate != null) "post_date": postDate.toIso8601String(),
-        "content": content,
-        "title": title,
-        if (postModified != null) "post_modified": postModified.toIso8601String(),
-        "post_parent": postParent,
-        "guid": guid,
-        "comment_count": commentCount,
-        if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
-        "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        "author_name": authorName,
-        "short_date_time": shortDateTime,
-        if (comments != null)
-          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
-        "category": category,
-        "featured_image_url": featuredImageUrl,
-        "featured_image_thumbnail_url": featuredImageThumbnailUrl,
-        "featured_image_ID": featuredImageId,
+        // "post_author": postAuthor,
+        // if (postDate != null) "post_date": postDate.toIso8601String(),
+        // "content": content,
+        // "title": title,
+        // if (postModified != null) "post_modified": postModified.toIso8601String(),
+        // "post_parent": postParent,
+        // "guid": guid,
+        // "comment_count": commentCount,
+        // if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
+        // "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
+        // "author_name": authorName,
+        // "short_date_time": shortDateTime,
+        // if (comments != null)
+        //   "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        // "category": category,
+        // "featured_image_url": featuredImageUrl,
+        // "featured_image_thumbnail_url": featuredImageThumbnailUrl,
+        // "featured_image_ID": featuredImageId,
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
