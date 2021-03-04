@@ -28,27 +28,27 @@ class ApiItemOption {
 /// [ApiPost] is a model for a post.
 ///
 /// Post can be used for many purpose like blog, messaging, shopping mall, etc.
-class ApiPost {
+class ApiPost extends ApiForumBase {
   ApiPost({
-    this.data,
-    this.idx,
-    this.title,
-    this.content,
-    this.comments,
-    this.files,
-    this.authorName,
-    this.profilePhotoUrl,
+    idx,
+    rootIdx,
+    parentIdx,
+    userIdx,
+    categoryIdx,
+    subcategory,
+    path,
+    content,
+    profilePhotoUrl,
+    authorName,
+    files,
+    createdAt,
+    updatedAt,
+    deletedAt,
 
-    // updates
-    this.userIdx,
-    this.rootIdx,
-    this.parentIdx,
-    this.categoryIdx,
-    this.subcategory,
-    this.path,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
+    //
+    this.data,
+    this.title,
+    this.comments,
 
     // Shopping mall props
     this.shortTitle,
@@ -66,35 +66,33 @@ class ApiPost {
     this.detailPhoto,
     this.keywords,
     this.options,
-  }) {
-    if (files == null) files = [];
+  }) : super(
+          idx: idx,
+          rootIdx: rootIdx,
+          parentIdx: parentIdx,
+          userIdx: userIdx,
+          categoryIdx: categoryIdx,
+          subcategory: subcategory,
+          path: path,
+          content: content,
+          profilePhotoUrl: profilePhotoUrl,
+          authorName: authorName,
+          files: files,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          deletedAt: deletedAt,
+        ) {
     if (title == null) title = '';
-    if (content == null) content = '';
+    if (comments == null) comments = [];
   }
 
   /// [data] is the original data for the post. When you need to access an extra meta property,
   /// you can access [data] directly.
   dynamic data;
-  int idx;
   String title;
-  String content;
-  String authorName;
-  String profilePhotoUrl;
 
   /// TODO:
-  List<ApiFile> files;
   List<ApiComment> comments;
-
-  /// updates
-  String userIdx;
-  String rootIdx;
-  String parentIdx;
-  String categoryIdx;
-  String subcategory;
-  String path;
-  String createdAt;
-  String updatedAt;
-  String deletedAt;
 
   /// Upload file/image
   String thumbnailUrl(src, {int width = 150, int height = 150, int quality = 75}) {
@@ -161,10 +159,6 @@ class ApiPost {
   // Map<String, int> optionCount = {};
 
   /// EO Shopping Mall ----------------------------------------------------
-
-  ///
-  bool get isMine => userIdx == Api.instance.idx;
-  bool get isNotMine => !isMine;
 
   /// Display options
   ///
