@@ -76,6 +76,17 @@ class Api extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
+  bool get isNewCommentOnMyPostOrComment {
+    if (notLoggedIn) return false;
+    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
+        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'Y';
+  }
+
+  bool isSubscribeTopic(topic) {
+    if (notLoggedIn) return false;
+    return user.data[topic] == null || user.data[topic] == 'Y';
+  }
+
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
   BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
@@ -477,6 +488,18 @@ class Api extends GetxController {
     data['route'] = 'user.update';
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
+    update();
+    return user;
+  }
+
+  Future<ApiUser> userUpdateOptionSetting(String option) async {
+    Map<String, dynamic> req = {
+      'route': 'user.updateOptionSetting',
+      'option': option,
+    };
+    final res = await request(req);
+    user = ApiUser.fromJson(res);
+    await _saveUserProfile(user);
     update();
     return user;
   }
@@ -1046,13 +1069,6 @@ class Api extends GetxController {
     );
   }
 
-  Future<ApiUser> subscribeOrUnsubscribeChat(String topic) {
-    return subscribeOrUnsubscribe(
-      route: 'notification.chatSubscription',
-      topic: topic,
-    );
-  }
-
   Future<ApiUser> subscribeOrUnsubscribe({String route, String topic}) async {
     Map<String, dynamic> req = {
       'route': route,
@@ -1150,8 +1166,7 @@ class Api extends GetxController {
   ///
   Future _saveTokenToDatabase(String token) {
     this.token = token;
-    print('------------------- @todo: updateToken()');
-    // return updateToken(token);
+    return updateToken(token);
   }
 
   /// 현재 카트 정보를 백업 시켜 놓는다.
