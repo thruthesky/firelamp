@@ -1105,8 +1105,7 @@ class Api extends GetxController {
   ///
   Future _saveTokenToDatabase(String token) {
     this.token = token;
-    print('------------------- @todo: updateToken()');
-    // return updateToken(token);
+    return updateToken(token);
   }
 
   /// 현재 카트 정보를 백업 시켜 놓는다.
