@@ -698,7 +698,7 @@ class Api extends GetxController {
   /// [post] is the post of the comment.
   ///
   /// It returns deleted file id.
-  Future<int> deleteComment(ApiComment comment, ApiPost post) async {
+  Future<String> deleteComment(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
       'route': 'comment.delete',
       'idx': comment.idx,
