@@ -32,37 +32,23 @@ class ApiPost {
   ApiPost({
     this.data,
     this.idx,
+    this.title,
+    this.content,
+    this.comments,
+    this.files,
+    this.authorName,
+    this.profilePhotoUrl,
 
     // updates
     this.userIdx,
-    this.roodIdx,
+    this.rootIdx,
     this.parentIdx,
     this.categoryIdx,
-    this.subCategory,
+    this.subcategory,
     this.path,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
-
-    /// old
-    this.postAuthor,
-    this.profilePhotoUrl,
-    this.postDate,
-    this.content,
-    this.title,
-    this.postModified,
-    this.postParent,
-    this.guid,
-    this.commentCount,
-    this.postCategory,
-    this.files,
-    this.authorName,
-    this.shortDateTime,
-    this.comments,
-    this.category,
-    this.featuredImageUrl,
-    this.featuredImageThumbnailUrl,
-    this.featuredImageId,
 
     // Shopping mall props
     this.shortTitle,
@@ -75,9 +61,9 @@ class ApiPost {
     this.deliveryFee,
     this.storageMethod,
     this.expiry,
-    this.itemPrimaryPhoto,
-    this.itemWidgetPhoto,
-    this.itemDetailPhoto,
+    this.primaryPhoto,
+    this.widgetPhoto,
+    this.detailPhoto,
     this.keywords,
     this.options,
   }) {
@@ -90,38 +76,31 @@ class ApiPost {
   /// you can access [data] directly.
   dynamic data;
   int idx;
+  String title;
+  String content;
+  String authorName;
+  String profilePhotoUrl;
+
+  /// TODO:
+  List<ApiFile> files;
+  List<ApiComment> comments;
 
   /// updates
   String userIdx;
-  String roodIdx;
+  String rootIdx;
   String parentIdx;
   String categoryIdx;
-  String subCategory;
+  String subcategory;
   String path;
   String createdAt;
   String updatedAt;
   String deletedAt;
 
-  /// old
-  String postAuthor;
-  String profilePhotoUrl;
-  DateTime postDate;
-  String content;
-  String title;
-  DateTime postModified;
-  int postParent;
-  String guid;
-  int commentCount;
-  List<int> postCategory;
-  List<ApiFile> files;
-  String authorName;
-  String shortDateTime;
-  List<ApiComment> comments;
-  String category;
-
-  String featuredImageUrl;
-  String featuredImageThumbnailUrl;
-  int featuredImageId;
+  /// Upload file/image
+  String thumbnailUrl(src, {int width = 150, int height = 150, int quality = 75}) {
+    String url = Api.instance.thumbnailUrl;
+    return url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+  }
 
   /// Widgets
   ///
@@ -148,9 +127,12 @@ class ApiPost {
   int deliveryFee;
   String storageMethod;
   String expiry;
-  String itemPrimaryPhoto;
-  String itemWidgetPhoto;
-  String itemDetailPhoto;
+  String primaryPhoto;
+  String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, width: 600);
+  String widgetPhoto;
+  String get widgetPhotoUrl => thumbnailUrl(widgetPhoto);
+  String detailPhoto;
+  String get detailPhotoUrl => thumbnailUrl(detailPhoto, width: 600);
 
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
@@ -198,6 +180,7 @@ class ApiPost {
 
   /// Get short name for display
   String get displayName {
+    if (authorName == null) return '';
     return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
   }
 
@@ -206,7 +189,7 @@ class ApiPost {
     // print(comment.commentParent);
 
     // find existing comment and update.
-    int i = comments.indexWhere((c) => c.commentId == comment.commentId);
+    int i = comments.indexWhere((c) => c.idx == comment.idx);
     if (i != -1) {
       comment.depth = comments[i].depth;
       comments[i] = comment;
@@ -214,14 +197,14 @@ class ApiPost {
     }
 
     // if it's new comment right under post, then add at bottom.
-    if (comment.commentParent == '0') {
+    if (comment.parentIdx == idx.toString()) {
       comments.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.commentId == comment.commentParent);
+    int p = comments.indexWhere((c) => c.idx.toString() == comment.parentIdx);
     if (p != -1) {
       comment.depth = comments[p].depth + 1;
       comments.insert(p + 1, comment);
@@ -261,90 +244,69 @@ class ApiPost {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+      authorName: json["authorName"] ?? '',
+      title: json["title"] != '' ? json['title'] : 'No Title',
+      content: json["content"] ?? '',
+      profilePhotoUrl: json['profile_photo_url'],
 
       /// Updates
+      /// TODO: human readable date
+      ///
       userIdx: json['userIdx'],
-      roodIdx: json['rootIdx'],
+      rootIdx: json['rootIdx'],
       parentIdx: json['parentIdx'],
       categoryIdx: json['categoryIdx'],
-      subCategory: json['subCategory'],
+      subcategory: json['subcategory'],
       path: json['path'],
       createdAt: json["createdAt"],
       updatedAt: json["updatedAt"],
       deletedAt: json["deletedAt"],
 
-      /// Old
-      postAuthor: json["post_author"],
-      postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
-      profilePhotoUrl: json['profile_photo_url'],
-      content: json["content"] ?? '',
-      title: json["title"] ?? '',
-      postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
-      postParent: json["post_parent"] ?? 0,
-      guid: json["guid"] ?? '',
-      commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
-      postCategory:
-          json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
-      // files: json["files"] == null
-      //     ? []
-      //     : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      authorName: json["author_name"] ?? '',
-      shortDateTime: json["short_date_time"] ?? '',
+      // TODO:
+      files: json["files"] == null || json["files"] == ''
+          ? []
+          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
       comments: json["comments"] == null
           ? []
           : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
-      category: json["category"],
-      featuredImageUrl: json["featured_image_url"],
-      featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
-      featuredImageId: json["featured_image_ID"] == null
-          ? 0
-          : json["featured_image_ID"] is int
-              ? json["featured_image_ID"]
 
-              /// Fix bug here, parse and return int if not as int already.
-              : int.parse(json["featured_image_ID"]),
-      shortTitle: json["short_title"],
+      // DateTime.parse(json["post_date"] ?? DateTime.now().toString())
+
+      /// Shopping Mall
+      shortTitle: json["shortTitle"],
       price: _parseInt(json["price"]) ?? 0,
-      optionItemPrice: json["option_item_price"] == '1' ? true : false,
-      discountRate: _parseInt(json["discount_rate"]),
-      pause: json["pause"] == null || json["pause"] == ""
-          ? false
-          : int.parse(json["pause"]) == 1
-              ? true
-              : false,
+      optionItemPrice: json["optionItemPrice"] == '1' ? true : false,
+      discountRate: _parseInt(json["discountRate"]),
+      pause: json["pause"] == 'Y' ? true : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
       volume: json["volume"],
-      deliveryFee: _parseInt(json["delivery_fee"]),
+      deliveryFee: _parseInt(json["deliveryFee"]),
       storageMethod: json["storage_method"],
       expiry: json["expiry"],
-      itemPrimaryPhoto: json["item_primary_photo"],
-      itemWidgetPhoto: json["item_widget_photo"],
-      itemDetailPhoto: json["item_detail_photo"],
+      primaryPhoto: json["primaryPhoto"],
+      widgetPhoto: json["widgetPhoto"],
+      detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
-      options: _prepareOptions(json['options'], json["option_item_price"] == '1' ? true : false),
+      options: _prepareOptions(json['options'], json["optionItemPrice"] == '1' ? true : false),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "idx": idx,
-        "post_author": postAuthor,
-        if (postDate != null) "post_date": postDate.toIso8601String(),
-        "content": content,
         "title": title,
-        if (postModified != null) "post_modified": postModified.toIso8601String(),
-        "post_parent": postParent,
-        "guid": guid,
-        "comment_count": commentCount,
-        if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
+        "content": content,
+        "userIdx": userIdx,
+        "rootIdx": rootIdx,
+        "parentIdx": parentIdx,
+        "categoryIdx": categoryIdx,
+        "subcategory": subcategory,
+        "path": path,
+        "createdAt": createdAt,
+        "updatedAt": updatedAt,
+        "deletedAt": deletedAt,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        "author_name": authorName,
-        "short_date_time": shortDateTime,
         if (comments != null)
           "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
-        "category": category,
-        "featured_image_url": featuredImageUrl,
-        "featured_image_thumbnail_url": featuredImageThumbnailUrl,
-        "featured_image_ID": featuredImageId,
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
@@ -355,9 +317,9 @@ class ApiPost {
         "deliveryFee": deliveryFee,
         "storageMethod": storageMethod,
         "expiry": expiry,
-        "itemPrimaryPhoto": itemPrimaryPhoto,
-        "itemWidgetPhoto": itemWidgetPhoto,
-        "itemDetailPhoto": itemDetailPhoto,
+        "primaryPhoto": primaryPhoto,
+        "widgetPhoto": widgetPhoto,
+        "detailPhoto": detailPhoto,
         "keywords": keywords,
         "options": options.toString,
       };

@@ -33,8 +33,15 @@ class Api extends GetxController {
 
   Prefix.Dio dio = Prefix.Dio();
 
-  /// [_apiUrl] is the api url.
-  String _apiUrl;
+  /// [apiUrl] is the api url.
+  String apiUrl;
+
+  /// [thumbnailUrl] return the phpThumb url.
+  String get thumbnailUrl {
+    String url = apiUrl.replaceAll('index.php', '');
+    url += 'etc/phpThumb/phpThumb.php';
+    return url;
+  }
 
   GetStorage localStorage;
 
@@ -213,7 +220,7 @@ class Api extends GetxController {
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
 
-    _apiUrl = apiUrl;
+    this.apiUrl = apiUrl;
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
@@ -306,7 +313,7 @@ class Api extends GetxController {
 
     try {
       String queryString = Uri(queryParameters: params).query;
-      print("_printDebugUrl: $_apiUrl?$queryString");
+      print("_printDebugUrl: $apiUrl?$queryString");
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
       print(data);
@@ -320,9 +327,9 @@ class Api extends GetxController {
     dynamic res;
     try {
       _printDebugUrl(data);
-      res = await dio.post(_apiUrl, data: data);
+      res = await dio.post(apiUrl, data: data);
     } catch (e) {
-      print('Api.request() got error; _apiUrl: $_apiUrl');
+      print('Api.request() got error; apiUrl: $apiUrl');
       print(e);
       _printDebugUrl(data);
       rethrow;
@@ -359,7 +366,7 @@ class Api extends GetxController {
 
   /// Query directly to database with SQL.
   /// ```dart
-  /// final re = await api.query('bio', "profile_photo_apiUrl!='' ORDER BY updatedAt DESC LIMIT 15");
+  /// final re = await api.query('bio', "profile_photoapiUrl!='' ORDER BY updatedAt DESC LIMIT 15");
   /// ```
   Future query(String table, String where) {
     return request({
@@ -539,7 +546,7 @@ class Api extends GetxController {
     ///
     if (post != null) {
       if (post.idx != null) data['ID'] = post.idx;
-      if (post.category != null) data['category'] = post.category;
+      if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
@@ -565,6 +572,7 @@ class Api extends GetxController {
 
     if (idx == null) {
       data['route'] = 'post.create';
+      data['authorName'] = user.nickname ?? user.email;
     } else {
       data['route'] = 'post.update';
       data['idx'] = idx;
@@ -580,7 +588,7 @@ class Api extends GetxController {
     ///
     if (post != null) {
       if (post.idx != null) data['idx'] = post.idx;
-      if (post.category != null) data['category'] = post.category;
+      if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
@@ -593,6 +601,7 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
+  @Deprecated('user commentEdit()')
   Future<ApiComment> editComment({
     content = '',
     List<ApiFile> files,
@@ -603,15 +612,50 @@ class Api extends GetxController {
     final data = {
       'route': 'forum.editComment',
       'comment_post_ID': post.idx,
-      if (comment != null && comment.commentId != null && comment.commentId != '')
-        'comment_ID': comment.commentId,
-      if (parent != null) 'comment_parent': parent.commentId,
-      'comment_content': content ?? '',
+      // if (comment != null && comment.commentId != null && comment.commentId != '')
+      //   'comment_ID': comment.commentId,
+      // if (parent != null) 'comment_parent': parent.commentId,
+      // 'comment_content': content ?? '',
     };
     if (files != null) {
       Set ids = files.map((file) => file.id).toSet();
       data['files'] = ids.join(',');
     }
+    final json = await request(data);
+    return ApiComment.fromJson(json);
+  }
+
+  Future<ApiComment> commentEdit({
+    int idx,
+    String rootIdx,
+    String parentIdx,
+    String content,
+    List<ApiFile> files,
+    Map<String, dynamic> data,
+    ApiComment comment,
+  }) async {
+    if (data == null) data = {};
+
+    if (idx == null) {
+      data['route'] = 'comment.create';
+      data['authorName'] = user.nickname ?? user.email;
+      data['rootIdx'] = rootIdx;
+      data['parentIdx'] = parentIdx;
+    } else {
+      data['route'] = 'comment.update';
+      data['idx'] = idx;
+      if (comment.files.length > 0) {
+        Set ids = comment.files.map((file) => file.id).toSet();
+        data['files'] = ids.join(',');
+      }
+    }
+
+    if (content != null) data['content'] = content;
+    if (files != null) {
+      Set ids = files.map((file) => file.id).toSet();
+      data['files'] = ids.join(',');
+    }
+
     final json = await request(data);
     return ApiComment.fromJson(json);
   }
@@ -654,14 +698,14 @@ class Api extends GetxController {
   /// [post] is the post of the comment.
   ///
   /// It returns deleted file id.
-  Future<int> deleteComment(ApiComment comment, ApiPost post) async {
+  Future<String> deleteComment(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
-      'route': 'forum.deleteComment',
-      'comment_ID': comment.commentId,
+      'route': 'comment.delete',
+      'idx': comment.idx,
     });
-    int i = post.comments.indexWhere((c) => c.commentId == comment.commentId);
+    int i = post.comments.indexWhere((c) => c.idx == comment.idx);
     post.comments.removeAt(i);
-    return data['comment_ID'];
+    return data['idx'];
   }
 
   @Deprecated('use postSearch()')
@@ -706,7 +750,7 @@ class Api extends GetxController {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
     data['postIdOnTop'] = postIdOnTop;
-    data['where'] = "categoryId=<$categoryId> and parentIdx=0";
+    data['where'] = "categoryId=<$categoryId> and parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
     if (searchKey != null) data['s'] = searchKey;
@@ -764,7 +808,7 @@ class Api extends GetxController {
     });
 
     final res = await dio.post(
-      _apiUrl,
+      apiUrl,
       data: formData,
       onSendProgress: (int sent, int total) {
         if (onProgress != null) onProgress(sent * 100 / total);
@@ -870,9 +914,7 @@ class Api extends GetxController {
       // Don't show same post twice if forum.post is set.
       if (forum.post != null && forum.post.idx == p.idx) return;
 
-      if (p.deletedAt == '0') {
-        forum.posts.add(p);
-      }
+      forum.posts.add(p);
     });
 
     forum.loading = false;

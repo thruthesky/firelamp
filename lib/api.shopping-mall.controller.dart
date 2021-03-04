@@ -177,8 +177,8 @@ class Cart extends GetxController {
   loadOptions() async {
     try {
       final re = await Api.instance.request({'route': 'mall.options'});
-      deliveryFeeFreeLimit = int.parse(re['delivery_fee_free_limit']);
-      _deliveryFeePrice = int.parse(re['delivery_fee_price']);
+      deliveryFeeFreeLimit = int.parse("${re['deliveryFeeFreeLimit']}");
+      _deliveryFeePrice = int.parse("${re['deliveryFeePrice']}");
       print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
       print('deliveryFeePrice: $_deliveryFeePrice');
       // print(re);
@@ -231,7 +231,7 @@ class Cart extends GetxController {
     return jsonEncode({
       'postId': item.idx,
       'optionItemPrice': item.optionItemPrice,
-      'postTitle': item.title, // 상품 제목
+      'title': item.title, // 상품 제목
       'price': item.price, // 해당 상품 가격
       'discountRate': item.discountRate, // 해당 상품의 할인 율
       'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
