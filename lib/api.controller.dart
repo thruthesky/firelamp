@@ -33,8 +33,15 @@ class Api extends GetxController {
 
   Prefix.Dio dio = Prefix.Dio();
 
-  /// [_apiUrl] is the api url.
-  String _apiUrl;
+  /// [apiUrl] is the api url.
+  String apiUrl;
+
+  /// [thumbnailUrl] return the phpThumb url.
+  String get thumbnailUrl {
+    String url = apiUrl.replaceAll('index.php', '');
+    url += 'etc/phpThumb/phpThumb.php';
+    return url;
+  }
 
   GetStorage localStorage;
 
@@ -213,7 +220,7 @@ class Api extends GetxController {
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
 
-    _apiUrl = apiUrl;
+    this.apiUrl = apiUrl;
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
@@ -306,7 +313,7 @@ class Api extends GetxController {
 
     try {
       String queryString = Uri(queryParameters: params).query;
-      print("_printDebugUrl: $_apiUrl?$queryString");
+      print("_printDebugUrl: $apiUrl?$queryString");
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
       print(data);
@@ -320,9 +327,9 @@ class Api extends GetxController {
     dynamic res;
     try {
       _printDebugUrl(data);
-      res = await dio.post(_apiUrl, data: data);
+      res = await dio.post(apiUrl, data: data);
     } catch (e) {
-      print('Api.request() got error; _apiUrl: $_apiUrl');
+      print('Api.request() got error; apiUrl: $apiUrl');
       print(e);
       _printDebugUrl(data);
       rethrow;
@@ -359,7 +366,7 @@ class Api extends GetxController {
 
   /// Query directly to database with SQL.
   /// ```dart
-  /// final re = await api.query('bio', "profile_photo_apiUrl!='' ORDER BY updatedAt DESC LIMIT 15");
+  /// final re = await api.query('bio', "profile_photoapiUrl!='' ORDER BY updatedAt DESC LIMIT 15");
   /// ```
   Future query(String table, String where) {
     return request({
@@ -764,7 +771,7 @@ class Api extends GetxController {
     });
 
     final res = await dio.post(
-      _apiUrl,
+      apiUrl,
       data: formData,
       onSendProgress: (int sent, int total) {
         if (onProgress != null) onProgress(sent * 100 / total);
