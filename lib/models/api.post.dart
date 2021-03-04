@@ -41,7 +41,7 @@ class ApiPost {
 
     // updates
     this.userIdx,
-    this.roodIdx,
+    this.rootIdx,
     this.parentIdx,
     this.categoryIdx,
     this.subcategory,
@@ -49,20 +49,6 @@ class ApiPost {
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
-
-    /// old
-    // this.postAuthor,
-    // this.postDate,
-    // this.postModified,
-    // this.postParent,
-    // this.guid,
-    // this.commentCount,
-    // this.postCategory,
-    // this.shortDateTime,
-    // this.category,
-    // this.featuredImageUrl,
-    // this.featuredImageThumbnailUrl,
-    // this.featuredImageId,
 
     // Shopping mall props
     this.shortTitle,
@@ -101,7 +87,7 @@ class ApiPost {
 
   /// updates
   String userIdx;
-  String roodIdx;
+  String rootIdx;
   String parentIdx;
   String categoryIdx;
   String subcategory;
@@ -109,21 +95,6 @@ class ApiPost {
   String createdAt;
   String updatedAt;
   String deletedAt;
-
-  /// old
-  // String postAuthor;
-  // DateTime postDate;
-  // DateTime postModified;
-  // int postParent;
-  // String guid;
-  // int commentCount;
-  // List<int> postCategory;
-  // String shortDateTime;
-  // String category;
-
-  // String featuredImageUrl;
-  // String featuredImageThumbnailUrl;
-  // int featuredImageId;
 
   /// Upload file/image
   String thumbnailUrl(src, {int width = 150, int height = 150, int quality = 75}) {
@@ -279,8 +250,10 @@ class ApiPost {
       profilePhotoUrl: json['profile_photo_url'],
 
       /// Updates
+      /// TODO: human readable date
+      ///
       userIdx: json['userIdx'],
-      roodIdx: json['rootIdx'],
+      rootIdx: json['rootIdx'],
       parentIdx: json['parentIdx'],
       categoryIdx: json['categoryIdx'],
       subcategory: json['subcategory'],
@@ -297,28 +270,7 @@ class ApiPost {
           ? []
           : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
 
-
-      /// Old
-      // postAuthor: json["post_author"],
-      // postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
-      // postModified: DateTime.parse(json["post_modified"] ?? DateTime.now().toString()),
-      // postParent: json["post_parent"] ?? 0,
-      // guid: json["guid"] ?? '',
-      // commentCount: json["comment_count"] == null ? 0 : int.parse(json["comment_count"]),
-      // postCategory:
-      //     json["post_category"] == null ? [] : List<int>.from(json["post_category"].map((x) => x)),
-      // authorName: json["author_name"] ?? '',
-      // shortDateTime: json["short_date_time"] ?? '',
-      // category: json["category"],
-      // featuredImageUrl: json["featured_image_url"],
-      // featuredImageThumbnailUrl: json["featured_image_thumbnail_url"],
-      // featuredImageId: json["featured_image_ID"] == null
-      //     ? 0
-      //     : json["featured_image_ID"] is int
-      //         ? json["featured_image_ID"]
-
-              /// Fix bug here, parse and return int if not as int already.
-              // : int.parse(json["featured_image_ID"]),
+      // DateTime.parse(json["post_date"] ?? DateTime.now().toString())
 
       /// Shopping Mall
       shortTitle: json["shortTitle"],
@@ -341,24 +293,20 @@ class ApiPost {
 
   Map<String, dynamic> toJson() => {
         "idx": idx,
-        // "post_author": postAuthor,
-        // if (postDate != null) "post_date": postDate.toIso8601String(),
-        // "content": content,
-        // "title": title,
-        // if (postModified != null) "post_modified": postModified.toIso8601String(),
-        // "post_parent": postParent,
-        // "guid": guid,
-        // "comment_count": commentCount,
-        // if (postCategory != null) "post_category": List<dynamic>.from(postCategory.map((x) => x)),
-        // "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        // "author_name": authorName,
-        // "short_date_time": shortDateTime,
-        // if (comments != null)
-        //   "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
-        // "category": category,
-        // "featured_image_url": featuredImageUrl,
-        // "featured_image_thumbnail_url": featuredImageThumbnailUrl,
-        // "featured_image_ID": featuredImageId,
+        "title": title,
+        "content": content,
+        "userIdx": userIdx,
+        "rootIdx": rootIdx,
+        "parentIdx": parentIdx,
+        "categoryIdx": categoryIdx,
+        "subcategory": subcategory,
+        "path": path,
+        "createdAt": createdAt,
+        "updatedAt": updatedAt,
+        "deletedAt": deletedAt,
+        "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
+        if (comments != null)
+          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),

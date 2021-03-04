@@ -709,6 +709,7 @@ class Api extends GetxController {
   }
 
   @Deprecated('use postSearch()')
+
   /// Get posts from backend.
   ///
   /// You can use this to display some posts from the forum category. You may use this for displaying
@@ -749,7 +750,7 @@ class Api extends GetxController {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
     data['postIdOnTop'] = postIdOnTop;
-    data['where'] = "categoryId=<$categoryId> and parentIdx=0";
+    data['where'] = "categoryId=<$categoryId> and parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
     if (searchKey != null) data['s'] = searchKey;
@@ -913,9 +914,7 @@ class Api extends GetxController {
       // Don't show same post twice if forum.post is set.
       if (forum.post != null && forum.post.idx == p.idx) return;
 
-      if (p.deletedAt == '0') {
-        forum.posts.add(p);
-      }
+      forum.posts.add(p);
     });
 
     forum.loading = false;
