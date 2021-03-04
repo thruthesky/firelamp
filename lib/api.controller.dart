@@ -744,17 +744,19 @@ class Api extends GetxController {
     String categoryId,
     int limit = 20,
     int page = 1,
-    int userIdx,
-    String searchKey,
+    String userIdx,
+    String searchKey = '',
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
     data['postIdOnTop'] = postIdOnTop;
-    data['where'] = "categoryId=<$categoryId> and parentIdx=0 and deletedAt=0";
+    data['where'] = "parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
-    if (searchKey != null) data['s'] = searchKey;
-    if (userIdx != null) data['userIdx'] = userIdx;
+
+    if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    // if (searchKey != null || searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -787,7 +789,8 @@ class Api extends GetxController {
 
   /// [getPosts] is an alias of [searchPosts]
   Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
-    return searchPost(category: category, limit: limit, paged: paged, author: author);
+    // return searchPost(category: category, limit: limit, paged: paged, author: author);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: author);
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
@@ -898,7 +901,7 @@ class Api extends GetxController {
       page: forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
-      // author: forum.author,
+      userIdx: forum.author,
       searchKey: forum.searchKey,
     );
 
