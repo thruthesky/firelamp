@@ -779,7 +779,7 @@ class Api extends GetxController {
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
-    // if (searchKey != null || searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
