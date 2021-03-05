@@ -977,7 +977,7 @@ class Api extends GetxController {
       page: forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
-      userIdx: forum.author,
+      userIdx: forum.userIdx.toString(),
       searchKey: forum.searchKey,
     );
 
