@@ -794,18 +794,15 @@ class Api extends GetxController {
   Future<List<ApiComment>> searchComments({
     int userIdx,
     int limit = 20,
-    int paged = 0,
+    int page = 1,
     String order = 'DESC',
   }) async {
     final Map<String, dynamic> data = {
       'route': 'comment.search',
       'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
+      'limit': limit,
+      'page': page
     };
-    // data['route'] = 'forum.searchComments';
-    // data['number'] = limit;
-    // data['offset'] = paged * limit;
-    // data['order'] = order;
-    // if (author != null) data['user_id'] = author;
 
     final jsonList = await request(data);
 
