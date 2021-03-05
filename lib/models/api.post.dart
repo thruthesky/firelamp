@@ -269,7 +269,7 @@ class ApiPost extends ApiForumBase {
       /// Shopping Mall
       shortTitle: json["shortTitle"],
       price: _parseInt(json["price"]) ?? 0,
-      optionItemPrice: json["optionItemPrice"] == '1' ? true : false,
+      optionItemPrice: json["optionItemPrice"] == 'Y' ? true : false,
       discountRate: _parseInt(json["discountRate"]),
       pause: json["pause"] == 'Y' ? true : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
@@ -281,7 +281,7 @@ class ApiPost extends ApiForumBase {
       widgetPhoto: json["widgetPhoto"],
       detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
-      options: _prepareOptions(json['options'], json["optionItemPrice"] == '1' ? true : false),
+      options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
     );
   }
 
@@ -383,6 +383,8 @@ class ApiPost extends ApiForumBase {
         if (kv[0].indexOf('(') > 0) {
           // 할인율 지정
           String optionName = kv[0].split('(').first.trim(); // 옵션 이름
+
+          // @todo 옵션 포멧을 잘못 지정한 경우 에러가는데, 핸들링을 해야 한다.
           discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
 
           String _discountedPrice = moneyFormat(discount(_price, discountRate));
