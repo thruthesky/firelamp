@@ -95,9 +95,13 @@ class ApiPost extends ApiForumBase {
   List<ApiComment> comments;
 
   /// Upload file/image
-  String thumbnailUrl(src, {int width = 360, int height = 360, int quality = 75}) {
+  String thumbnailUrl(src,
+      {int width = 330, int height = 330, int quality = 75, bool original = false}) {
     String url = Api.instance.thumbnailUrl;
-    return url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+    url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+    if (original) url += '&original=Y';
+    print('thumbnailUrl: $url');
+    return url;
   }
 
   /// Widgets
@@ -126,11 +130,11 @@ class ApiPost extends ApiForumBase {
   String storageMethod;
   String expiry;
   String primaryPhoto;
-  String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, width: 640, height: 2048, quality: 80);
+  String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, original: true);
   String widgetPhoto;
   String get widgetPhotoUrl => thumbnailUrl(widgetPhoto);
   String detailPhoto;
-  String get detailPhotoUrl => thumbnailUrl(detailPhoto, width: 640, height: 2048, quality: 80);
+  String get detailPhotoUrl => thumbnailUrl(detailPhoto, original: true);
 
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
@@ -398,8 +402,10 @@ class ApiPost extends ApiForumBase {
               TextSpan(
                   text: " ${moneyFormat(_price)} ",
                   style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
-              WidgetSpan(child: Icon(Icons.arrow_right_alt)),
-              TextSpan(text: " => $_discountedPrice원"),
+              WidgetSpan(
+                  child: Transform.translate(
+                      offset: const Offset(0.0, 4.0), child: Icon(Icons.arrow_right_alt))),
+              TextSpan(text: "$_discountedPrice원"),
             ],
           ));
         } else {

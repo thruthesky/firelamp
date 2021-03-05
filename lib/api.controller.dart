@@ -1160,7 +1160,6 @@ class Api extends GetxController {
     // When ever user logs in, update the token with user Id.
     authChanges.listen((user) {
       if (user == null) return;
-      // print('Saving token on user auth chagnes: $token');
       _saveTokenToDatabase(token);
     });
   }
