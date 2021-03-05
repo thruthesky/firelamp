@@ -297,7 +297,6 @@ class ApiPost {
           ? []
           : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
 
-
       /// Old
       // postAuthor: json["post_author"],
       // postDate: DateTime.parse(json["post_date"] ?? DateTime.now().toString()),
@@ -317,8 +316,8 @@ class ApiPost {
       //     : json["featured_image_ID"] is int
       //         ? json["featured_image_ID"]
 
-              /// Fix bug here, parse and return int if not as int already.
-              // : int.parse(json["featured_image_ID"]),
+      /// Fix bug here, parse and return int if not as int already.
+      // : int.parse(json["featured_image_ID"]),
 
       /// Shopping Mall
       shortTitle: json["shortTitle"],
@@ -441,6 +440,8 @@ class ApiPost {
         if (kv[0].indexOf('(') > 0) {
           // 할인율 지정
           String optionName = kv[0].split('(').first.trim(); // 옵션 이름
+
+          // @todo 옵션 포멧을 잘못 지정한 경우 에러가는데, 핸들링을 해야 한다.
           discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
 
           String _discountedPrice = moneyFormat(discount(_price, discountRate));
