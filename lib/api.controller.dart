@@ -799,7 +799,7 @@ class Api extends GetxController {
   }) async {
     final Map<String, dynamic> data = {
       'route': 'comment.search',
-      'where': 'userIdx=$userIdx AND parentIdx > 0',
+      'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
     };
     // data['route'] = 'forum.searchComments';
     // data['number'] = limit;
