@@ -12,8 +12,8 @@ class ApiForum {
   /// The [category] is used on fetching posts.
   String category;
 
-  /// The [author] is used on fetching to get the user's posts only.
-  String author;
+  /// The [userIdx] is used on fetching to get the user's posts only.
+  int userIdx;
 
   /// The [searchKey] is used on fetching to search posts
   String searchKey;
@@ -53,11 +53,11 @@ class ApiForum {
 
   bool get canSearch {
     if (postInEdit != null) return false;
-    if (author != null) return false;
+    if (userIdx != null) return false;
     return true;
   }
 
-  bool get canCreate => author == null && category != null && postInEdit == null;
+  bool get canCreate => userIdx == null && category != null && postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;
   bool get noPosts => posts.isEmpty;
@@ -72,7 +72,7 @@ class ApiForum {
   ApiPost postInEdit;
   ApiForum({
     this.category,
-    this.author,
+    this.userIdx,
     this.searchKey,
     this.limit = 10,
     @required this.render,

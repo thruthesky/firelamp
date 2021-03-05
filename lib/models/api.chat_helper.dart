@@ -1,7 +1,7 @@
 part of '../firelamp.dart';
 
 class ChatHelper {
-  String get myIdx => Api.instance.idx;
+  int get myIdx => Api.instance.idx;
 
   /// [noMoreMessage] becomes true when there is no more old messages to view.
   /// The app should display 'no more message' to user.
@@ -14,7 +14,7 @@ class ChatHelper {
   /// Returns login user's room list collection `/chat/rooms` reference.
   /// Or, returns reference of my room (that has last message of the room)
   DatabaseReference myRoomsRef({String roomId}) {
-    final ref = roomsRef(myIdx);
+    final ref = roomsRef(myIdx.toString());
     if (roomId == null)
       return ref;
     else

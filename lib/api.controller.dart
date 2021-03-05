@@ -60,7 +60,9 @@ class Api extends GetxController {
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
 
-  String get idx => user?.idx;
+  @Deprecated('Use userIdx')
+  int get idx => user == null ? 0 : user.idx;
+  int get userIdx => user == null ? 0 : user.idx;
   String get sessionId => user?.sessionId;
   String get primaryPhotoUrl => user?.profilePhotoUrl;
   String get fullName => user?.name;
@@ -177,7 +179,6 @@ class Api extends GetxController {
       /// If the user has logged in previously, he will be auto logged in on next app running.
       /// [user] will be null if the user has not logged in previously.
       user = _loadUserProfile();
-      // if (loggedIn) print('ApiUser logged in with cached profile: ${user.sessionId}');
 
       /// Get user profile from backend if the user previous logged in.
       /// If user has logged in with localStorage data, refresh the user data from backend.
@@ -239,7 +240,56 @@ class Api extends GetxController {
     if (enableChat) _initChat();
     if (enableInAppPurchase) _initInAppPurchase();
 
+    _initFirebaseAuth();
+
     cart = Cart();
+  }
+
+  /// Automatic Firebase email/password login/logout.
+  ///
+  /// When user login or logout in firelamp, the app also login or logout into Firebase Auth automatically.
+  _initFirebaseAuth() async {
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
+    authChanges.listen((user) async {
+      if (user == null) {
+        await FirebaseAuth.instance.signOut();
+      } else {
+        String email = user.email;
+        String password = user.email +
+            user.idx.toString() +
+            user.createdAt.toString() +
+            ' Wc~7 difficult to guess string salt %^.^%;';
+        try {
+          await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: user.email, password: password);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            print('The password provided is too weak.');
+          } else if (e.code == 'email-already-in-use') {
+            // User email already exists(registered), try to login.
+            try {
+              await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(email: email, password: password);
+            } on FirebaseAuthException catch (e) {
+              if (e.code == 'user-not-found') {
+                print('No user found for that email.');
+              } else if (e.code == 'wrong-password') {
+                print('Wrong password provided for that user.');
+              }
+            }
+          }
+        } catch (e) {
+          print(e);
+        }
+      }
+    });
   }
 
   /// Initialize chat functionalities
