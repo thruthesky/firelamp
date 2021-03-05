@@ -84,7 +84,7 @@ class Api extends GetxController {
 
   bool isSubscribeTopic(topic) {
     if (notLoggedIn) return false;
-    return user.data[topic] == null || user.data[topic] == 'Y';
+    return user.data[topic] != null && user.data[topic] == 'Y';
   }
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
@@ -780,7 +780,8 @@ class Api extends GetxController {
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
-    if (searchKey != null && searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '')
+      data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -791,17 +792,21 @@ class Api extends GetxController {
   }
 
   Future<List<ApiComment>> searchComments({
-    String author,
+    int userIdx,
     int limit = 20,
     int paged = 0,
     String order = 'DESC',
   }) async {
-    final Map<String, dynamic> data = {};
-    data['route'] = 'forum.searchComments';
-    data['number'] = limit;
-    data['offset'] = paged * limit;
-    data['order'] = order;
-    if (author != null) data['user_id'] = author;
+    final Map<String, dynamic> data = {
+      'route': 'comment.search',
+      'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
+    };
+    // data['route'] = 'forum.searchComments';
+    // data['number'] = limit;
+    // data['offset'] = paged * limit;
+    // data['order'] = order;
+    // if (author != null) data['user_id'] = author;
+
     final jsonList = await request(data);
 
     List<ApiComment> _comments = [];
