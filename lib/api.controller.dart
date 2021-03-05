@@ -237,6 +237,7 @@ class Api extends GetxController {
   /// Automatic Firebase email/password login/logout.
   ///
   /// When user login or logout in firelamp, the app also login or logout into Firebase Auth automatically.
+  /// Password is composed with `idx` and `createdAt` that are never changed. You may set the salt.
   _initFirebaseAuth() async {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
