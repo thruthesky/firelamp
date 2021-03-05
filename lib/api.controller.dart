@@ -84,7 +84,7 @@ class Api extends GetxController {
 
   bool isSubscribeTopic(topic) {
     if (notLoggedIn) return false;
-    return user.data[topic] == null || user.data[topic] == 'Y';
+    return user.data[topic] != null && user.data[topic] == 'Y';
   }
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
