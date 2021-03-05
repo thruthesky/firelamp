@@ -6,42 +6,38 @@ enum CommentMode {
   reply,
 }
 
-class ApiComment {
+class ApiComment extends ApiForumBase {
   ApiComment({
-    this.idx,
-    this.rootIdx,
-    this.parentIdx,
-    this.userIdx,
-    this.subcategory,
-    this.path,
-    this.content,
-    this.profilePhotoUrl,
-    this.authorName,
-    this.files,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
+    int idx,
+    String rootIdx,
+    String parentIdx,
+    String userIdx,
+    String subcategory,
+    String path,
+    String content,
+    String profilePhotoUrl,
+    String authorName,
+    List<ApiFile> files,
+    String createdAt,
+    String updatedAt,
+    String deletedAt,
     this.depth,
     this.mode = CommentMode.none,
-  }) {
-    if (files == null) files = [];
-    if (content == null) content = '';
-  }
-
-  /// updates
-  int idx;
-  String rootIdx;
-  String parentIdx;
-  String userIdx;
-  String subcategory;
-  String path;
-  String content;
-  String profilePhotoUrl;
-  String authorName;
-  List<ApiFile> files;
-  String createdAt;
-  String updatedAt;
-  String deletedAt;
+  }) : super(
+          idx: idx,
+          rootIdx: rootIdx,
+          parentIdx: parentIdx,
+          userIdx: userIdx,
+          subcategory: subcategory,
+          path: path,
+          content: content,
+          profilePhotoUrl: profilePhotoUrl,
+          authorName: authorName,
+          files: files,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          deletedAt: deletedAt,
+        );
 
   int depth;
 
@@ -50,11 +46,6 @@ class ApiComment {
   /// - `CommentMode.reply` when the comment will have a form for creating a child comment.
   /// - `CommentMode.none` string for nothing.
   CommentMode mode;
-
-  bool get isMine => userIdx == Api.instance.idx;
-  bool get isNotMine => !isMine;
-
-  bool get isDeleted => deletedAt != '0';
 
   factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(
         idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
@@ -66,11 +57,9 @@ class ApiComment {
         content: json['content'] ?? '',
         profilePhotoUrl: json['profilePhotoUrl'] ?? '',
         authorName: json['authorName'],
-
         files: json["files"] == null || json["files"] == ''
             ? []
             : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-
         depth: json["depth"] ?? 1,
         createdAt: json['createdAt'],
         updatedAt: json['updatedAt'],

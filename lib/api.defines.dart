@@ -14,3 +14,5 @@ class ChatProtocol {
   static String block = 'ChatProtocol.block';
   static String roomCreated = 'ChatProtocol.roomCreated';
 }
+
+const String NEW_COMMENT_ON_MY_POST_OR_COMMENT = 'newCommentUserOption';

@@ -78,6 +78,17 @@ class Api extends GetxController {
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
+  bool get isNewCommentOnMyPostOrComment {
+    if (notLoggedIn) return false;
+    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
+        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'Y';
+  }
+
+  bool isSubscribeTopic(topic) {
+    if (notLoggedIn) return false;
+    return user.data[topic] != null && user.data[topic] == 'Y';
+  }
+
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
   BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
@@ -533,6 +544,18 @@ class Api extends GetxController {
     return user;
   }
 
+  Future<ApiUser> userUpdateOptionSetting(String option) async {
+    Map<String, dynamic> req = {
+      'route': 'user.updateOptionSetting',
+      'option': option,
+    };
+    final res = await request(req);
+    user = ApiUser.fromJson(res);
+    await _saveUserProfile(user);
+    update();
+    return user;
+  }
+
   /// User profile data
   ///
   /// * logic
@@ -750,7 +773,7 @@ class Api extends GetxController {
   /// [post] is the post of the comment.
   ///
   /// It returns deleted file id.
-  Future<int> deleteComment(ApiComment comment, ApiPost post) async {
+  Future<String> deleteComment(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
       'route': 'comment.delete',
       'idx': comment.idx,
@@ -796,17 +819,20 @@ class Api extends GetxController {
     String categoryId,
     int limit = 20,
     int page = 1,
-    int userIdx,
-    String searchKey,
+    String userIdx,
+    String searchKey = '',
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
     data['postIdOnTop'] = postIdOnTop;
-    data['where'] = "categoryId=<$categoryId> and parentIdx=0";
+    data['where'] = "parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
-    if (searchKey != null) data['s'] = searchKey;
-    if (userIdx != null) data['userIdx'] = userIdx;
+
+    if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (searchKey != null && searchKey != '')
+      data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -817,17 +843,18 @@ class Api extends GetxController {
   }
 
   Future<List<ApiComment>> searchComments({
-    String author,
+    int userIdx,
     int limit = 20,
-    int paged = 0,
+    int page = 1,
     String order = 'DESC',
   }) async {
-    final Map<String, dynamic> data = {};
-    data['route'] = 'forum.searchComments';
-    data['number'] = limit;
-    data['offset'] = paged * limit;
-    data['order'] = order;
-    if (author != null) data['user_id'] = author;
+    final Map<String, dynamic> data = {
+      'route': 'comment.search',
+      'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
+      'limit': limit,
+      'page': page
+    };
+
     final jsonList = await request(data);
 
     List<ApiComment> _comments = [];
@@ -839,7 +866,8 @@ class Api extends GetxController {
 
   /// [getPosts] is an alias of [searchPosts]
   Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
-    return searchPost(category: category, limit: limit, paged: paged, author: author);
+    // return searchPost(category: category, limit: limit, paged: paged, author: author);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: author);
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
@@ -950,7 +978,7 @@ class Api extends GetxController {
       page: forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
-      // author: forum.author,
+      userIdx: forum.userIdx.toString(),
       searchKey: forum.searchKey,
     );
 
@@ -966,9 +994,7 @@ class Api extends GetxController {
       // Don't show same post twice if forum.post is set.
       if (forum.post != null && forum.post.idx == p.idx) return;
 
-      if (p.deletedAt == '0') {
-        forum.posts.add(p);
-      }
+      forum.posts.add(p);
     });
 
     forum.loading = false;
@@ -1097,13 +1123,6 @@ class Api extends GetxController {
     );
   }
 
-  Future<ApiUser> subscribeOrUnsubscribeChat(String topic) {
-    return subscribeOrUnsubscribe(
-      route: 'notification.chatSubscription',
-      topic: topic,
-    );
-  }
-
   Future<ApiUser> subscribeOrUnsubscribe({String route, String topic}) async {
     Map<String, dynamic> req = {
       'route': route,
@@ -1200,8 +1219,7 @@ class Api extends GetxController {
   ///
   Future _saveTokenToDatabase(String token) {
     this.token = token;
-    print('------------------- @todo: updateToken()');
-    // return updateToken(token);
+    return updateToken(token);
   }
 
   /// 현재 카트 정보를 백업 시켜 놓는다.
