@@ -322,7 +322,7 @@ class ApiPost {
       /// Shopping Mall
       shortTitle: json["shortTitle"],
       price: _parseInt(json["price"]) ?? 0,
-      optionItemPrice: json["optionItemPrice"] == '1' ? true : false,
+      optionItemPrice: json["optionItemPrice"] == 'Y' ? true : false,
       discountRate: _parseInt(json["discountRate"]),
       pause: json["pause"] == 'Y' ? true : false,
       point: json["point"] == null ? 0 : _parseInt(json["point"]),
@@ -334,7 +334,7 @@ class ApiPost {
       widgetPhoto: json["widgetPhoto"],
       detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
-      options: _prepareOptions(json['options'], json["optionItemPrice"] == '1' ? true : false),
+      options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
     );
   }
 
