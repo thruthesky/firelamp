@@ -819,7 +819,7 @@ class Api extends GetxController {
     String categoryId,
     int limit = 20,
     int page = 1,
-    String userIdx,
+    int userIdx,
     String searchKey = '',
   }) async {
     final Map<String, dynamic> data = {};
@@ -865,9 +865,9 @@ class Api extends GetxController {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String author}) {
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, int userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
-    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: author);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
@@ -978,7 +978,7 @@ class Api extends GetxController {
       page: forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
-      userIdx: forum.userIdx.toString(),
+      userIdx: forum.userIdx,
       searchKey: forum.searchKey,
     );
 
