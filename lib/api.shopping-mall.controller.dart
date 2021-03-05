@@ -176,7 +176,7 @@ class Cart extends GetxController {
 
   loadOptions() async {
     try {
-      final re = await Api.instance.request({'route': 'mall.options'});
+      final re = await Api.instance.request({'route': 'shopping-mall.options'});
       deliveryFeeFreeLimit = int.parse("${re['deliveryFeeFreeLimit']}");
       _deliveryFeePrice = int.parse("${re['deliveryFeePrice']}");
       print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
@@ -211,7 +211,7 @@ class Cart extends GetxController {
       // (게시글) 번호 및 상품에 대한 정보 저장.
       m.add(serializeItem(item));
     }
-    return jsonEncode(m);
+    return m;
   }
 
   serializeItem(ApiPost item) {
@@ -220,15 +220,15 @@ class Cart extends GetxController {
     // '옵션에 금액 추가' 방식에서는 DEFAULT_OPTION 의 개 수가, 상품 구매 개수 이다. 이 때, 옵션을 선택하면, "해당 옵션 가격 * DEFAULT_OPTION 개 수" 를 하면 된다.
     for (final option in item.options.keys) {
       if (item.options[option].count == 0) continue;
-      selected[option] = jsonEncode({
+      selected[option] = {
         'count': item.options[option].count,
         'price': item.options[option].price,
         'discountRate': item.options[option].discountRate,
-      });
+      };
     }
     // 상품 정보.
     // (게시글) 번호 및 상품에 대한 정보 저장.
-    return jsonEncode({
+    return {
       'postId': item.idx,
       'optionItemPrice': item.optionItemPrice,
       'title': item.title, // 상품 제목
@@ -236,6 +236,6 @@ class Cart extends GetxController {
       'discountRate': item.discountRate, // 해당 상품의 할인 율
       'orderPrice': item.priceWithOptions, // 상품 별 옵션 포함 총 주문 가격
       'selectedOptions': selected,
-    });
+    };
   }
 }

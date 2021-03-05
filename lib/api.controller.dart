@@ -325,6 +325,7 @@ class Api extends GetxController {
     try {
       String queryString = Uri(queryParameters: params).query;
       print("_printDebugUrl: $apiUrl?$queryString");
+      // debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
       print(data);
@@ -779,7 +780,7 @@ class Api extends GetxController {
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
-    // if (searchKey != null || searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
