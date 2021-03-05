@@ -38,10 +38,14 @@ class ApiUser {
   String name;
   String birthday;
   String birthdate;
-  String idx;
+
+  int idx;
   String email;
   String userRegistered;
   String sessionId;
+
+  int createdAt;
+  int updatedAt;
 
   /// [mode] is used only when `loginOrRegister` method is being invoked.
   /// It is one of `login` or `register`.
@@ -82,6 +86,8 @@ class ApiUser {
     this.mode,
     this.profilePhotoUrl,
     this.point,
+    this.createdAt,
+    this.updatedAt,
   });
 
   ApiUser.fromJson(Map<String, dynamic> json) {
@@ -103,15 +109,18 @@ class ApiUser {
     name = json['name'];
     birthday = json['birthday'];
     birthdate = json['birthdate'];
-    idx = json['idx'];
+    idx = int.parse("${json['idx']}");
     email = json['email'];
     userRegistered = json['user_registered'];
     sessionId = json['sessionId'];
     mode = json['mode'];
     profilePhotoUrl = json['profilePhotoUrl'];
     point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
+    createdAt = int.parse("${json['createdAt']}");
+    updatedAt = int.parse("${json['updatedAt']}");
   }
 
+  /// ! this data will be saved into cache(GetStorage)
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['nickname'] = this.nickname;
@@ -137,6 +146,8 @@ class ApiUser {
     data['mode'] = this.mode;
     data['profilePhotoUrl'] = this.profilePhotoUrl;
     data['point'] = this.point;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
 
     return data;
   }
