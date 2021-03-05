@@ -459,8 +459,10 @@ class ApiPost {
               TextSpan(
                   text: " ${moneyFormat(_price)} ",
                   style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
-              WidgetSpan(child: Icon(Icons.arrow_right_alt)),
-              TextSpan(text: " => $_discountedPrice원"),
+              WidgetSpan(
+                  child: Transform.translate(
+                      offset: const Offset(0.0, 4.0), child: Icon(Icons.arrow_right_alt))),
+              TextSpan(text: "$_discountedPrice원"),
             ],
           ));
         } else {
