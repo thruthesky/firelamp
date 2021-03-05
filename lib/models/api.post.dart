@@ -126,9 +126,12 @@ class ApiPost {
   // int featuredImageId;
 
   /// Upload file/image
-  String thumbnailUrl(src, {int width = 360, int height = 360, int quality = 75}) {
+  String thumbnailUrl(src,
+      {int width = 360, int height = 360, int quality = 75, bool thumbnail = true}) {
     String url = Api.instance.thumbnailUrl;
-    return url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+    return url +
+        '?src=$src&w=$width&h=$height&f=jpeg&q=$quality&thumbnail=' +
+        (thumbnail ? 'Y' : 'N');
   }
 
   /// Widgets
@@ -157,11 +160,11 @@ class ApiPost {
   String storageMethod;
   String expiry;
   String primaryPhoto;
-  String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, width: 640, height: 2048, quality: 80);
+  String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, thumbnail: false);
   String widgetPhoto;
   String get widgetPhotoUrl => thumbnailUrl(widgetPhoto);
   String detailPhoto;
-  String get detailPhotoUrl => thumbnailUrl(detailPhoto, width: 640, height: 2048, quality: 80);
+  String get detailPhotoUrl => thumbnailUrl(detailPhoto, thumbnail: false);
 
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
