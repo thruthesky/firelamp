@@ -49,6 +49,9 @@ class Api extends GetxController {
   /// After this, you can use [localStorage]
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
 
+  /// Translation
+  ///
+  /// Translation is enabled by default.
   /// When translation changes(from backend), [translationChanges] event is posted with translation data.
   PublishSubject<Map<String, dynamic>> translationChanges = PublishSubject();
 
@@ -389,7 +392,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
