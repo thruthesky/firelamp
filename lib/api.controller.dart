@@ -261,11 +261,12 @@ class Api extends GetxController {
       if (user == null) {
         print('User is currently signed out!');
       } else {
-        print('User is signed in!');
+        print('User is signed in! ${user.email}');
       }
     });
 
     authChanges.listen((user) async {
+      print("_initFirebaseAuth() authChanges.listen((user) { ... }");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -485,7 +486,7 @@ class Api extends GetxController {
     data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
-    print(res);
+    // print(res);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
     authChanges.add(user);
@@ -733,8 +734,17 @@ class Api extends GetxController {
     } else {
       data['route'] = 'comment.update';
       data['idx'] = idx;
+    }
+    data['files'] = '';
+
+    if (comment != null) {
       if (comment.files.length > 0) {
         Set ids = comment.files.map((file) => file.idx).toSet();
+        data['files'] = ids.join(',');
+      }
+    } else {
+      if (files != null && files.length > 0) {
+        Set ids = files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     }
