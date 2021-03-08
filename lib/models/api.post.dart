@@ -201,14 +201,14 @@ class ApiPost {
     }
 
     // if it's new comment right under post, then add at bottom.
-    if (comment.parentIdx == idx.toString()) {
+    if (comment.parentIdx == idx) {
       comments.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.idx.toString() == comment.parentIdx);
+    int p = comments.indexWhere((c) => c.idx == comment.parentIdx);
     if (p != -1) {
       comment.depth = comments[p].depth + 1;
       comments.insert(p + 1, comment);
