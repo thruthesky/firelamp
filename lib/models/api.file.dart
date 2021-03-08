@@ -3,7 +3,7 @@ part of '../firelamp.dart';
 class ApiFile {
   ApiFile({
     this.url,
-    this.id,
+    this.idx,
     this.mediaType,
     this.type,
     this.name,
@@ -12,7 +12,7 @@ class ApiFile {
   });
 
   String url;
-  int id;
+  int idx;
   String mediaType;
   String type;
   String name;
@@ -23,7 +23,7 @@ class ApiFile {
 
   factory ApiFile.fromJson(Map<String, dynamic> json) => ApiFile(
         url: json["url"],
-        id: json["ID"],
+        idx: json["idx"],
         mediaType: json["media_type"],
         type: json["type"],
         name: json["name"],
@@ -33,7 +33,7 @@ class ApiFile {
 
   Map<String, dynamic> toJson() => {
         "url": url,
-        "ID": id,
+        "idx": idx,
         "media_type": mediaType,
         "type": type,
         "name": name,

@@ -18,6 +18,8 @@ class ApiForum {
   /// The [searchKey] is used on fetching to search posts
   String searchKey;
 
+  @Deprecated('change name to postOntop')
+
   /// The post of [postIdOnTop] will be shown on top of the post list with other posts.
   /// Use this when user want to see(view) a post. It may serve as a view page.
   /// The following posts is coming same category if [category] is not set.
