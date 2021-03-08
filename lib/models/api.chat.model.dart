@@ -96,7 +96,7 @@ class ApiChatMessage {
       userId: data['userId'],
       text: data['text'],
       protocol: data['protocol'],
-      isMine: data['userId'] == Api.instance.idx,
+      isMine: data['userId'] == Api.instance.userIdx,
       isImage: isImageUrl(data['text']),
     );
   }

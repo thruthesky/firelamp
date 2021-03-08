@@ -1,7 +1,7 @@
 part of '../firelamp.dart';
 
 class ChatHelper {
-  int get myIdx => Api.instance.idx;
+  int get myIdx => Api.instance.userIdx;
 
   /// [noMoreMessage] becomes true when there is no more old messages to view.
   /// The app should display 'no more message' to user.

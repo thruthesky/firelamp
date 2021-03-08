@@ -100,7 +100,7 @@ class ApiPost extends ApiForumBase {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';
-    print('thumbnailUrl: $url');
+    // print('thumbnailUrl: $url');
     return url;
   }
 

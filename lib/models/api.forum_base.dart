@@ -43,7 +43,7 @@ class ApiForumBase {
   String updatedAt;
   String deletedAt;
 
-  bool get isMine => userIdx == Api.instance.idx;
+  bool get isMine => userIdx == Api.instance.userIdx;
   bool get isNotMine => !isMine;
 
   bool get isDeleted => deletedAt != '0';

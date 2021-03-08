@@ -45,7 +45,7 @@ class Cart extends GetxController {
   void onInit() {
     super.onInit();
     loadOptions();
-    print('cartLoadOptions');
+    // print('cartLoadOptions');
   }
 
   clear() {
@@ -179,8 +179,8 @@ class Cart extends GetxController {
       final re = await Api.instance.request({'route': 'shopping-mall.options'});
       deliveryFeeFreeLimit = int.parse("${re['deliveryFeeFreeLimit']}");
       _deliveryFeePrice = int.parse("${re['deliveryFeePrice']}");
-      print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
-      print('deliveryFeePrice: $_deliveryFeePrice');
+      // print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
+      // print('deliveryFeePrice: $_deliveryFeePrice');
       // print(re);
 
     } catch (e) {

@@ -1155,14 +1155,23 @@ class Api extends GetxController {
   /// todo: make it one time call.
   _loadTranslations() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    print('loadTranslations() res: $res');
+    // print('loadTranslations() res: $res');
 
+    /// When it is a List, there is no translation. It should be a Map when it has data.
+    if (res is List) return;
+    if (res is Map && res.keys.length == 0) return;
     translationChanges.add(res);
   }
 
   /// loadSettings
   _loadSettings() async {
     final _settings = await request({'route': 'app.settings'});
+    if (_settings == null) return;
+
+    /// When it is a List, there is no translation. It should be a Map when it has data.
+    if (_settings is List) return;
+    if (_settings is Map && _settings.keys.length == 0) return;
+    // print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
