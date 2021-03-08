@@ -261,11 +261,12 @@ class Api extends GetxController {
       if (user == null) {
         print('User is currently signed out!');
       } else {
-        print('User is signed in!');
+        print('User is signed in! ${user.email}');
       }
     });
 
     authChanges.listen((user) async {
+      print("_initFirebaseAuth() authChanges.listen((user) { ... }");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -485,7 +486,7 @@ class Api extends GetxController {
     data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
-    print(res);
+    // print(res);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
     authChanges.add(user);
@@ -626,7 +627,7 @@ class Api extends GetxController {
     if (title != null) data['title'] = title;
     if (content != null) data['content'] = content;
     if (files != null) {
-      Set ids = files.map((file) => file.id).toSet();
+      Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
     }
 
@@ -639,7 +640,7 @@ class Api extends GetxController {
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
-        Set ids = post.files.map((file) => file.id).toSet();
+        Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     }
@@ -670,7 +671,7 @@ class Api extends GetxController {
     if (title != null) data['title'] = title;
     if (content != null) data['content'] = content;
     if (files != null) {
-      Set ids = files.map((file) => file.id).toSet();
+      Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
     }
 
@@ -681,7 +682,7 @@ class Api extends GetxController {
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
-        Set ids = post.files.map((file) => file.id).toSet();
+        Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     }
@@ -707,7 +708,7 @@ class Api extends GetxController {
       // 'comment_content': content ?? '',
     };
     if (files != null) {
-      Set ids = files.map((file) => file.id).toSet();
+      Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
     }
     final json = await request(data);
@@ -733,15 +734,24 @@ class Api extends GetxController {
     } else {
       data['route'] = 'comment.update';
       data['idx'] = idx;
+    }
+    data['files'] = '';
+
+    if (comment != null) {
       if (comment.files.length > 0) {
-        Set ids = comment.files.map((file) => file.id).toSet();
+        Set ids = comment.files.map((file) => file.idx).toSet();
+        data['files'] = ids.join(',');
+      }
+    } else {
+      if (files != null && files.length > 0) {
+        Set ids = files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     }
 
     if (content != null) data['content'] = content;
     if (files != null) {
-      Set ids = files.map((file) => file.id).toSet();
+      Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
     }
 
@@ -765,7 +775,7 @@ class Api extends GetxController {
     final json = await request({
       'route': 'forum.setFeaturedImage',
       'idx': post.idx,
-      'featured_image_ID': file.id,
+      'featured_image_ID': file.idx,
     });
     return json;
   }
@@ -915,12 +925,14 @@ class Api extends GetxController {
         if (onProgress != null) onProgress(sent * 100 / total);
       },
     );
-    if (res.data is String || res.data['code'] == null) {
+
+    /// @todo  merge this error handling with [request]
+    if (res.data is String || res.data['response'] == null) {
       throw (res.data);
-    } else if (res.data['code'] != 0) {
-      throw res.data['code'];
+    } else if (res.data['response'] is String) {
+      throw res.data['response'];
     }
-    return ApiFile.fromJson(res.data['data']);
+    return ApiFile.fromJson(res.data['response']);
   }
 
   /// 사진업로드
