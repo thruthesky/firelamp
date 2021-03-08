@@ -77,7 +77,6 @@ class ApiPost extends ApiForumBase {
           path: path,
           content: content,
           profilePhotoUrl: profilePhotoUrl,
-          authorName: authorName,
           files: files,
           createdAt: createdAt,
           updatedAt: updatedAt,
@@ -180,8 +179,7 @@ class ApiPost extends ApiForumBase {
 
   /// Get short name for display
   String get displayName {
-    if (authorName == null) return '';
-    return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
+    return 'displayName';
   }
 
   ///

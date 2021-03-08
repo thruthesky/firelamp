@@ -662,7 +662,6 @@ class Api extends GetxController {
 
     if (idx == null) {
       data['route'] = 'post.create';
-      data['authorName'] = user.nickname ?? user.email;
     } else {
       data['route'] = 'post.update';
       data['idx'] = idx;

@@ -11,7 +11,6 @@ class ApiForumBase {
     this.subcategory,
     this.path,
     this.content,
-    this.authorName,
     this.profilePhotoUrl,
     this.files,
     this.createdAt,
@@ -33,7 +32,6 @@ class ApiForumBase {
   String path;
 
   String content;
-  String authorName;
   String profilePhotoUrl;
 
   /// TODO:
