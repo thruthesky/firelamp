@@ -141,7 +141,7 @@ class ApiChatRoom extends ChatHelper {
         'newMessages': 0,
         'userId': otherUser.idx,
         'displayName': otherUser.nickname,
-        'profilePhotoUrl': otherUser.profilePhotoUrl,
+        'profilePhotoUrl': otherUser.photoUrl,
       });
 
       /// Create the other room
@@ -153,7 +153,7 @@ class ApiChatRoom extends ChatHelper {
         'newMessages': 0,
         'userId': Api.instance.userIdx,
         'displayName': Api.instance.nickname,
-        'profilePhotoUrl': Api.instance.profilePhotoUrl,
+        'profilePhotoUrl': Api.instance.photoUrl,
       });
 
       /// Save the first message on message document.
@@ -171,7 +171,7 @@ class ApiChatRoom extends ChatHelper {
       /// Update your copy of other User and update the Room Information
       await roomsRef(myIdx.toString(), roomId: roomId).update({
         'displayName': otherUser.nickname,
-        'profilePhotoUrl': otherUser.profilePhotoUrl,
+        'profilePhotoUrl': otherUser.photoUrl,
       });
     }
 

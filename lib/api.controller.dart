@@ -71,14 +71,13 @@ class Api extends GetxController {
   int get idx => user == null ? 0 : user.idx;
   int get userIdx => user == null ? 0 : user.idx;
   String get sessionId => user?.sessionId;
-  String get primaryPhotoUrl => user?.profilePhotoUrl;
+  String get photoUrl => user?.photoUrl;
   String get fullName => user?.name;
   String get nickname => user?.nickname;
-  String get profilePhotoUrl => user?.profilePhotoUrl;
   bool get profileComplete =>
       loggedIn &&
-      primaryPhotoUrl != null &&
-      primaryPhotoUrl.isNotEmpty &&
+      photoUrl != null &&
+      photoUrl.isNotEmpty &&
       fullName != null &&
       fullName.isNotEmpty;
 
