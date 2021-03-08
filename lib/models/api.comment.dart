@@ -58,7 +58,7 @@ class ApiComment extends ApiForumBase {
         files: json["files"] == null || json["files"] == ''
             ? []
             : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-        depth: int.parse("${json['depth']}"),
+        depth: int.parse("${json['depth'] ?? 1}"),
         createdAt: int.parse("${json['createdAt']}"),
         updatedAt: int.parse("${json['updatedAt']}"),
         deletedAt: int.parse("${json['deletedAt']}"),
