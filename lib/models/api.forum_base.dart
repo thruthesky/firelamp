@@ -25,10 +25,10 @@ class ApiForumBase {
   dynamic data;
 
   int idx;
-  String userIdx;
-  String rootIdx;
-  String parentIdx;
-  String categoryIdx;
+  int userIdx;
+  int rootIdx;
+  int parentIdx;
+  int categoryIdx;
   String subcategory;
   String path;
 
@@ -39,9 +39,9 @@ class ApiForumBase {
   /// TODO:
   List<ApiFile> files;
 
-  String createdAt;
-  String updatedAt;
-  String deletedAt;
+  int createdAt;
+  int updatedAt;
+  int deletedAt;
 
   bool get isMine => userIdx == Api.instance.userIdx;
   bool get isNotMine => !isMine;

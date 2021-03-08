@@ -31,19 +31,19 @@ class ApiItemOption {
 class ApiPost extends ApiForumBase {
   ApiPost({
     int idx,
-    String rootIdx,
-    String parentIdx,
-    String userIdx,
-    String categoryIdx,
+    int rootIdx,
+    int parentIdx,
+    int userIdx,
+    int categoryIdx,
     String subcategory,
     String path,
     String content,
     String profilePhotoUrl,
     String authorName,
     List<ApiFile> files,
-    String createdAt,
-    String updatedAt,
-    String deletedAt,
+    int createdAt,
+    int updatedAt,
+    int deletedAt,
 
     //
     this.data,
@@ -250,15 +250,15 @@ class ApiPost extends ApiForumBase {
       /// Updates
       /// TODO: human readable date
       ///
-      userIdx: json['userIdx'],
-      rootIdx: json['rootIdx'],
-      parentIdx: json['parentIdx'],
-      categoryIdx: json['categoryIdx'],
+      userIdx: int.parse("${json['userIdx']}"),
+      rootIdx: int.parse("${json['rootIdx']}"),
+      parentIdx: int.parse("${json['parentIdx']}"),
+      categoryIdx: int.parse("${json['categoryIdx']}"),
       subcategory: json['subcategory'],
       path: json['path'],
-      createdAt: json["createdAt"],
-      updatedAt: json["updatedAt"],
-      deletedAt: json["deletedAt"],
+      createdAt: int.parse("${json["createdAt"]}"),
+      updatedAt: int.parse("${json["updatedAt"]}"),
+      deletedAt: int.parse("${json["deletedAt"]}"),
 
       // TODO:
       files: json["files"] == null || json["files"] == ''
