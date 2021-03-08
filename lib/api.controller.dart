@@ -899,6 +899,22 @@ class Api extends GetxController {
     return _comments;
   }
 
+  /// TODO: vote
+  /// create vote for comment too..
+  /// or make it one.
+  Future postVote({
+    int idx,
+    String choice,
+  }) {
+    Map<String, dynamic> data = {
+      'route': 'post.vote',
+      'idx': idx,
+      'choice': choice
+    };
+
+    return request(data);
+  }
+
   /// [getPosts] is an alias of [searchPosts]
   Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, int userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
