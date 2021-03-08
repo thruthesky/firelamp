@@ -846,7 +846,7 @@ class Api extends GetxController {
   }
 
   Future<List<ApiPost>> postSearch({
-    int postIdOnTop,
+    int postOnTop,
     String categoryId,
     int limit = 20,
     int page = 1,
@@ -855,7 +855,7 @@ class Api extends GetxController {
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
-    data['postIdOnTop'] = postIdOnTop;
+    data['postOnTop'] = postOnTop;
     data['where'] = "parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
@@ -1006,7 +1006,7 @@ class Api extends GetxController {
     // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await postSearch(
-      postIdOnTop: forum.postIdOnTop,
+      postOnTop: forum.postOnTop,
       categoryId: forum.category,
       page: forum.pageNo,
       limit: forum.limit,
