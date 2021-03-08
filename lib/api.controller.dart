@@ -902,16 +902,11 @@ class Api extends GetxController {
   /// TODO: vote
   /// create vote for comment too..
   /// or make it one.
-  Future postVote({
+  Future vote(
     int idx,
     String choice,
-  }) {
-    Map<String, dynamic> data = {
-      'route': 'post.vote',
-      'idx': idx,
-      'choice': choice
-    };
-
+  ) {
+    Map<String, dynamic> data = {'route': 'post.vote', 'idx': idx, 'choice': choice};
     return request(data);
   }
 
