@@ -28,21 +28,21 @@ class ApiItemOption {
 /// [ApiPost] is a model for a post.
 ///
 /// Post can be used for many purpose like blog, messaging, shopping mall, etc.
-class ApiPost extends ApiForumBase {
+class ApiPost {
   ApiPost({
-    int idx,
-    int rootIdx,
-    int parentIdx,
-    int userIdx,
-    int categoryIdx,
-    String subcategory,
-    String path,
-    String content,
-    String profilePhotoUrl,
-    List<ApiFile> files,
-    int createdAt,
-    int updatedAt,
-    int deletedAt,
+    this.idx,
+    this.rootIdx,
+    this.parentIdx,
+    this.userIdx,
+    this.categoryIdx,
+    this.subcategory,
+    this.path,
+    this.content,
+    this.profilePhotoUrl,
+    this.files,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
 
     //
     this.data,
@@ -66,23 +66,10 @@ class ApiPost extends ApiForumBase {
     this.detailPhoto,
     this.keywords,
     this.options,
-  }) : super(
-          idx: idx,
-          rootIdx: rootIdx,
-          parentIdx: parentIdx,
-          userIdx: userIdx,
-          categoryIdx: categoryIdx,
-          subcategory: subcategory,
-          path: path,
-          content: content,
-          profilePhotoUrl: profilePhotoUrl,
-          files: files,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          deletedAt: deletedAt,
-        ) {
+  }) {
     if (title == null) title = '';
     if (comments == null) comments = [];
+    if (content == null) content = '';
   }
 
   /// [data] is the original data for the post. When you need to access an extra meta property,
@@ -90,6 +77,20 @@ class ApiPost extends ApiForumBase {
   dynamic data;
   String title;
   String categoryId;
+
+  int idx;
+  int rootIdx;
+  int parentIdx;
+  int userIdx;
+  int categoryIdx;
+  String subcategory;
+  String path;
+  String content;
+  String profilePhotoUrl;
+  List<ApiFile> files;
+  int createdAt;
+  int updatedAt;
+  int deletedAt;
 
   /// TODO:
   List<ApiComment> comments;
@@ -175,6 +176,11 @@ class ApiPost extends ApiForumBase {
   /// The [mode] has one of the following status: null, 'edit'
   /// - when it is 'edit', the post is in edit mode.
   String mode;
+
+  bool get isMine => userIdx == Api.instance.userIdx;
+  bool get isNotMine => !isMine;
+
+  bool get isDeleted => deletedAt != 0;
 
   /// Get short name for display
   String get displayName {
