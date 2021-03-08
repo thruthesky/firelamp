@@ -69,7 +69,8 @@ class ApiForum {
     return false;
   }
 
-  ApiPost postInEdit;
+  ///
+  ApiPost postInEdit = ApiPost();
   ApiForum({
     this.category,
     this.userIdx,

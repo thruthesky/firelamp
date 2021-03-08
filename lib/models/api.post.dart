@@ -70,6 +70,7 @@ class ApiPost {
     if (title == null) title = '';
     if (comments == null) comments = [];
     if (content == null) content = '';
+    if (files == null) files = [];
   }
 
   /// [data] is the original data for the post. When you need to access an extra meta property,
