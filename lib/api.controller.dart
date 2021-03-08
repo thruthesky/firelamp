@@ -402,7 +402,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      // _printDebugUrl(data);
+      _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -653,6 +653,7 @@ class Api extends GetxController {
   Future<ApiPost> postEdit({
     int idx,
     String categoryId,
+    String subcategory,
     String title,
     String content,
     List<ApiFile> files,
@@ -661,15 +662,17 @@ class Api extends GetxController {
   }) async {
     if (data == null) data = {};
 
-    if (idx == null) {
+    if (idx == null && (post == null || post.idx == null)) {
       data['route'] = 'post.create';
     } else {
       data['route'] = 'post.update';
       data['idx'] = idx;
     }
+
     if (categoryId != null) data['categoryId'] = categoryId;
     if (title != null) data['title'] = title;
     if (content != null) data['content'] = content;
+    if (subcategory != null) data['subcategory'] = subcategory;
     if (files != null) {
       Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
@@ -681,6 +684,7 @@ class Api extends GetxController {
       if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
+      if (post.subcategory != null) data['subcategory'] = post.subcategory;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
@@ -964,14 +968,14 @@ class Api extends GetxController {
   /// file will be removed from the `files` array after deletion.
   ///
   /// It returns deleted file id.
-  Future<int> deleteFile(int id, {dynamic postOrComment}) async {
+  Future<int> deleteFile(int idx, {dynamic postOrComment}) async {
     final dynamic data = await request({
       'route': 'file.delete',
-      'ID': id,
+      'idx': idx,
     });
-    int i = postOrComment.files.indexWhere((file) => file.id == id);
+    int i = postOrComment.files.indexWhere((file) => file.idx == idx);
     postOrComment.files.removeAt(i);
-    return data['ID'];
+    return int.parse("${data['idx']}");
   }
 
   /// Fetch posts based on the options of [forum]

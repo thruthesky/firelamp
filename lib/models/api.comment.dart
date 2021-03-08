@@ -8,15 +8,16 @@ enum CommentMode {
 
 class ApiComment {
   ApiComment({
+    this.data,
     this.idx,
     this.rootIdx,
     this.parentIdx,
     this.userIdx,
+    this.user,
     this.categoryIdx,
     this.subcategory,
     this.path,
     this.content,
-    this.profilePhotoUrl,
     this.files,
     this.createdAt,
     this.updatedAt,
@@ -28,16 +29,17 @@ class ApiComment {
     if (content == null) content = '';
   }
 
+  Map<String, dynamic> data;
   int depth;
   int idx;
   int rootIdx;
   int parentIdx;
   int userIdx;
+  ApiPostUser user;
   int categoryIdx;
   String subcategory;
   String path;
   String content;
-  String profilePhotoUrl;
   List<ApiFile> files;
   int createdAt;
   int updatedAt;
@@ -54,24 +56,27 @@ class ApiComment {
 
   bool get isDeleted => deletedAt != 0;
 
-  factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(
-        idx: int.parse(
-            "${json['idx']}"), //    json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-        rootIdx: int.parse("${json['rootIdx']}"),
-        parentIdx: int.parse("${json['parentIdx']}"),
-        subcategory: json['subcategory'],
-        userIdx: int.parse("${json['userIdx']}"),
-        path: json['path'],
-        content: json['content'] ?? '',
-        profilePhotoUrl: json['profilePhotoUrl'] ?? '',
-        files: json["files"] == null || json["files"] == ''
-            ? []
-            : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-        depth: int.parse("${json['depth'] ?? 1}"),
-        createdAt: int.parse("${json['createdAt']}"),
-        updatedAt: int.parse("${json['updatedAt']}"),
-        deletedAt: int.parse("${json['deletedAt']}"),
-      );
+  factory ApiComment.fromJson(Map<String, dynamic> json) {
+    return ApiComment(
+      data: json,
+      idx: int.parse(
+          "${json['idx']}"), //    json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+      rootIdx: int.parse("${json['rootIdx']}"),
+      parentIdx: int.parse("${json['parentIdx']}"),
+      subcategory: json['subcategory'],
+      userIdx: int.parse("${json['userIdx']}"),
+      user: ApiPostUser.fromJson(json['user']),
+      path: json['path'],
+      content: json['content'] ?? '',
+      files: json["files"] == null || json["files"] == ''
+          ? []
+          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      depth: int.parse("${json['depth'] ?? 1}"),
+      createdAt: int.parse("${json['createdAt']}"),
+      updatedAt: int.parse("${json['updatedAt']}"),
+      deletedAt: int.parse("${json['deletedAt']}"),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "idx": idx,
@@ -79,10 +84,10 @@ class ApiComment {
         "parentIdx": parentIdx,
         "subcategory": subcategory,
         "userIdx": userIdx,
+        "user": user.toString(),
         "path": path,
         "content": content,
         "files": files,
-        "profilePhotoUrl": profilePhotoUrl,
         "depth": depth,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
