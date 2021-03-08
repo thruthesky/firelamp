@@ -905,9 +905,9 @@ class Api extends GetxController {
   Future vote(
     int idx,
     String choice,
-  ) {
+  ) async {
     Map<String, dynamic> data = {'route': 'post.vote', 'idx': idx, 'choice': choice};
-    return request(data);
+    return await request(data);
   }
 
   /// [getPosts] is an alias of [searchPosts]
