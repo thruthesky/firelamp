@@ -39,10 +39,10 @@ class ApiChatRoom extends ChatHelper {
 
   /// [roomId] is the combination of the User A md5 and user B md5 which is return when you get the other user profile.
   String get roomId {
-    if (int.parse(Api.instance.idx.toString()) < int.parse(otherUserId)) {
-      return "${Api.instance.idx}-$otherUserId";
+    if (int.parse(Api.instance.userIdx.toString()) < int.parse(otherUserId)) {
+      return "${Api.instance.userIdx}-$otherUserId";
     } else {
-      return "$otherUserId-${Api.instance.idx}";
+      return "$otherUserId-${Api.instance.userIdx}";
     }
   }
 
@@ -151,7 +151,7 @@ class ApiChatRoom extends ChatHelper {
       await roomsRef(otherUserId, roomId: roomId).set({
         'createdAt': ServerValue.timestamp,
         'newMessages': 0,
-        'userId': Api.instance.idx,
+        'userId': Api.instance.userIdx,
         'displayName': Api.instance.nickname,
         'profilePhotoUrl': Api.instance.profilePhotoUrl,
       });
@@ -162,7 +162,7 @@ class ApiChatRoom extends ChatHelper {
       /// await sendMessage(text: ChatProtocol.roomCreated, displayName: loginUserId);
       await messagesRef(roomId).push().set({
         'createdAt': ServerValue.timestamp,
-        'userId': Api.instance.idx,
+        'userId': Api.instance.userIdx,
         'protocol': ChatProtocol.roomCreated
       });
     } else {
@@ -185,12 +185,12 @@ class ApiChatRoom extends ChatHelper {
     // This will be notify chat room listener when chat room title changes, or new users enter, etc.
     if (_currentRoomSubscription != null) _currentRoomSubscription.cancel();
     _currentRoomSubscription =
-        roomsRef(Api.instance.idx.toString(), roomId: roomId).onValue.listen((Event event) {
+        roomsRef(Api.instance.userIdx.toString(), roomId: roomId).onValue.listen((Event event) {
       // If the user got a message from a chat room where the user is currently in,
       // then, set `newMessages` to 0.
       final data = ApiChatUserRoom.fromSnapshot(event.snapshot);
       if (data.newMessages != null && data.newMessages > 0 && data.createdAt != null) {
-        roomsRef(Api.instance.idx.toString(), roomId: roomId).update({'newMessages': 0});
+        roomsRef(Api.instance.userIdx.toString(), roomId: roomId).update({'newMessages': 0});
       }
     });
 
@@ -339,7 +339,7 @@ class ApiChatRoom extends ChatHelper {
     Map<String, dynamic> extra,
   }) async {
     Map<String, dynamic> message = {
-      'userId': Api.instance.idx,
+      'userId': Api.instance.userIdx,
       'text': text,
       if (extra != null) ...extra,
     };

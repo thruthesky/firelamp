@@ -28,26 +28,26 @@ class ApiItemOption {
 /// [ApiPost] is a model for a post.
 ///
 /// Post can be used for many purpose like blog, messaging, shopping mall, etc.
-class ApiPost extends ApiForumBase {
+class ApiPost {
   ApiPost({
-    int idx,
-    String rootIdx,
-    String parentIdx,
-    String userIdx,
-    String categoryIdx,
-    String subcategory,
-    String path,
-    String content,
-    String profilePhotoUrl,
-    String authorName,
-    List<ApiFile> files,
-    String createdAt,
-    String updatedAt,
-    String deletedAt,
+    this.idx,
+    this.rootIdx,
+    this.parentIdx,
+    this.userIdx,
+    this.categoryIdx,
+    this.subcategory,
+    this.path,
+    this.content,
+    this.profilePhotoUrl,
+    this.files,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
 
     //
     this.data,
     this.title,
+    this.categoryId,
     this.comments,
 
     // Shopping mall props
@@ -66,30 +66,32 @@ class ApiPost extends ApiForumBase {
     this.detailPhoto,
     this.keywords,
     this.options,
-  }) : super(
-          idx: idx,
-          rootIdx: rootIdx,
-          parentIdx: parentIdx,
-          userIdx: userIdx,
-          categoryIdx: categoryIdx,
-          subcategory: subcategory,
-          path: path,
-          content: content,
-          profilePhotoUrl: profilePhotoUrl,
-          authorName: authorName,
-          files: files,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          deletedAt: deletedAt,
-        ) {
+  }) {
     if (title == null) title = '';
     if (comments == null) comments = [];
+    if (content == null) content = '';
+    if (files == null) files = [];
   }
 
   /// [data] is the original data for the post. When you need to access an extra meta property,
   /// you can access [data] directly.
   dynamic data;
   String title;
+  String categoryId;
+
+  int idx;
+  int rootIdx;
+  int parentIdx;
+  int userIdx;
+  int categoryIdx;
+  String subcategory;
+  String path;
+  String content;
+  String profilePhotoUrl;
+  List<ApiFile> files;
+  int createdAt;
+  int updatedAt;
+  int deletedAt;
 
   /// TODO:
   List<ApiComment> comments;
@@ -100,7 +102,7 @@ class ApiPost extends ApiForumBase {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';
-    print('thumbnailUrl: $url');
+    // print('thumbnailUrl: $url');
     return url;
   }
 
@@ -176,10 +178,14 @@ class ApiPost extends ApiForumBase {
   /// - when it is 'edit', the post is in edit mode.
   String mode;
 
+  bool get isMine => userIdx == Api.instance.userIdx;
+  bool get isNotMine => !isMine;
+
+  bool get isDeleted => deletedAt != 0;
+
   /// Get short name for display
   String get displayName {
-    if (authorName == null) return '';
-    return authorName.length <= 10 ? authorName : authorName.substring(0, 9);
+    return 'displayName';
   }
 
   ///
@@ -195,14 +201,14 @@ class ApiPost extends ApiForumBase {
     }
 
     // if it's new comment right under post, then add at bottom.
-    if (comment.parentIdx == idx.toString()) {
+    if (comment.parentIdx == idx) {
       comments.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.idx.toString() == comment.parentIdx);
+    int p = comments.indexWhere((c) => c.idx == comment.parentIdx);
     if (p != -1) {
       comment.depth = comments[p].depth + 1;
       comments.insert(p + 1, comment);
@@ -242,7 +248,7 @@ class ApiPost extends ApiForumBase {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-      authorName: json["authorName"] ?? '',
+      categoryId: json['categoryId'],
       title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',
       profilePhotoUrl: json['profile_photo_url'],
@@ -250,15 +256,15 @@ class ApiPost extends ApiForumBase {
       /// Updates
       /// TODO: human readable date
       ///
-      userIdx: json['userIdx'],
-      rootIdx: json['rootIdx'],
-      parentIdx: json['parentIdx'],
-      categoryIdx: json['categoryIdx'],
+      userIdx: int.parse("${json['userIdx']}"),
+      rootIdx: int.parse("${json['rootIdx']}"),
+      parentIdx: int.parse("${json['parentIdx']}"),
+      categoryIdx: int.parse("${json['categoryIdx']}"),
       subcategory: json['subcategory'],
       path: json['path'],
-      createdAt: json["createdAt"],
-      updatedAt: json["updatedAt"],
-      deletedAt: json["deletedAt"],
+      createdAt: int.parse("${json["createdAt"]}"),
+      updatedAt: int.parse("${json["updatedAt"]}"),
+      deletedAt: int.parse("${json["deletedAt"]}"),
 
       // TODO:
       files: json["files"] == null || json["files"] == ''
@@ -297,6 +303,7 @@ class ApiPost extends ApiForumBase {
         "rootIdx": rootIdx,
         "parentIdx": parentIdx,
         "categoryIdx": categoryIdx,
+        "categoryId": categoryId,
         "subcategory": subcategory,
         "path": path,
         "createdAt": createdAt,

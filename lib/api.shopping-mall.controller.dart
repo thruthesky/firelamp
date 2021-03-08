@@ -45,7 +45,7 @@ class Cart extends GetxController {
   void onInit() {
     super.onInit();
     loadOptions();
-    print('cartLoadOptions');
+    // print('cartLoadOptions');
   }
 
   clear() {
@@ -179,8 +179,8 @@ class Cart extends GetxController {
       final re = await Api.instance.request({'route': 'shopping-mall.options'});
       deliveryFeeFreeLimit = int.parse("${re['deliveryFeeFreeLimit']}");
       _deliveryFeePrice = int.parse("${re['deliveryFeePrice']}");
-      print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
-      print('deliveryFeePrice: $_deliveryFeePrice');
+      // print('deliveryFeeFreeLimit: $deliveryFeeFreeLimit');
+      // print('deliveryFeePrice: $_deliveryFeePrice');
       // print(re);
 
     } catch (e) {
@@ -229,7 +229,7 @@ class Cart extends GetxController {
     // 상품 정보.
     // (게시글) 번호 및 상품에 대한 정보 저장.
     return {
-      'postId': item.idx,
+      'postIdx': item.idx,
       'optionItemPrice': item.optionItemPrice,
       'title': item.title, // 상품 제목
       'price': item.price, // 해당 상품 가격

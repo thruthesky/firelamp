@@ -6,40 +6,42 @@ enum CommentMode {
   reply,
 }
 
-class ApiComment extends ApiForumBase {
+class ApiComment {
   ApiComment({
-    int idx,
-    String rootIdx,
-    String parentIdx,
-    String userIdx,
-    String subcategory,
-    String path,
-    String content,
-    String profilePhotoUrl,
-    String authorName,
-    List<ApiFile> files,
-    String createdAt,
-    String updatedAt,
-    String deletedAt,
+    this.idx,
+    this.rootIdx,
+    this.parentIdx,
+    this.userIdx,
+    this.categoryIdx,
+    this.subcategory,
+    this.path,
+    this.content,
+    this.profilePhotoUrl,
+    this.files,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
     this.depth,
     this.mode = CommentMode.none,
-  }) : super(
-          idx: idx,
-          rootIdx: rootIdx,
-          parentIdx: parentIdx,
-          userIdx: userIdx,
-          subcategory: subcategory,
-          path: path,
-          content: content,
-          profilePhotoUrl: profilePhotoUrl,
-          authorName: authorName,
-          files: files,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          deletedAt: deletedAt,
-        );
+  }) {
+    if (files == null) files = [];
+    if (content == null) content = '';
+  }
 
   int depth;
+  int idx;
+  int rootIdx;
+  int parentIdx;
+  int userIdx;
+  int categoryIdx;
+  String subcategory;
+  String path;
+  String content;
+  String profilePhotoUrl;
+  List<ApiFile> files;
+  int createdAt;
+  int updatedAt;
+  int deletedAt;
 
   /// [mode] becomes
   /// - `CommentMode.edit` when the comment is in edit mode.
@@ -47,23 +49,28 @@ class ApiComment extends ApiForumBase {
   /// - `CommentMode.none` string for nothing.
   CommentMode mode;
 
+  bool get isMine => userIdx == Api.instance.userIdx;
+  bool get isNotMine => !isMine;
+
+  bool get isDeleted => deletedAt != 0;
+
   factory ApiComment.fromJson(Map<String, dynamic> json) => ApiComment(
-        idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-        rootIdx: json['rootIdx'],
-        parentIdx: json['parentIdx'],
+        idx: int.parse(
+            "${json['idx']}"), //    json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+        rootIdx: int.parse("${json['rootIdx']}"),
+        parentIdx: int.parse("${json['parentIdx']}"),
         subcategory: json['subcategory'],
-        userIdx: json['userIdx'],
+        userIdx: int.parse("${json['userIdx']}"),
         path: json['path'],
         content: json['content'] ?? '',
         profilePhotoUrl: json['profilePhotoUrl'] ?? '',
-        authorName: json['authorName'],
         files: json["files"] == null || json["files"] == ''
             ? []
             : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-        depth: json["depth"] ?? 1,
-        createdAt: json['createdAt'],
-        updatedAt: json['updatedAt'],
-        deletedAt: json['deletedAt'],
+        depth: int.parse("${json['depth'] ?? 1}"),
+        createdAt: int.parse("${json['createdAt']}"),
+        updatedAt: int.parse("${json['updatedAt']}"),
+        deletedAt: int.parse("${json['deletedAt']}"),
       );
 
   Map<String, dynamic> toJson() => {
@@ -76,7 +83,6 @@ class ApiComment extends ApiForumBase {
         "content": content,
         "files": files,
         "profilePhotoUrl": profilePhotoUrl,
-        "authorName": authorName,
         "depth": depth,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
