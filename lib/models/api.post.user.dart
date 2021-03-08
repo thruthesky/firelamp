@@ -16,7 +16,7 @@ class ApiPostUser {
     String url;
     if (photoIdx > 0) {
       url = Api.instance.thumbnailUrl;
-      url = url + '?src=$photoIdx}&w=100&h=100&f=jpeg&q=95';
+      url = url + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
     }
     return ApiPostUser(
       idx: int.parse("${json['idx']}"),

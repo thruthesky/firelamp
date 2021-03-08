@@ -71,14 +71,13 @@ class Api extends GetxController {
   int get idx => user == null ? 0 : user.idx;
   int get userIdx => user == null ? 0 : user.idx;
   String get sessionId => user?.sessionId;
-  String get primaryPhotoUrl => user?.profilePhotoUrl;
+  String get photoUrl => user?.photoUrl;
   String get fullName => user?.name;
   String get nickname => user?.nickname;
-  String get profilePhotoUrl => user?.profilePhotoUrl;
   bool get profileComplete =>
       loggedIn &&
-      primaryPhotoUrl != null &&
-      primaryPhotoUrl.isNotEmpty &&
+      photoUrl != null &&
+      photoUrl.isNotEmpty &&
       fullName != null &&
       fullName.isNotEmpty;
 
@@ -259,14 +258,14 @@ class Api extends GetxController {
   _initFirebaseAuth() async {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
-        print('User is currently signed out!');
+        // print('User is currently signed out!');
       } else {
-        print('User is signed in! ${user.email}');
+        // print('User is signed in! ${user.email}');
       }
     });
 
     authChanges.listen((user) async {
-      print("_initFirebaseAuth() authChanges.listen((user) { ... }");
+      // print("_initFirebaseAuth() authChanges.listen((user) { ... }");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -402,7 +401,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');

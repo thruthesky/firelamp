@@ -60,7 +60,8 @@ class ApiUser {
   // String drinking;
   // String smoking;
 
-  String profilePhotoUrl;
+  int photoIdx;
+  String photoUrl;
 
   ApiUser({
     this.nickname,
@@ -84,7 +85,8 @@ class ApiUser {
     this.userRegistered,
     this.sessionId,
     this.mode,
-    this.profilePhotoUrl,
+    this.photoIdx,
+    this.photoUrl,
     this.point,
     this.createdAt,
     this.updatedAt,
@@ -114,7 +116,12 @@ class ApiUser {
     userRegistered = json['user_registered'];
     sessionId = json['sessionId'];
     mode = json['mode'];
-    profilePhotoUrl = json['profilePhotoUrl'];
+    photoIdx = int.parse("${json['photoIdx'] ?? 0}");
+    if (photoIdx > 0) {
+      photoUrl = Api.instance.thumbnailUrl;
+      photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
+    }
+
     point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
     createdAt = int.parse("${json['createdAt']}");
     updatedAt = int.parse("${json['updatedAt']}");
@@ -144,7 +151,8 @@ class ApiUser {
     data['user_registered'] = this.userRegistered;
     data['sessionId'] = this.sessionId;
     data['mode'] = this.mode;
-    data['profilePhotoUrl'] = this.profilePhotoUrl;
+    data['photoIdx'] = this.photoIdx;
+    data['photoUrl'] = this.photoUrl;
     data['point'] = this.point;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
