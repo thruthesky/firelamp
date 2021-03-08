@@ -714,10 +714,11 @@ class Api extends GetxController {
     return ApiComment.fromJson(json);
   }
 
+  ///
   Future<ApiComment> commentEdit({
     int idx,
-    String rootIdx,
-    String parentIdx,
+    int rootIdx,
+    int parentIdx,
     String content,
     List<ApiFile> files,
     Map<String, dynamic> data,
@@ -748,8 +749,15 @@ class Api extends GetxController {
     return ApiComment.fromJson(json);
   }
 
+  @Deprecated('User postGet')
   Future<ApiPost> getPost(dynamic id) async {
     final json = await request({'route': 'forum.getPost', 'id': id});
+    return ApiPost.fromJson(json);
+  }
+
+  ///
+  Future<ApiPost> postGet(int idx) async {
+    final json = await request({'route': 'post.get', 'idx': idx});
     return ApiPost.fromJson(json);
   }
 
