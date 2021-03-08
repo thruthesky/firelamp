@@ -3,6 +3,7 @@ library firelamp;
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:firelamp/models/api.post.user.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';

@@ -233,6 +233,135 @@ class _ForumListScreenState extends State<ForumListScreen> {
 }
 ```
 
+### 글 목록, 글 수정 예제
+
+- 아래의 예제를 살펴보면, 글을 가져오고, 목록하고, 글 생성, 수정하는 방법을 잘 알 수 있다.
+
+```dart
+class _ProductInquiryScreenState extends State<ProductInquiryScreen> {
+  String inquiryCategory = '';
+  bool edit = false;
+  ApiPost editPost;
+
+  // 1. Forum 모델 정의(선언)
+  ApiForum forum;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 2. Forum 모델 초기화
+    forum = ApiForum(
+      category: 'inquiry',
+      render: () {
+        setState(() => null);
+      },
+    );
+
+    // 3. 첫 페이지 목록 가져오기
+    () async {
+      try {
+        await api.fetchPosts(forum);
+        setState(() => null);
+      } catch (e) {
+        app.error(e);
+      }
+    }();
+
+    // 4. 스크롤을 하면, 다음 페이지 글 목록 가져오기. 주의: 5 번에서 스크롤에 연결해야 함.
+    forum.itemPositionsListener.itemPositions.addListener(() async {
+      int lastVisibleIndex = forum.itemPositionsListener.itemPositions.value.last.index;
+      if (forum.loading) return;
+      if (lastVisibleIndex > forum.posts.length - 4) {
+        try {
+          await api.fetchPosts(forum);
+          setState(() => null);
+        } catch (e) {
+          app.error(e);
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RaisedButton(
+          child: Text('문의 쓰기'),
+          onPressed: () => setState(() => edit = true),
+        ),
+        if (edit) ...[
+          ShoppingMallInquiryCategory(onChanged: (value) => this.inquiryCategory = value),
+          ItsudaPostEdit(
+            post: editPost,
+            onCancel: () {
+              // print('cancel:');
+            },
+            onError: (e) => error(e),
+            onSubmit: (post) async {
+              try {
+                ApiPost edited = await api.postEdit(
+                    post: post, categoryId: 'inquiry', subcategory: inquiryCategory);
+                await alert('문의 사항을 등록하였습니다.');
+
+                // 6. 글 작성 후 맨 위에 추가. 또는 글 수정 후, 해당 글 수정.
+                if (editPost == null) {
+                  // 글 작성이면 맨 위에 추가
+                  forum.posts.insert(0, edited);
+                } else {
+                  // 글 수정이면, 아무것도 하지 않아도, Call by reference 로 원글이 이미 수정 되어 있다.
+                  // 하지만, 아래와 같이, 수정된 글을 원본 글에 복사 해 주면 더 좋다.
+                  int i = forum.posts.indexWhere((post) => post.idx == edited.idx);
+                  forum.posts[i] = edited;
+                  editPost = null;
+                }
+                // 수정 모드 해제 후, 화면 업데이트
+                setState(() => edit = false);
+              } catch (e) {
+                error(e);
+              }
+            },
+          ),
+        ],
+        // 5. 글 목록 표시. forum.listController 와 forum.itemPositionListener 연결.
+        Expanded(
+          child: ScrollablePositionedList.builder(
+            itemScrollController: forum.listController,
+            itemPositionsListener: forum.itemPositionsListener,
+            itemCount: forum.posts.length,
+            itemBuilder: (_, i) {
+              ApiPost post = forum.posts[i];
+              return GestureDetector(
+                child: Container(
+                  margin: EdgeInsets.only(top: md),
+                  padding: EdgeInsets.all(md),
+                  color: Colors.grey[200],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('title: ${post.title}', style: TextStyle(fontSize: 40)),
+                      Text('content: ${post.content}', style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  // 7. 글을 터치하면, 수정
+                  this.editPost = post;
+                  this.edit = true;
+                  setState(() {});
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
 # Push Notification
 
 - When user login, the app sends push token to backend and update it on backend.

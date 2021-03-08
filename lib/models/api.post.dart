@@ -34,11 +34,11 @@ class ApiPost {
     this.rootIdx,
     this.parentIdx,
     this.userIdx,
+    this.user,
     this.categoryIdx,
     this.subcategory,
     this.path,
     this.content,
-    this.profilePhotoUrl,
     this.files,
     this.createdAt,
     this.updatedAt,
@@ -87,13 +87,14 @@ class ApiPost {
   String subcategory;
   String path;
   String content;
-  String profilePhotoUrl;
   List<ApiFile> files;
   int createdAt;
   int updatedAt;
   int deletedAt;
 
-  /// TODO:
+  ///
+  ApiPostUser user;
+
   List<ApiComment> comments;
 
   /// Upload file/image
@@ -251,7 +252,8 @@ class ApiPost {
       categoryId: json['categoryId'],
       title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',
-      profilePhotoUrl: json['profile_photo_url'],
+
+      user: ApiPostUser.fromJson(json['user']),
 
       /// Updates
       /// TODO: human readable date
@@ -300,6 +302,7 @@ class ApiPost {
         "title": title,
         "content": content,
         "userIdx": userIdx,
+        "user": user.toString(),
         "rootIdx": rootIdx,
         "parentIdx": parentIdx,
         "categoryIdx": categoryIdx,
