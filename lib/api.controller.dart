@@ -49,16 +49,20 @@ class Api extends GetxController {
   /// After this, you can use [localStorage]
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
 
-  /// Translation
+  /// Translations
   ///
   /// Translation is enabled by default.
   /// When translation changes(from backend), [translationChanges] event is posted with translation data.
   PublishSubject<Map<String, dynamic>> translationChanges = PublishSubject();
 
+  /// App Settings
+  ///
+  /// App Setting is enabled by default.
   /// When settings changes(from backend), [settingChanges] is posted with settings.
   PublishSubject<Map<String, dynamic>> settingChanges = PublishSubject();
 
   /// [settings] is the settings that was develivered over [settingChanges] event.
+  ///
   Map<String, dynamic> settings = {};
 
   FirebaseDatabase get database => FirebaseDatabase.instance;
@@ -336,7 +340,12 @@ class Api extends GetxController {
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    database.reference().child('notifications').child('translation').onChildChanged.listen((event) {
+    database
+        .reference()
+        .child('notifications')
+        .child('translations')
+        .onChildChanged
+        .listen((event) {
       print('_initTranslation:: updated!');
       _loadTranslations();
     });

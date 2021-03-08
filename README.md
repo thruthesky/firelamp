@@ -96,6 +96,17 @@ class _MainAppState extends State<MainApp> {
 }
 ```
 
+## App Settings
+
+- When admin updates settings in admin page, `Api.instance.settings` will be automatically updated and [settingChanges] event will be posted.
+
+```dart
+final Api a = Get.put<Api>(api, permanent: true);
+a.init(...);
+a.settings = {'forum_like': 'Y', 'forum_dislike': 'Y', 'search_categories': ''};
+a.settingChanges.listen((x) => setState(() {}));
+```
+
 ## User
 
 ### Display user login information
