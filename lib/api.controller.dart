@@ -631,6 +631,8 @@ class Api extends GetxController {
     }
 
     ///
+    /// If [post] is given, the id, category, title, content and files will be used from it instead.
+    /// [post] 에 값이 있으면, 그 값을 사용한다.
     if (post != null) {
       if (post.idx != null) data['ID'] = post.idx;
       if (post.categoryIdx != null) data['category'] = post.categoryIdx;
@@ -646,6 +648,7 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
+  ///
   Future<ApiPost> postEdit({
     int idx,
     String categoryId,

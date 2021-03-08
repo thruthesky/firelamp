@@ -48,6 +48,7 @@ class ApiPost extends ApiForumBase {
     //
     this.data,
     this.title,
+    this.categoryId,
     this.comments,
 
     // Shopping mall props
@@ -90,6 +91,7 @@ class ApiPost extends ApiForumBase {
   /// you can access [data] directly.
   dynamic data;
   String title;
+  String categoryId;
 
   /// TODO:
   List<ApiComment> comments;
@@ -243,6 +245,7 @@ class ApiPost extends ApiForumBase {
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
       authorName: json["authorName"] ?? '',
+      categoryId: json['categoryId'],
       title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',
       profilePhotoUrl: json['profile_photo_url'],
@@ -297,6 +300,7 @@ class ApiPost extends ApiForumBase {
         "rootIdx": rootIdx,
         "parentIdx": parentIdx,
         "categoryIdx": categoryIdx,
+        "categoryId": categoryId,
         "subcategory": subcategory,
         "path": path,
         "createdAt": createdAt,
