@@ -259,14 +259,14 @@ class Api extends GetxController {
   _initFirebaseAuth() async {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
-        print('User is currently signed out!');
+        // print('User is currently signed out!');
       } else {
-        print('User is signed in! ${user.email}');
+        // print('User is signed in! ${user.email}');
       }
     });
 
     authChanges.listen((user) async {
-      print("_initFirebaseAuth() authChanges.listen((user) { ... }");
+      // print("_initFirebaseAuth() authChanges.listen((user) { ... }");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -402,7 +402,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
