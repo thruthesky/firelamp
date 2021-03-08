@@ -727,7 +727,6 @@ class Api extends GetxController {
 
     if (idx == null) {
       data['route'] = 'comment.create';
-      data['authorName'] = user.nickname ?? user.email;
       data['rootIdx'] = rootIdx;
       data['parentIdx'] = parentIdx;
     } else {

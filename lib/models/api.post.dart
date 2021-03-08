@@ -39,7 +39,6 @@ class ApiPost extends ApiForumBase {
     String path,
     String content,
     String profilePhotoUrl,
-    String authorName,
     List<ApiFile> files,
     int createdAt,
     int updatedAt,
@@ -242,7 +241,6 @@ class ApiPost extends ApiForumBase {
     return ApiPost(
       data: json,
       idx: json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-      authorName: json["authorName"] ?? '',
       categoryId: json['categoryId'],
       title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',

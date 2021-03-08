@@ -16,7 +16,6 @@ class ApiComment extends ApiForumBase {
     String path,
     String content,
     String profilePhotoUrl,
-    String authorName,
     List<ApiFile> files,
     int createdAt,
     int updatedAt,
@@ -32,7 +31,6 @@ class ApiComment extends ApiForumBase {
           path: path,
           content: content,
           profilePhotoUrl: profilePhotoUrl,
-          authorName: authorName,
           files: files,
           createdAt: createdAt,
           updatedAt: updatedAt,
@@ -57,7 +55,6 @@ class ApiComment extends ApiForumBase {
         path: json['path'],
         content: json['content'] ?? '',
         profilePhotoUrl: json['profilePhotoUrl'] ?? '',
-        authorName: json['authorName'],
         files: json["files"] == null || json["files"] == ''
             ? []
             : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
@@ -77,7 +74,6 @@ class ApiComment extends ApiForumBase {
         "content": content,
         "files": files,
         "profilePhotoUrl": profilePhotoUrl,
-        "authorName": authorName,
         "depth": depth,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
