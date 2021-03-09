@@ -197,9 +197,13 @@ class ApiPost {
 
   bool get isDeleted => deletedAt != 0;
 
+  String get authorName {
+    return user.nickname.isNotEmpty ? user.nickname : user.name;
+  }
+
   /// Get short name for display
-  String get displayName {
-    return 'displayName';
+  String get shortAuthorName {
+    return authorName.length < 10 ? authorName : authorName.substring(0, 9);
   }
 
   ///

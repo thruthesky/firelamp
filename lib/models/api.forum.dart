@@ -26,6 +26,8 @@ class ApiForum {
   /// It is ignored when [searchKey] is set.
   int postIdOnTop;
 
+  int postOnTop;
+
   /// The post to be shown on top of the list.
   /// This may also serve as a post view page. Since it has a complete post information,
   /// it will be immediately available before getting data from backend.
