@@ -15,6 +15,9 @@ class ApiForum {
   /// The [userIdx] is used on fetching to get the user's posts only.
   int userIdx;
 
+  /// The [relationIdx] is used to fetch posts related with an entity of [relationIdx].
+  int relationIdx;
+
   /// The [searchKey] is used on fetching to search posts
   String searchKey;
 
@@ -78,6 +81,7 @@ class ApiForum {
   ApiForum({
     this.category,
     this.userIdx,
+    this.relationIdx,
     this.searchKey,
     this.limit = 10,
     @required this.render,

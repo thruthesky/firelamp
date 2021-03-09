@@ -651,6 +651,7 @@ class Api extends GetxController {
   ///
   Future<ApiPost> postEdit({
     int idx,
+    int relationIdx,
     String categoryId,
     String subcategory,
     String title,
@@ -668,6 +669,7 @@ class Api extends GetxController {
       data['idx'] = idx;
     }
 
+    if (relationIdx != null) data['relationIdx'] = relationIdx;
     if (categoryId != null) data['categoryId'] = categoryId;
     if (title != null) data['title'] = title;
     if (content != null) data['content'] = content;
@@ -680,6 +682,7 @@ class Api extends GetxController {
     ///
     if (post != null) {
       if (post.idx != null) data['idx'] = post.idx;
+      if (post.relationIdx != null) data['relationIdx'] = post.relationIdx;
       if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
@@ -774,6 +777,12 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
+  ///
+  Future categoryGet(String id) {
+    return request({'route': 'category.get', 'id': id});
+  }
+
+  @Deprecated('')
   Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
@@ -854,6 +863,7 @@ class Api extends GetxController {
     int limit = 20,
     int page = 1,
     int userIdx,
+    int relationIdx,
     String searchKey = '',
   }) async {
     final Map<String, dynamic> data = {};
@@ -864,6 +874,7 @@ class Api extends GetxController {
     data['limit'] = limit;
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (searchKey != null && searchKey != '')
       data['where'] = data['where'] + " and title like '%$searchKey%'";
@@ -1031,6 +1042,7 @@ class Api extends GetxController {
       limit: forum.limit,
       // @todo search by user.idx
       userIdx: forum.userIdx,
+      relationIdx: forum.relationIdx,
       searchKey: forum.searchKey,
     );
 

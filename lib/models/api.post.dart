@@ -195,6 +195,9 @@ class ApiPost {
   bool get isMine => userIdx == Api.instance.userIdx;
   bool get isNotMine => !isMine;
 
+  bool get isEdit => idx != null && idx > 0;
+  bool get isCreate => !isEdit;
+
   bool get isDeleted => deletedAt != 0;
 
   String get authorName {

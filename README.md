@@ -254,7 +254,7 @@ class _ProductInquiryScreenState extends State<ProductInquiryScreen> {
     forum = ApiForum(
       category: 'inquiry',
       render: () {
-        setState(() => null);
+        if ( mounted ) setState(() => null);
       },
     );
 
@@ -262,7 +262,6 @@ class _ProductInquiryScreenState extends State<ProductInquiryScreen> {
     () async {
       try {
         await api.fetchPosts(forum);
-        setState(() => null);
       } catch (e) {
         app.error(e);
       }
@@ -275,7 +274,6 @@ class _ProductInquiryScreenState extends State<ProductInquiryScreen> {
       if (lastVisibleIndex > forum.posts.length - 4) {
         try {
           await api.fetchPosts(forum);
-          setState(() => null);
         } catch (e) {
           app.error(e);
         }
