@@ -401,7 +401,7 @@ class Api extends GetxController {
 
     dynamic res;
     try {
-      // _printDebugUrl(data);
+      _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -789,7 +789,7 @@ class Api extends GetxController {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<String> deletePost(ApiPost post, [ApiForum forum]) async {
+  Future<String> postDelete(ApiPost post, [ApiForum forum]) async {
     final dynamic data = await request({
       'route': 'post.delete',
       'idx': post.idx,
@@ -807,7 +807,7 @@ class Api extends GetxController {
   /// [post] is the post of the comment.
   ///
   /// It returns deleted file id.
-  Future<String> deleteComment(ApiComment comment, ApiPost post) async {
+  Future<String> commentDelete(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
       'route': 'comment.delete',
       'idx': comment.idx,
@@ -902,6 +902,22 @@ class Api extends GetxController {
   Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, int userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
     return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
+  }
+
+  ///
+  Future<dynamic> vote(dynamic postOrComment, String choice) async {
+    String route;
+    if (postOrComment.parentIdx > 0) {
+      route = 'comment.vote';
+    } else {
+      route = 'post.vote';
+    }
+    final re = await request({'route': route, 'idx': postOrComment.idx, 'choice': choice});
+    if (postOrComment.parentIdx > 0) {
+      return ApiComment.fromJson(re);
+    } else {
+      return ApiPost.fromJson(re);
+    }
   }
 
   Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {

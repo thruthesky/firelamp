@@ -33,6 +33,7 @@ class ApiPost {
     this.idx,
     this.rootIdx,
     this.parentIdx,
+    this.relationIdx,
     this.userIdx,
     this.user,
     this.categoryIdx,
@@ -43,6 +44,11 @@ class ApiPost {
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
+    this.private,
+    this.privateTitle,
+    this.privateContent,
+    this.y,
+    this.n,
 
     //
     this.data,
@@ -91,6 +97,13 @@ class ApiPost {
   int createdAt;
   int updatedAt;
   int deletedAt;
+
+  int y;
+  int n;
+  int relationIdx;
+  String private;
+  String privateTitle;
+  String privateContent;
 
   ///
   ApiPostUser user;
@@ -261,12 +274,18 @@ class ApiPost {
       userIdx: int.parse("${json['userIdx']}"),
       rootIdx: int.parse("${json['rootIdx']}"),
       parentIdx: int.parse("${json['parentIdx']}"),
+      relationIdx: int.parse("${json['relationIdx']}"),
       categoryIdx: int.parse("${json['categoryIdx']}"),
       subcategory: json['subcategory'],
       path: json['path'],
       createdAt: int.parse("${json["createdAt"]}"),
       updatedAt: int.parse("${json["updatedAt"]}"),
       deletedAt: int.parse("${json["deletedAt"]}"),
+      y: int.parse("${json['Y']}"),
+      n: int.parse("${json['N']}"),
+      private: json['private'],
+      privateTitle: json['privateTitle'],
+      privateContent: json['privateContent'],
 
       // TODO:
       files: json["files"] == null || json["files"] == ''
@@ -302,6 +321,7 @@ class ApiPost {
         "title": title,
         "content": content,
         "userIdx": userIdx,
+        "relationIdx": relationIdx,
         "user": user.toString(),
         "rootIdx": rootIdx,
         "parentIdx": parentIdx,
@@ -312,6 +332,11 @@ class ApiPost {
         "createdAt": createdAt,
         "updatedAt": updatedAt,
         "deletedAt": deletedAt,
+        "private": private,
+        "privateTitle": privateTitle,
+        "privateContent": privateContent,
+        "y": y,
+        "n": n,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         if (comments != null)
           "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
