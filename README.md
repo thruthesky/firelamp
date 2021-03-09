@@ -360,6 +360,19 @@ class _ProductInquiryScreenState extends State<ProductInquiryScreen> {
 }
 ```
 
+# Forum settings
+
+- You can get forum settings when you need. You may get forum settings from server on post list page.
+
+- Or you can load the forum settings on `main.dart` like below before the app neends.
+
+```dart
+a.init(...);
+ApiCategory qna = await api.categoryGet('qna');
+ApiCategory reminder = await api.categoryGet('reminder');
+ApiCategory discussion = await api.categoryGet('discussion');
+```
+
 # Push Notification
 
 - When user login, the app sends push token to backend and update it on backend.
