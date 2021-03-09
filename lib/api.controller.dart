@@ -778,8 +778,9 @@ class Api extends GetxController {
   }
 
   ///
-  Future categoryGet(String id) {
-    return request({'route': 'category.get', 'id': id});
+  Future<ApiCategory> categoryGet(String id) async {
+    final re = await request({'route': 'category.get', 'id': id});
+    return ApiCategory.fromJson(re);
   }
 
   @Deprecated('')

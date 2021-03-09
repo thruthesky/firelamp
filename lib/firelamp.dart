@@ -33,6 +33,7 @@ part 'api.shopping-mall.controller.dart';
 part 'models/api.comment.dart';
 part 'models/api.file.dart';
 part 'models/api.post.dart';
+part 'models/api.category.dart';
 part 'models/api.user.dart';
 part 'models/api.forum.dart';
 part 'models/api.chat_helper.dart';
