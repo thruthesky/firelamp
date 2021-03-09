@@ -56,6 +56,15 @@ class ApiComment {
 
   bool get isDeleted => deletedAt != 0;
 
+  String get authorName {
+    return user.nickname.isNotEmpty ? user.nickname : user.name;
+  }
+
+  /// Get short name for display
+  String get shortName {
+    return authorName.length < 10 ? authorName : authorName.substring(0, 9);
+  }
+
   factory ApiComment.fromJson(Map<String, dynamic> json) {
     return ApiComment(
       data: json,
