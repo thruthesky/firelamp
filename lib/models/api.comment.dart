@@ -23,6 +23,8 @@ class ApiComment {
     this.updatedAt,
     this.deletedAt,
     this.depth,
+    this.y,
+    this.n,
     this.mode = CommentMode.none,
   }) {
     if (files == null) files = [];
@@ -44,6 +46,8 @@ class ApiComment {
   int createdAt;
   int updatedAt;
   int deletedAt;
+  int y;
+  int n;
 
   /// [mode] becomes
   /// - `CommentMode.edit` when the comment is in edit mode.
@@ -84,6 +88,8 @@ class ApiComment {
       createdAt: int.parse("${json['createdAt']}"),
       updatedAt: int.parse("${json['updatedAt']}"),
       deletedAt: int.parse("${json['deletedAt']}"),
+      y: int.parse("${json['Y']}"),
+      n: int.parse("${json['N']}"),
     );
   }
 
@@ -101,6 +107,8 @@ class ApiComment {
         "createdAt": createdAt,
         "updatedAt": updatedAt,
         "deletedAt": deletedAt,
+        "y": y,
+        "n": n,
       };
   @override
   String toString() {
