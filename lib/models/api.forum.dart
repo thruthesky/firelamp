@@ -11,6 +11,7 @@ part of '../firelamp.dart';
 class ApiForum {
   /// The [category] is used on fetching posts.
   String category;
+  String subcategory;
 
   /// The [userIdx] is used on fetching to get the user's posts only.
   int userIdx;
@@ -80,6 +81,7 @@ class ApiForum {
   ApiPost postInEdit;
   ApiForum({
     this.category,
+    this.subcategory,
     this.userIdx,
     this.relationIdx,
     this.searchKey,

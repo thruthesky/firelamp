@@ -17,6 +17,7 @@ class ApiComment {
     this.categoryIdx,
     this.subcategory,
     this.path,
+    this.title,
     this.content,
     this.files,
     this.createdAt,
@@ -41,6 +42,9 @@ class ApiComment {
   int categoryIdx;
   String subcategory;
   String path;
+
+  /// The [title] is the title of the comment. It may be used if needed.
+  String title;
   String content;
   List<ApiFile> files;
   int createdAt;
@@ -83,6 +87,7 @@ class ApiComment {
       userIdx: int.parse("${json['userIdx']}"),
       user: ApiPostUser.fromJson(json['user']),
       path: json['path'],
+      title: json['title'] ?? '',
       content: json['content'] ?? '',
       files: json["files"] == null || json["files"] == ''
           ? []
@@ -104,6 +109,7 @@ class ApiComment {
         "userIdx": userIdx,
         "user": user.toString(),
         "path": path,
+        "title": title,
         "content": content,
         "files": files,
         "depth": depth,
