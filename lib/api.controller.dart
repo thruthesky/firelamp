@@ -387,7 +387,7 @@ class Api extends GetxController {
 
     try {
       String queryString = Uri(queryParameters: params).query;
-      print("_printDebugUrl: $apiUrl?$queryString");
+      // print("_printDebugUrl: $apiUrl?$queryString");
       // debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
