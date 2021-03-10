@@ -387,8 +387,8 @@ class Api extends GetxController {
 
     try {
       String queryString = Uri(queryParameters: params).query;
-      // print("_printDebugUrl: $apiUrl?$queryString");
-      // debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
+      print("_printDebugUrl: $apiUrl?$queryString");
+      debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
       print(data);
@@ -396,12 +396,14 @@ class Api extends GetxController {
   }
 
   Future<dynamic> request(Map<String, dynamic> data) async {
+    // print('request: $data');
+    // _printDebugUrl(data);
     data = _addSessionId(data);
     // final res = await dio.get(url, queryParameters: data);
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
