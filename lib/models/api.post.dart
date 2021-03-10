@@ -120,16 +120,10 @@ class ApiPost {
     return url;
   }
 
-  /// Widgets
-  ///
-  String get mobileForumListWidget => data['category_options'] == null
-      ? null
-      : data['category_options']['mobile_forum_list_widget'];
 
-  ///
-  String get mobileForumViewWidget => data['category_options'] == null
-      ? null
-      : data['category_options']['mobile_forum_view_widget'];
+  bool get hasFiles {
+    return files.isNotEmpty;
+  }
 
   /// Shopping mall properties
   ///
