@@ -863,6 +863,7 @@ class Api extends GetxController {
   Future<List<ApiPost>> postSearch({
     int postOnTop,
     String categoryId,
+    String subcategory,
     int limit = 20,
     int page = 1,
     int userIdx,
@@ -879,6 +880,7 @@ class Api extends GetxController {
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
     if (searchKey != null && searchKey != '')
       data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
@@ -1041,6 +1043,7 @@ class Api extends GetxController {
     _posts = await postSearch(
       postOnTop: forum.postOnTop,
       categoryId: forum.category,
+      subcategory: forum.subcategory,
       page: forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
