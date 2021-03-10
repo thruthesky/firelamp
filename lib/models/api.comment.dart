@@ -60,6 +60,9 @@ class ApiComment {
 
   bool get isDeleted => deletedAt != 0;
 
+  bool get isEdit => idx != null && idx > 0;
+  bool get isCreate => !isEdit;
+
   String get authorName {
     return user.nickname.isNotEmpty ? user.nickname : user.name;
   }
