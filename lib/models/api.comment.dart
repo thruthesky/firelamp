@@ -27,6 +27,7 @@ class ApiComment {
     this.y,
     this.n,
     this.mode = CommentMode.none,
+    this.shortDateTime,
   }) {
     if (files == null) files = [];
     if (content == null) content = '';
@@ -52,6 +53,8 @@ class ApiComment {
   int deletedAt;
   int y;
   int n;
+
+  String shortDateTime;
 
   /// [mode] becomes
   /// - `CommentMode.edit` when the comment is in edit mode.
@@ -98,6 +101,7 @@ class ApiComment {
       deletedAt: int.parse("${json['deletedAt']}"),
       y: int.parse("${json['Y']}"),
       n: int.parse("${json['N']}"),
+      shortDateTime: json['short_date_time'],
     );
   }
 
@@ -118,6 +122,7 @@ class ApiComment {
         "deletedAt": deletedAt,
         "y": y,
         "n": n,
+        "shortDateTime": shortDateTime,
       };
   @override
   String toString() {

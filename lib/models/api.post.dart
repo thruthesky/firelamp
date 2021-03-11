@@ -72,6 +72,8 @@ class ApiPost {
     this.detailPhoto,
     this.keywords,
     this.options,
+
+    this.shortDateTime,
   }) {
     if (title == null) title = '';
     if (comments == null) comments = [];
@@ -104,6 +106,8 @@ class ApiPost {
   String private;
   String privateTitle;
   String privateContent;
+
+  String shortDateTime;
 
   ///
   ApiPostUser user;
@@ -313,6 +317,8 @@ class ApiPost {
       detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
       options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
+
+      shortDateTime: json['short_date_time'],
     );
   }
 
@@ -355,6 +361,7 @@ class ApiPost {
         "detailPhoto": detailPhoto,
         "keywords": keywords,
         "options": options.toString,
+        "shortDateTime": shortDateTime,
       };
 
   @override
