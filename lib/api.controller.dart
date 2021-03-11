@@ -779,6 +779,16 @@ class Api extends GetxController {
     return ApiPost.fromJson(json);
   }
 
+  Future<List<ApiPost>> postGets(List<int> idxes) async {
+    if (idxes.length == 0) return [];
+    final jsonList = await request({'route': 'post.gets', 'idxes': idxes.join(',')});
+    List<ApiPost> _posts = [];
+    for (int i = 0; i < jsonList.length; i++) {
+      _posts.add(ApiPost.fromJson(jsonList[i]));
+    }
+    return _posts;
+  }
+
   ///
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});
@@ -881,6 +891,7 @@ class Api extends GetxController {
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
+
     if (searchKey != null && searchKey != '')
       data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);

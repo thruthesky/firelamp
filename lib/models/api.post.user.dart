@@ -10,8 +10,12 @@ class ApiPostUser {
 
   ApiPostUser({this.idx, this.name, this.nickname, this.gender, this.photoIdx, this.photoUrl});
 
-  factory ApiPostUser.fromJson(Map<String, dynamic> json) {
+  factory ApiPostUser.fromJson(dynamic json) {
     if (json == null) return ApiPostUser();
+
+    // 사용자 정보가 없는 경우, Map 대신 빈 배열(List)로 들어온다.
+    if (json is List) return ApiPostUser();
+
     int photoIdx = int.parse("${json['photoIdx']}");
     String url;
     if (photoIdx > 0) {

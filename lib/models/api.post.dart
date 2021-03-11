@@ -120,7 +120,6 @@ class ApiPost {
     return url;
   }
 
-
   bool get hasFiles {
     return files.isNotEmpty;
   }
