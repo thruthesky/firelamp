@@ -1,4 +1,5 @@
-import 'package:firelamp/widgets/basic/image.cache.dart';
+
+import 'package:firelamp/widgets/image.cache.dart';
 import 'package:flutter/material.dart';
 
 class UserAvatar extends StatelessWidget {

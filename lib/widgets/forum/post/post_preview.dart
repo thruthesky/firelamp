@@ -22,7 +22,7 @@ class PostPreview extends StatelessWidget {
         children: [
           if (post.hasFiles)
             Stack(
-              overflow: Overflow.visible,
+              clipBehavior: Clip.none,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
