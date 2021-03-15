@@ -72,7 +72,6 @@ class ApiPost {
     this.detailPhoto,
     this.keywords,
     this.options,
-
     this.shortDateTime,
   }) {
     if (title == null) title = '';
@@ -318,7 +317,7 @@ class ApiPost {
       keywords: json['keywords'] ?? '',
       options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
 
-      shortDateTime: json['short_date_time'],
+      shortDateTime: json['short_date_time'] ?? '',
     );
   }
 

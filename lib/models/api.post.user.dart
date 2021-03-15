@@ -16,7 +16,7 @@ class ApiPostUser {
     // 사용자 정보가 없는 경우, Map 대신 빈 배열(List)로 들어온다.
     if (json is List) return ApiPostUser();
 
-    int photoIdx = int.parse("${json['photoIdx']}");
+    int photoIdx = int.parse("${json['photoIdx'] ?? 0}");
     String url;
     if (photoIdx > 0) {
       url = Api.instance.thumbnailUrl;
