@@ -115,7 +115,7 @@ class ApiPost {
 
   /// Upload file/image
   String thumbnailUrl(src,
-      {int width = 330, int height = 330, int quality = 75, bool original = false}) {
+      {int width = 320, int height = 320, int quality = 75, bool original = false}) {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';

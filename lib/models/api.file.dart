@@ -20,7 +20,7 @@ class ApiFile {
 
   factory ApiFile.fromJson(Map<String, dynamic> json) {
     String url = Api.instance.thumbnailUrl;
-    url = url + '?src=${json['idx']}&w=100&h=100&f=jpeg&q=95';
+    url = url + '?src=${json['idx']}&w=360&h=360&f=jpeg&q=95';
 
     return ApiFile(
       url: json["url"],
