@@ -101,7 +101,7 @@ class ApiComment {
       deletedAt: int.parse("${json['deletedAt']}"),
       y: int.parse("${json['Y']}"),
       n: int.parse("${json['N']}"),
-      shortDateTime: json['short_date_time'],
+      shortDateTime: json['short_date_time'] ?? '',
     );
   }
 
