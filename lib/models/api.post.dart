@@ -115,7 +115,7 @@ class ApiPost {
 
   /// Upload file/image
   String thumbnailUrl(src,
-      {int width = 330, int height = 330, int quality = 75, bool original = false}) {
+      {int width = 320, int height = 320, int quality = 75, bool original = false}) {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';
@@ -272,8 +272,6 @@ class ApiPost {
       user: ApiPostUser.fromJson(json['user']),
 
       /// Updates
-      /// TODO: human readable date
-      ///
       userIdx: int.parse("${json['userIdx']}"),
       rootIdx: int.parse("${json['rootIdx']}"),
       parentIdx: int.parse("${json['parentIdx']}"),
@@ -290,7 +288,6 @@ class ApiPost {
       privateTitle: json['privateTitle'],
       privateContent: json['privateContent'],
 
-      // TODO:
       files: json["files"] == null || json["files"] == ''
           ? []
           : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
