@@ -24,7 +24,7 @@ class ForumBasicPostTitle extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(post.user.name),
-          Text(post.title),
+          Text(post.title, maxLines: 1, overflow: TextOverflow.ellipsis),
           SizedBox(height: 5),
           Text(
             post.shortDateTime,

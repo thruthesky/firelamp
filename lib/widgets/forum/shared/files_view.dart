@@ -1,4 +1,3 @@
-
 import 'package:firelamp/widgets/image.cache.dart';
 import 'package:firelamp/widgets/app_photo_viewer.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +38,7 @@ class FilesView extends StatelessWidget {
     Widget grid = isStaggered
         ? StaggeredGridView.countBuilder(
             shrinkWrap: true,
-            crossAxisCount: 4,
+            crossAxisCount: postOrComment.files.length < 3 ? 1 : 4,
             itemCount: postOrComment.files.length,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
@@ -66,12 +65,13 @@ class FilesView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (!isStaggered) ...[
-        SizedBox(height: Space.xsm),
-        Text(
-          'Attached files',
-          style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
-        ),
-        Divider(),],
+          SizedBox(height: Space.xsm),
+          Text(
+            'Attached files',
+            style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
+          ),
+          Divider(),
+        ],
         grid,
       ],
     );
