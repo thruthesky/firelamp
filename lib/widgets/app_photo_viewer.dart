@@ -1,4 +1,3 @@
-
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/firelamp.dart';
@@ -20,9 +19,11 @@ class AppPhotoViewer extends StatefulWidget {
 
 class _AppPhotoViewerState extends State<AppPhotoViewer> {
   PageController _controller;
+  int currentIndex;
 
   @override
   void initState() {
+    currentIndex = widget.initialIndex ?? 0;
     _controller = PageController(initialPage: widget.initialIndex);
     super.initState();
   }
@@ -49,13 +50,34 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
                 child: Spinner(valueColor: Colors.white),
               ),
               pageController: _controller,
+              onPageChanged: (i) => setState(() => currentIndex = i),
             ),
           ),
           Container(
             child: IconButton(
                 icon: Icon(Icons.close_rounded, color: Colors.redAccent, size: Space.xl),
                 onPressed: () => Get.back()),
-          )
+          ),
+          if (currentIndex != 0)
+            Positioned(
+              bottom: Space.xxl,
+              left: Space.md,
+              child: IconButton(
+                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xl),
+                onPressed: () => _controller.previousPage(
+                    duration: Duration(milliseconds: 500), curve: Curves.ease),
+              ),
+            ),
+          if (currentIndex != widget.files.length - 1)
+            Positioned(
+              bottom: Space.xxl,
+              right: Space.md,
+              child: IconButton(
+                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xl),
+                onPressed: () =>
+                    _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
+              ),
+            ),
         ],
       ),
     );
