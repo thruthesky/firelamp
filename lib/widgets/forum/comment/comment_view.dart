@@ -91,7 +91,6 @@ class _CommentViewState extends State<CommentView> {
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
-                      // child: Text(widget.comment.mode == CommentMode.reply ? 'Cancel' : 'Reply'),
                       icon: Icon(
                           widget.comment.mode == CommentMode.reply
                               ? Icons.close
@@ -145,15 +144,6 @@ class _CommentViewState extends State<CommentView> {
                     forum: widget.forum,
                     onSuccess: widget.onCommentEditSuccess,
                   ),
-                // if (canCancel)
-                //   IconButton(
-                //     icon: Icon(Icons.close, color: Colors.redAccent),
-                //     onPressed: () {
-                //       setState(() {
-                //         widget.comment.mode = CommentMode.none;
-                //       });
-                //     },
-                //   ),
               ],
             ),
           );
