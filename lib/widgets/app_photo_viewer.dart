@@ -60,20 +60,20 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
           ),
           if (currentIndex != 0)
             Positioned(
-              bottom: Space.xxl,
-              left: Space.md,
+              bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
+              // left: Space.md,
               child: IconButton(
-                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xl),
+                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xxl),
                 onPressed: () => _controller.previousPage(
                     duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),
           if (currentIndex != widget.files.length - 1)
             Positioned(
-              bottom: Space.xxl,
+              bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
               right: Space.md,
               child: IconButton(
-                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xl),
+                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xxl),
                 onPressed: () =>
                     _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),

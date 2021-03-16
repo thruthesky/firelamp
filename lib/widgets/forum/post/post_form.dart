@@ -39,9 +39,12 @@ class _PostFormState extends State<PostForm> {
 
   onImageIconTap() async {
     try {
-      final file =
-          await imageUpload(quality: 95, onProgress: (p) => setState(() => percentage = p));
-      // print('file upload success: $file');
+      final file = await imageUpload(
+        quality: 95,
+        onProgress: (p) => setState(
+          () => percentage = p,
+        ),
+      );
       percentage = 0;
       post.files.add(file);
       setState(() => null);
@@ -72,7 +75,6 @@ class _PostFormState extends State<PostForm> {
       widget.forum.insertOrUpdatePost(editedPost);
       setState(() => loading = false);
       if (widget.onSuccess != null) widget.onSuccess(editedPost);
-      // reset();
     } catch (e) {
       setState(() => loading = false);
       onError(e);
@@ -86,7 +88,6 @@ class _PostFormState extends State<PostForm> {
   @override
   void initState() {
     super.initState();
-    // print('_PostFormState::initState()');
     post = widget.forum.postInEdit;
     title.text = post.title;
     content.text = post.content;
