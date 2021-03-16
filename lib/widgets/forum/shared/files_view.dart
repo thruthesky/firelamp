@@ -11,7 +11,7 @@ class FilesView extends StatelessWidget {
   const FilesView({
     Key key,
     this.postOrComment,
-    this.isStaggered = true,
+    this.isStaggered = false,
   }) : super(key: key);
 
   final dynamic postOrComment;
@@ -65,13 +65,13 @@ class FilesView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (!isStaggered) ...[
         SizedBox(height: Space.xsm),
-        if (!isStaggered)
         Text(
           'Attached files',
           style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
         ),
-        Divider(),
+        Divider(),],
         grid,
       ],
     );

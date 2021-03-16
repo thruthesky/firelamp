@@ -1,5 +1,6 @@
 import 'package:firelamp/widgets/forum/post/post_preview.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
+import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
 
@@ -47,7 +48,19 @@ class _PostViewWithThumbnailAndAvatarState extends State<PostViewWithThumbnailAn
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onTitleTap,
-                child: PostMeta(widget.post, showAvatar: true, isInlineName: widget.open),
+                child: Row(
+                  children: [
+                    UserAvatar(widget.post.user.photoUrl),
+                    SizedBox(width: Space.xs),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${widget.post.user.name}'),
+                        PostMeta(widget.post, widget.forum),
+                      ],
+                    )
+                  ],
+                ),
               ),
               SizedBox(height: Space.sm),
               Text('${widget.post.title}', style: stylePostTitle),
@@ -58,7 +71,10 @@ class _PostViewWithThumbnailAndAvatarState extends State<PostViewWithThumbnailAn
                   style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
                 ),
               ),
-              FilesView(postOrComment: widget.post),
+              FilesView(
+                postOrComment: widget.post,
+                isStaggered: widget.forum.listView == 'gallery',
+              ),
               Divider(height: Space.xs, thickness: 1.3),
               Row(children: widget.actions),
               CommentForm(
