@@ -106,9 +106,8 @@ class _CommentViewState extends State<CommentView> {
                       },
                     ),
                     VoteButtons(
-                      postOrComment: widget.comment,
-                      showLike: widget.forum.showLike,
-                      showDislike: widget.forum.showDislike,
+                      widget.comment,
+                      widget.forum,
                       onError: widget.onError,
                     ),
                     Spacer(),

@@ -4,15 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class VoteButtons extends StatefulWidget {
-  VoteButtons({
-    @required this.postOrComment,
-    this.showLike = true,
-    this.showDislike,
+  VoteButtons(
+    this.postOrComment,
+    this.forum, {
     this.onError,
   });
-
-  final bool showLike;
-  final bool showDislike;
+  final ApiForum forum;
   final dynamic postOrComment;
   final Function onError;
 
@@ -24,20 +21,17 @@ class _VoteButtonsState extends State<VoteButtons> {
   onVoteSuccess(dynamic re) {
     widget.postOrComment.y = re.y;
     widget.postOrComment.n = re.n;
+    widget.forum.render();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    // String likeText = "Like" + (widget.postOrComment.y > 0 ? "(${widget.postOrComment.y})" : "");
-    // String dislikeText =
-    //     "Dislike" + (widget.postOrComment.n > 0 ? "(${widget.postOrComment.n})" : "");
-
-    return widget.showLike && widget.showDislike
+    return widget.forum.showLike || widget.forum.showDislike
         ? Container(
             child: Row(
             children: [
-              if (widget.showLike)
+              if (widget.forum.showLike)
                 TextButton(
                   child: Row(
                     children: [
@@ -60,7 +54,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                     }
                   },
                 ),
-              if (widget.showDislike)
+              if (widget.forum.showDislike)
                 TextButton(
                   child: Row(
                     children: [
