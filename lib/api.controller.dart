@@ -87,12 +87,12 @@ class Api extends GetxController {
   bool get isNewCommentOnMyPostOrComment {
     if (notLoggedIn) return false;
     return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
-        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'Y';
+        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
   }
 
   bool isSubscribeTopic(topic) {
     if (notLoggedIn) return false;
-    return user.data[topic] != null && user.data[topic] == 'Y';
+    return user.data[topic] != null && user.data[topic] == 'on';
   }
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
@@ -558,9 +558,9 @@ class Api extends GetxController {
     return user;
   }
 
-  Future<ApiUser> userUpdateOptionSetting(String option) async {
+  Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
-      'route': 'user.updateOptionSetting',
+      'route': route,
       'option': option,
     };
     final res = await request(req);
@@ -568,6 +568,14 @@ class Api extends GetxController {
     await _saveUserProfile(user);
     update();
     return user;
+  }
+
+  Future<ApiUser> userOptionSwitchOn(String option) async {
+    return userOptionSwitch(option: option, route: 'user.switchOn');
+  }
+
+  Future<ApiUser> userOptionSwitchOff(String option) async {
+    return userOptionSwitch(option: option, route: 'user.switchOff');
   }
 
   /// User profile data
