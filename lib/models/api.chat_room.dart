@@ -49,11 +49,11 @@ class ApiChatRoom extends ChatHelper {
   /// push notification topic name
   String get topic => 'notifyChat_${this.roomId}';
   bool get subscribed {
-    return Api.instance.user.data[topic] == null || Api.instance.user.data[topic] == 'Y';
+    return Api.instance.user.data[topic] == null || Api.instance.user.data[topic] == 'on';
   }
 
   set subscribed(bool v) {
-    Api.instance.user.data[topic] = v ? 'Y' : 'N';
+    Api.instance.user.data[topic] = v ? 'on' : 'off';
   }
 
   /// When user scrolls to top to view previous messages, the app fires the scroll event

@@ -16,4 +16,3 @@ class ChatProtocol {
 }
 
 const String NEW_COMMENT_ON_MY_POST_OR_COMMENT = 'newCommentUserOption';
-
