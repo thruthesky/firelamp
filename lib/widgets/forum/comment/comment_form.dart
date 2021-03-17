@@ -46,9 +46,10 @@ class _CommentFormState extends State<CommentForm> {
   // file upload
   onImageIconPressed() async {
     try {
-      final file =
-          await imageUpload(quality: 95, onProgress: (p) => setState(() => percentage = p));
-      // print('file upload success: $file');
+      final file = await imageUpload(
+        quality: 95,
+        onProgress: (p) => setState(() => percentage = p),
+      );
       percentage = 0;
       comment.files.add(file);
       setState(() => null);
@@ -86,7 +87,6 @@ class _CommentFormState extends State<CommentForm> {
       setState(() => null);
       widget.forum.render();
       if (widget.onSuccess != null) widget.onSuccess();
-      // print('editeComment..: $editedComment');
     } catch (e) {
       setState(() => loading = false);
       onError(e);
@@ -123,7 +123,6 @@ class _CommentFormState extends State<CommentForm> {
                 child: TextFormField(
                   controller: content,
                   onChanged: (v) => setState(() => null),
-                  // expands: true,
                   minLines: 1,
                   maxLines: 10,
                   decoration: InputDecoration(

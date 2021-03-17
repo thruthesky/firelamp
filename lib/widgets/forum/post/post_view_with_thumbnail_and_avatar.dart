@@ -41,6 +41,11 @@ class _PostViewWithThumbnailAndAvatarState extends State<PostViewWithThumbnailAn
 
   @override
   Widget build(BuildContext context) {
+    Widget filesView = FilesView(
+      postOrComment: widget.post,
+      isStaggered: widget.forum.listView == 'gallery',
+    );
+
     return showContent
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,6 +67,10 @@ class _PostViewWithThumbnailAndAvatarState extends State<PostViewWithThumbnailAn
                   ],
                 ),
               ),
+              if (widget.forum.listView == 'gallery') ...[
+                SizedBox(height: Space.sm),
+                filesView,
+              ],
               SizedBox(height: Space.sm),
               Text('${widget.post.title}', style: stylePostTitle),
               Padding(
@@ -71,10 +80,7 @@ class _PostViewWithThumbnailAndAvatarState extends State<PostViewWithThumbnailAn
                   style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
                 ),
               ),
-              FilesView(
-                postOrComment: widget.post,
-                isStaggered: widget.forum.listView == 'gallery',
-              ),
+              if (widget.forum.listView != 'gallery') filesView,
               Divider(height: Space.xs, thickness: 1.3),
               Row(children: widget.actions),
               CommentForm(
