@@ -56,6 +56,9 @@ class ApiPost {
     this.categoryId,
     this.comments,
 
+    //
+    this.appliedPoint,
+
     // Shopping mall props
     this.shortTitle,
     this.price,
@@ -106,6 +109,8 @@ class ApiPost {
   String privateTitle;
   String privateContent;
 
+  int appliedPoint;
+
   String shortDateTime;
 
   ///
@@ -123,8 +128,14 @@ class ApiPost {
     return url;
   }
 
+  /// Returns true if the post(or comment) has any file.
   bool get hasFiles {
     return files.isNotEmpty;
+  }
+
+  /// Returns true if the post has created but not updated.
+  bool get created {
+    return createdAt == updatedAt;
   }
 
   /// Shopping mall properties
@@ -288,6 +299,8 @@ class ApiPost {
       privateTitle: json['privateTitle'],
       privateContent: json['privateContent'],
 
+      appliedPoint: int.parse("${json['appliedPoint']}"),
+
       files: json["files"] == null || json["files"] == ''
           ? []
           : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
@@ -339,6 +352,7 @@ class ApiPost {
         "privateContent": privateContent,
         "y": y,
         "n": n,
+        "appliedPoint": appliedPoint,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         if (comments != null)
           "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
