@@ -136,6 +136,7 @@ class _CommentViewState extends State<CommentView> {
                     post: widget.post,
                     forum: widget.forum,
                     onSuccess: widget.onCommentEditSuccess,
+                    onError: widget.onError,
                   ),
                 if (widget.comment.mode == CommentMode.edit)
                   CommentForm(
@@ -143,6 +144,7 @@ class _CommentViewState extends State<CommentView> {
                     post: widget.post,
                     forum: widget.forum,
                     onSuccess: widget.onCommentEditSuccess,
+                    onError: widget.onError,
                   ),
               ],
             ),

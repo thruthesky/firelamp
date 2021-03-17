@@ -327,7 +327,7 @@ class ApiPost {
       keywords: json['keywords'] ?? '',
       options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
 
-      shortDateTime: json['short_date_time'] ?? '',
+      shortDateTime: json['shortDate'] ?? '',
     );
   }
 

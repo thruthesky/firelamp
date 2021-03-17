@@ -18,6 +18,17 @@ class VoteButtons extends StatefulWidget {
 }
 
 class _VoteButtonsState extends State<VoteButtons> {
+  onVote(String choice) async {
+    if (Api.instance.notLoggedIn) return widget.onError('Login First.');
+
+    try {
+      final re = await Api.instance.vote(widget.postOrComment, choice);
+      onVoteSuccess(re);
+    } catch (e) {
+      if (widget.onError != null) widget.onError(e);
+    }
+  }
+
   onVoteSuccess(dynamic re) {
     widget.postOrComment.y = re.y;
     widget.postOrComment.n = re.n;
@@ -45,14 +56,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                       ],
                     ],
                   ),
-                  onPressed: () async {
-                    try {
-                      final re = await Api.instance.vote(widget.postOrComment, 'Y');
-                      onVoteSuccess(re);
-                    } catch (e) {
-                      if (widget.onError != null) widget.onError(e);
-                    }
-                  },
+                  onPressed: () => onVote('Y'),
                 ),
               if (widget.forum.showDislike)
                 TextButton(
@@ -68,14 +72,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                       ],
                     ],
                   ),
-                  onPressed: () async {
-                    try {
-                      final re = await Api.instance.vote(widget.postOrComment, 'N');
-                      onVoteSuccess(re);
-                    } catch (e) {
-                      if (widget.onError != null) widget.onError(e);
-                    }
-                  },
+                  onPressed: () => onVote('N'),
                 ),
             ],
           ))

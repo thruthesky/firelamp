@@ -62,6 +62,7 @@ class ApiForum {
   bool get canSearch {
     if (postInEdit != null) return false;
     if (userIdx != null) return false;
+    if (searchCategories == '') return false;
     return true;
   }
 
