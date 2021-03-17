@@ -58,6 +58,7 @@ class ApiPost {
 
     //
     this.appliedPoint,
+    this.code,
 
     // Shopping mall props
     this.shortTitle,
@@ -110,6 +111,7 @@ class ApiPost {
   String privateContent;
 
   int appliedPoint;
+  String code;
 
   String shortDateTime;
 
@@ -300,6 +302,7 @@ class ApiPost {
       privateContent: json['privateContent'],
 
       appliedPoint: int.parse("${json['appliedPoint']}"),
+      code: json['code'],
 
       files: json["files"] == null || json["files"] == ''
           ? []
@@ -353,6 +356,7 @@ class ApiPost {
         "y": y,
         "n": n,
         "appliedPoint": appliedPoint,
+        "code": code,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         if (comments != null)
           "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),

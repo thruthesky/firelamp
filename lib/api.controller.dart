@@ -667,6 +667,7 @@ class Api extends GetxController {
     String title,
     String content,
     List<ApiFile> files,
+    String code,
     Map<String, dynamic> data,
     ApiPost post,
   }) async {
@@ -688,6 +689,7 @@ class Api extends GetxController {
       Set ids = files.map((file) => file.idx).toSet();
       data['files'] = ids.join(',');
     }
+    if (code != null) data['code'] = code;
 
     ///
     if (post != null) {
@@ -701,6 +703,7 @@ class Api extends GetxController {
         Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
+      if (post.code != null && post.code != '') data['code'] = post.code;
     }
 
     final json = await request(data);
@@ -798,10 +801,16 @@ class Api extends GetxController {
   }
 
   /// Returns a post of today based on the categoryId and userIdx.
-  Future<ApiPost> postToday({@required String categoryId, int userIdx = 0}) async {
-    final json =
-        await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx});
-    return ApiPost.fromJson(json);
+  Future<List<ApiPost>> postToday(
+      {@required String categoryId, int userIdx = 0, int limit = 10}) async {
+    final map = await request(
+        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
+
+    final List<ApiPost> rets = [];
+    for (final p in map) {
+      rets.add(ApiPost.fromJson(p));
+    }
+    return rets;
   }
 
   ///
@@ -962,13 +971,21 @@ class Api extends GetxController {
     }
   }
 
-  Future<ApiFile> uploadFile({@required File file, Function onProgress, String postType}) async {
+  Future<ApiFile> uploadFile(
+      {@required File file,
+      Function onProgress,
+      bool deletePreviousUpload = false,
+      String taxonomy = '',
+      int entity = 0}) async {
     /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
     final formData = Prefix.FormData.fromMap({
       /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
       'route': 'file.upload',
       'sessionId': sessionId,
-      if (postType != null) 'post_type': postType,
+
+      'taxonomy': taxonomy,
+      'entity': entity.toString(),
+      'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
 
       /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
       'userfile': await Prefix.MultipartFile.fromFile(
@@ -999,8 +1016,15 @@ class Api extends GetxController {
   /// 사진업로드
   ///
   /// 이미지를 카메라 또는 갤러리로 부터 가져와서, 이미지 누어서 찍힌 이미지를 바로 보정을 하고, 압축을 하고, 서버에 업로드
-  Future<ApiFile> takeUploadFile(
-      {@required ImageSource source, int quality = 90, @required Function onProgress}) async {
+  /// [deletePreviousUpload] 가 true 이면, 기존에 업로드된 동일한 taxonomy 와 entity 파일을 삭제한다.
+  Future<ApiFile> takeUploadFile({
+    @required ImageSource source,
+    int quality = 90,
+    bool deletePreviousUpload = false,
+    String taxonomy = '',
+    int entity = 0,
+    @required Function onProgress,
+  }) async {
     /// Pick image
     final picker = ImagePicker();
 
@@ -1015,7 +1039,13 @@ class Api extends GetxController {
     );
 
     /// Upload
-    return await uploadFile(file: file, onProgress: onProgress);
+    return await uploadFile(
+      file: file,
+      deletePreviousUpload: deletePreviousUpload,
+      onProgress: onProgress,
+      taxonomy: taxonomy,
+      entity: entity,
+    );
   }
 
   /// Deletes a file.
