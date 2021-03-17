@@ -30,7 +30,7 @@ class PostMeta extends StatelessWidget {
             Text('${post.user.name}', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.sm),
           ],
-          Text('${post.shortDateTime}.', style: TextStyle(fontSize: Space.sm)),
+          Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.sm)),
           SizedBox(width: Space.sm),
           if (post.comments.isNotEmpty) ...[
             Icon(Icons.chat_bubble_outlined, size: Space.sm, color: iconColor),
