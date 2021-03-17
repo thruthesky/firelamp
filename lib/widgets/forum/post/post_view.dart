@@ -8,8 +8,8 @@ import 'package:firelamp/widgets/forum/comment/comment_form.dart';
 import 'package:firelamp/widgets/forum/comment/comment_list.dart';
 import 'package:firelamp/widgets/forum/shared/files_view.dart';
 
-class PostThumbnailView extends StatefulWidget {
-  const PostThumbnailView({
+class PostView extends StatefulWidget {
+  const PostView({
     Key key,
     this.post,
     this.forum,
@@ -28,10 +28,10 @@ class PostThumbnailView extends StatefulWidget {
   final bool open;
 
   @override
-  _PostThumbnailViewState createState() => _PostThumbnailViewState();
+  _PostViewState createState() => _PostViewState();
 }
 
-class _PostThumbnailViewState extends State<PostThumbnailView> {
+class _PostViewState extends State<PostView> {
   bool get showContent {
     if (widget.open) return true;
     if (widget.post.display) return true;
@@ -69,7 +69,7 @@ class _PostThumbnailViewState extends State<PostThumbnailView> {
             style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
           ),
         ),
-        FilesView(postOrComment: widget.post, isStaggered: widget.forum.listView == 'gallery',),
+        FilesView(postOrComment: widget.post, isStaggered: widget.forum.listView == 'gallery'),
         Divider(height: Space.xs, thickness: 1.3),
         Row(children: widget.actions),
         CommentForm(
