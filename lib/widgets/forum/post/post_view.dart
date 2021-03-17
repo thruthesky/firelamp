@@ -62,12 +62,10 @@ class _PostViewState extends State<PostView> {
         ),
         SizedBox(height: Space.sm),
         Text('${widget.post.title}', style: stylePostTitle),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: Space.sm),
-          child: SelectableText(
-            '${widget.post.content}',
-            style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
-          ),
+        SizedBox(height: Space.sm),
+        SelectableText(
+          '${widget.post.content}',
+          style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
         FilesView(postOrComment: widget.post, isStaggered: widget.forum.listView == 'gallery'),
         Divider(height: Space.xs, thickness: 1.3),

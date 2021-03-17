@@ -18,16 +18,19 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget title = Text(
+      '${post.title}',
+      style: stylePostTitle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: forum.listView == 'gallery'
           ? Column(
               children: [
-                if (post.hasFiles) ...[
-                  FilesView(postOrComment: post, isStaggered: true),
-                  SizedBox(height: Space.sm),
-                ],
                 Row(
                   children: [
                     UserAvatar(post.user.photoUrl),
@@ -35,12 +38,17 @@ class PostPreview extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${post.user.name}'),
-                        PostMeta(post, forum),
+                        title,
+                        SizedBox(height: Space.xxs),
+                        PostMeta(post, forum, isInlineName: true),
                       ],
                     )
                   ],
                 ),
+                if (post.hasFiles) ...[
+                  SizedBox(height: Space.xsm),
+                  FilesView(postOrComment: post, isStaggered: true),
+                ],
               ],
             )
           : Column(
@@ -87,12 +95,7 @@ class PostPreview extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('${post.user.name}'),
-                          Text(
-                            '${post.title}',
-                            style: stylePostTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          title,
                           SizedBox(height: Space.xxs),
                           Text(
                             '${post.content}',
