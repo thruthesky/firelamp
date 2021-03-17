@@ -24,6 +24,10 @@ class PostPreview extends StatelessWidget {
       child: forum.listView == 'gallery'
           ? Column(
               children: [
+                if (post.hasFiles) ...[
+                  FilesView(postOrComment: post, isStaggered: true),
+                  SizedBox(height: Space.sm),
+                ],
                 Row(
                   children: [
                     UserAvatar(post.user.photoUrl),
@@ -37,10 +41,6 @@ class PostPreview extends StatelessWidget {
                     )
                   ],
                 ),
-                if (post.hasFiles) ...[
-                  SizedBox(height: Space.sm),
-                  FilesView(postOrComment: post, isStaggered: true),
-                ],
               ],
             )
           : Column(
@@ -48,7 +48,7 @@ class PostPreview extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (post.hasFiles) ...[
+                    if (post.hasFiles && forum.listView == 'thumbnail') ...[
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -69,7 +69,7 @@ class PostPreview extends StatelessWidget {
                       ),
                       SizedBox(width: Space.xsm),
                     ],
-                    if (!post.hasFiles) ...[
+                    if (!post.hasFiles && forum.listView == 'thumbnail') ...[
                       Container(
                         constraints: BoxConstraints(minWidth: 70),
                         child: Column(
