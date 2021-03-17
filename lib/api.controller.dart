@@ -797,6 +797,13 @@ class Api extends GetxController {
     return _posts;
   }
 
+  /// Returns a post of today based on the categoryId and userIdx.
+  Future<ApiPost> postToday({@required String categoryId, int userIdx = 0}) async {
+    final json =
+        await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx});
+    return ApiPost.fromJson(json);
+  }
+
   ///
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});

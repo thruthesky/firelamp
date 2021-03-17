@@ -22,6 +22,7 @@ class ApiFile {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=${json['idx']}&w=360&h=360&f=jpeg&q=95';
 
+    print('url: thumbnail: $url');
     return ApiFile(
       url: json["url"],
       idx: int.parse("${json["idx"]}"),
