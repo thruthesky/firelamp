@@ -18,6 +18,13 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget title = Text(
+      '${post.title}',
+      style: stylePostTitle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -31,14 +38,15 @@ class PostPreview extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${post.user.name}'),
-                        PostMeta(post, forum),
+                        title,
+                        SizedBox(height: Space.xxs),
+                        PostMeta(post, forum, isInlineName: true),
                       ],
                     )
                   ],
                 ),
                 if (post.hasFiles) ...[
-                  SizedBox(height: Space.sm),
+                  SizedBox(height: Space.xsm),
                   FilesView(postOrComment: post, isStaggered: true),
                 ],
               ],
@@ -48,7 +56,7 @@ class PostPreview extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (post.hasFiles) ...[
+                    if (post.hasFiles && forum.listView == 'thumbnail') ...[
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -69,7 +77,7 @@ class PostPreview extends StatelessWidget {
                       ),
                       SizedBox(width: Space.xsm),
                     ],
-                    if (!post.hasFiles) ...[
+                    if (!post.hasFiles && forum.listView == 'thumbnail') ...[
                       Container(
                         constraints: BoxConstraints(minWidth: 70),
                         child: Column(
@@ -87,12 +95,7 @@ class PostPreview extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('${post.user.name}'),
-                          Text(
-                            '${post.title}',
-                            style: stylePostTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          title,
                           SizedBox(height: Space.xxs),
                           Text(
                             '${post.content}',
