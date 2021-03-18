@@ -35,17 +35,24 @@ class FilesView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (postOrComment.files.length == 0) return SizedBox.shrink();
 
-    Widget grid = isStaggered
+    Widget imagesView = isStaggered
         ? StaggeredGridView.countBuilder(
             shrinkWrap: true,
-            crossAxisCount: postOrComment.files.length < 3 ? 1 : 4,
+            crossAxisCount: 4,
             itemCount: postOrComment.files.length,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
               color: Colors.green,
               child: _imageBuilder(postOrComment.files[index]),
             ),
-            staggeredTileBuilder: (int index) => StaggeredTile.count(2, index.isEven ? 2 : 1),
+            staggeredTileBuilder: (int index) => StaggeredTile.count(
+              2,
+              postOrComment.files.length == 2
+                  ? 2
+                  : index.isEven
+                      ? 2
+                      : 1,
+            ),
             mainAxisSpacing: 4.0,
             crossAxisSpacing: 4.0,
           )
@@ -53,7 +60,7 @@ class FilesView extends StatelessWidget {
             padding: EdgeInsets.all(0),
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: 3,
+            crossAxisCount: postOrComment.files.length == 2 ? 2 : 3,
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 8.0,
             children: [
@@ -72,7 +79,7 @@ class FilesView extends StatelessWidget {
           ),
           Divider(),
         ],
-        grid,
+        imagesView,
       ],
     );
   }
