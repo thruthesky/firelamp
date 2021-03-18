@@ -113,7 +113,7 @@ class ApiForum {
     String categoryId,
     ApiPost post,
   })  : _limit = limit,
-        this.categoryId = categoryId ?? setting.id,
+        this.categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [];
 
   /// Edit post or comment
