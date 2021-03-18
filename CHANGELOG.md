@@ -1,4 +1,6 @@
-## [0.0.3] - ..
+## [0.0.3] - Lots of user & forum functionalities.
+
+- A lot of updates and changes are going on at this time.
 
 ## [0.0.2] - Document update and minors
 

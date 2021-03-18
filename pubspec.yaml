@@ -1,6 +1,6 @@
 name: firelamp
 description: A flutter package to support CMS(Content Management System) functionalities like user management, forum management, and more for building apps like social apps, shopping apps.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/thruthesky/firelamp
 
 environment:
@@ -39,7 +39,6 @@ dependencies:
 
   # Chat room. Scroll adjustment when keypad is open.
   flutter_keyboard_visibility: ^4.0.3
-
 
 dev_dependencies:
   flutter_test:
