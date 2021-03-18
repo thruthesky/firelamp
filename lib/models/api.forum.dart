@@ -104,15 +104,16 @@ class ApiForum {
   ApiPost postInEdit;
   ApiForum({
     this.setting,
-    this.categoryId,
     this.subcategory,
     this.userIdx,
     this.relationIdx,
     this.searchKey,
     int limit,
     @required this.render,
+    String categoryId,
     ApiPost post,
   })  : _limit = limit,
+        this.categoryId = categoryId ?? setting.id,
         this.posts = post != null ? [post] : [];
 
   /// Edit post or comment

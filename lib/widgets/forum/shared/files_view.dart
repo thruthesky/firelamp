@@ -1,7 +1,7 @@
+import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/image.cache.dart';
 import 'package:firelamp/widgets/app_photo_viewer.dart';
 import 'package:flutter/material.dart';
-import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
@@ -31,27 +31,24 @@ class FilesView extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (postOrComment.files.length == 0) return SizedBox.shrink();
+  Widget _gridBuilder({bool hideFirstImage = false}) {
+    List<ApiFile> _files = hideFirstImage
+        ? postOrComment.files.getRange(1, postOrComment.files.length).toList()
+        : postOrComment.files;
 
-    Widget imagesView = isStaggered
+    return isStaggered && postOrComment.files.length != 3
         ? StaggeredGridView.countBuilder(
             shrinkWrap: true,
             crossAxisCount: 4,
-            itemCount: postOrComment.files.length,
+            itemCount: _files.length,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
               color: Colors.green,
-              child: _imageBuilder(postOrComment.files[index]),
+              child: _imageBuilder(_files[index]),
             ),
             staggeredTileBuilder: (int index) => StaggeredTile.count(
               2,
-              postOrComment.files.length == 2
-                  ? 2
-                  : index.isEven
-                      ? 2
-                      : 1,
+              index.isEven ? 2 : 1,
             ),
             mainAxisSpacing: 4.0,
             crossAxisSpacing: 4.0,
@@ -60,26 +57,38 @@ class FilesView extends StatelessWidget {
             padding: EdgeInsets.all(0),
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: postOrComment.files.length == 2 ? 2 : 3,
+            crossAxisCount: postOrComment.files.length == 3 ? 2 : 3,
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 8.0,
             children: [
-              for (ApiFile file in postOrComment.files) _imageBuilder(file),
+              for (ApiFile file in _files) _imageBuilder(file),
             ],
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int filesLength = postOrComment.files.length;
+
+    if (filesLength == 0) return SizedBox.shrink();
+    if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!isStaggered) ...[
+        // if (!isStaggered) ...[
+        SizedBox(height: Space.xsm),
+        Text(
+          'Attached files',
+          style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
+        ),
+        Divider(),
+        // ],
+        if (filesLength == 3) ...[
+          _imageBuilder(postOrComment.files.first),
           SizedBox(height: Space.xsm),
-          Text(
-            'Attached files',
-            style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
-          ),
-          Divider(),
         ],
-        imagesView,
+        _gridBuilder(hideFirstImage: filesLength == 3),
       ],
     );
   }
