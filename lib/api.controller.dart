@@ -1075,11 +1075,12 @@ class Api extends GetxController {
   /// If [postIdOnTop] is set, it will get the post on the top of the list following the posts of the same category of the post.
   ///   - And if it gets the next page of it, then [forum.postIdOnTop] should be removed and [forum.category] should be the `category` of [forum.postIdOnTop].
   ///
-  /// The [pageNo] is increased automatically.
+  /// The [forum.pageNo] is increased automatically.
   ///
   /// The [forum] setting should be declared in each forum list screen.
   Future<void> fetchPosts(ApiForum forum) async {
     if (forum.post != null && forum.posts.length == 0) {
+      //
       forum.posts.add(forum.post);
       forum.render();
     }
@@ -1094,13 +1095,12 @@ class Api extends GetxController {
     forum.loading = true;
     forum.render();
 
-    // print('Going to load pageNo: ${forum.pageNo}');
     List<ApiPost> _posts;
     _posts = await postSearch(
       postOnTop: forum.postOnTop,
-      categoryId: forum.category,
+      categoryId: forum.categoryId,
       subcategory: forum.subcategory,
-      page: forum.pageNo,
+      page: ++forum.pageNo,
       limit: forum.limit,
       // @todo search by user.idx
       userIdx: forum.userIdx,
@@ -1112,8 +1112,6 @@ class Api extends GetxController {
     if (_posts.length < forum.limit) {
       forum.noMorePosts = true;
       forum.loading = false;
-    } else {
-      forum.pageNo++;
     }
 
     _posts.forEach((ApiPost p) {

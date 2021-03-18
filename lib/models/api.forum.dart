@@ -9,8 +9,34 @@ part of '../firelamp.dart';
 ///
 /// [Forum] only manages the data of a category.
 class ApiForum {
-  /// The [category] is used on fetching posts.
-  String category;
+  /// Forum category settings
+  ApiCategory setting;
+
+  String get listView {
+    if (setting == null) return 'text';
+    if (setting.mobilePostListWidget.isBlank) return 'text';
+    return setting.mobilePostListWidget;
+  }
+
+  String get postView {
+    if (setting == null) return 'default';
+    if (setting.mobilePostViewWidget.isBlank) return 'default';
+    return setting.mobilePostViewWidget;
+  }
+
+  /// App can set the limit to get posts per page.
+  int _limit;
+  int get limit {
+    // If limit is set by app.
+    if (_limit != null) return _limit;
+    // If setting is not set, then 10.
+    if (setting == null) return 10;
+    if (setting.noOfPostsPerPage < 1) return 10;
+    return setting.noOfPostsPerPage;
+  }
+
+  /// The [categoryId] is used on fetching posts.
+  String categoryId;
   String subcategory;
 
   /// The [userIdx] is used on fetching to get the user's posts only.
@@ -38,14 +64,10 @@ class ApiForum {
   /// When [fetchPost] is being called, [render] will be immidately called with this post.
   ApiPost post;
 
-  String listView = '';
-  String postView = '';
-
   List<ApiPost> posts = [];
   bool loading = false;
   bool noMorePosts = false;
-  int pageNo = 1;
-  int limit = 10;
+  int pageNo = 0;
   bool get canLoad => loading == false && noMorePosts == false;
   bool get canList => postInEdit == null && posts.length > 0;
   final ItemScrollController listController = ItemScrollController();
@@ -66,7 +88,7 @@ class ApiForum {
     return true;
   }
 
-  bool get canCreate => userIdx == null && category != null && postInEdit == null;
+  bool get canCreate => userIdx == null && categoryId != null && postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;
   bool get noPosts => posts.isEmpty;
@@ -81,15 +103,17 @@ class ApiForum {
   ///
   ApiPost postInEdit;
   ApiForum({
-    this.category,
+    this.setting,
+    this.categoryId,
     this.subcategory,
     this.userIdx,
     this.relationIdx,
     this.searchKey,
-    this.limit = 10,
+    int limit,
     @required this.render,
-    post,
-  }) : this.posts = post != null ? [post] : [];
+    ApiPost post,
+  })  : _limit = limit,
+        this.posts = post != null ? [post] : [];
 
   /// Edit post or comment
   ///

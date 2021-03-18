@@ -16,3 +16,16 @@ class ChatProtocol {
 }
 
 const String NEW_COMMENT_ON_MY_POST_OR_COMMENT = 'newCommentUserOption';
+
+class NotificationOptions {
+  static String notifyPost = 'notifyPost_';
+  static String notifyComment = 'notifyComment_';
+
+  static String post(String category) {
+    return notifyPost + category;
+  }
+
+  static String comment(String category) {
+    return notifyComment + category;
+  }
+}
