@@ -1,3 +1,7 @@
+## [0.0.6] - Refactor to support web
+
+- Replace get_storage with shared_preferences.
+
 ## [0.0.5] - Removing path provider and upgrade Getx to support Web
 
 - Refactored to support web.
