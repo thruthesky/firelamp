@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
 
 import 'package:firelamp/widgets/forum/comment/comment_view.dart';
+import 'package:get/get.dart';
 
 class CommentList extends StatefulWidget {
   CommentList({
@@ -35,7 +36,8 @@ class _CommentListState extends State<CommentList> {
                 SizedBox(height: Space.xsm),
                 Text(
                   listText,
-                  style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
+                  style:
+                      TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
                 ),
                 for (ApiComment comment in widget.post.comments)
                   CommentView(
@@ -44,14 +46,14 @@ class _CommentListState extends State<CommentList> {
                     forum: widget.forum,
                     onError: widget.onError,
                     onCommentEditSuccess: () => setState(() {}),
-                    onCommentDeleteSuccess: () =>  setState(() {}),
+                    onCommentDeleteSuccess: () => setState(() {}),
                   ),
               ],
             )
           : Padding(
               padding: EdgeInsets.only(top: Space.xsm, left: Space.xsm),
               child: Text(
-                'No comments yet ..',
+                'No comments yet'.tr,
                 style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
               ),
             ),

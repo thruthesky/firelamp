@@ -43,8 +43,6 @@ class Api extends GetxController {
     return url;
   }
 
-  GetStorage localStorage;
-
   /// [storageInitialized] will be posted on get storage is ready.
   /// After this, you can use [localStorage]
   BehaviorSubject<bool> storageInitialized = BehaviorSubject<bool>.seeded(false);
@@ -66,6 +64,9 @@ class Api extends GetxController {
   Map<String, dynamic> settings = {};
 
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
+
+  /// Image compressor after taking Image.
+  Function imageCompressor;
 
   @Deprecated('Use userIdx')
   int get idx => user == null ? 0 : user.idx;
@@ -149,27 +150,35 @@ class Api extends GetxController {
     // print("--> Api::onInit()");
     super.onInit();
 
-    GetStorage.init().then((b) {
-      localStorage = GetStorage();
-      storageInitialized.add(true);
+    _initUserLogin();
+  }
 
-      /// First, load user profile from localStorage if the user previouly logged in
-      ///
-      /// If the user has logged in previously, he will be auto logged in on next app running.
-      /// [user] will be null if the user has not logged in previously.
-      user = _loadUserProfile();
+  _initUserLogin() async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String user = prefs.getString('user');
 
-      /// Get user profile from backend if the user previous logged in.
-      /// If user has logged in with localStorage data, refresh the user data from backend.
-      if (loggedIn) {
-        userProfile(sessionId);
-      }
-
+    user = await _loadUserProfile();
+    if (user != null) {
+      await userProfile(sessionId);
       authChanges.add(user);
-    });
+    }
 
-    // authChanges.listen((user) async {
-    //   // print('authChanges');
+    // GetStorage.init().then((b) {
+    //   localStorage = GetStorage();
+    //   storageInitialized.add(true);
+
+    //   /// First, load user profile from localStorage if the user previouly logged in
+    //   ///
+    //   /// If the user has logged in previously, he will be auto logged in on next app running.
+    //   /// [user] will be null if the user has not logged in previously.
+    //   user = _loadUserProfile();
+
+    //   /// Get user profile from backend if the user previous logged in.
+    //   /// If user has logged in with localStorage data, refresh the user data from backend.
+    //   if (loggedIn) {
+    //     userProfile(sessionId);
+    //   }
+
     // });
   }
 
@@ -195,6 +204,7 @@ class Api extends GetxController {
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
     bool enableInAppPurchase = false,
+    Function imageCompressor,
   }) async {
     if (enableMessaging) {
       assert(onForegroundMessage != null,
@@ -209,6 +219,8 @@ class Api extends GetxController {
     this.onForegroundMessage = onForegroundMessage;
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
+
+    this.imageCompressor = imageCompressor;
 
     this.apiUrl = apiUrl;
     await _initializeFirebase();
@@ -443,13 +455,16 @@ class Api extends GetxController {
   }
 
   _saveUserProfile(ApiUser user) async {
-    await localStorage.write('user', user.toJson());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('user', user.toJson().toString());
   }
 
   /// Returns null if the user has not logged in.
-  ApiUser _loadUserProfile() {
-    final json = localStorage.read('user');
-    if (json == null) return null;
+  Future<ApiUser> _loadUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs.getString('user');
+    if (user == null) return null;
+    Map<String, dynamic> json = jsonDecode(user);
     return ApiUser.fromJson(json);
   }
 
@@ -472,7 +487,8 @@ class Api extends GetxController {
   }
 
   logout() async {
-    await localStorage.remove('user');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('user');
     user = null;
     authChanges.add(null);
     update();
@@ -965,7 +981,6 @@ class Api extends GetxController {
   /// 이미지를 카메라 또는 갤러리로 부터 가져와서, 이미지 누어서 찍힌 이미지를 바로 보정을 하고, 압축을 하고, 서버에 업로드
   /// [deletePreviousUpload] 가 true 이면, 기존에 업로드된 동일한 taxonomy 와 entity 파일을 삭제한다.
   ///
-  /// @todo flutter_image_compress 패키지가 웹을 지원하지 않는다. 옵션으로 앱에서만 처리를 할 수 있도록 해 준다.
   Future<ApiFile> takeUploadFile({
     @required ImageSource source,
     int quality = 90,
@@ -980,12 +995,12 @@ class Api extends GetxController {
     final pickedFile = await picker.getImage(source: source);
     if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
 
-    String localFile = await getAbsoluteTemporaryFilePath(getRandomString() + '.jpeg');
-    File file = await FlutterImageCompress.compressAndGetFile(
-      pickedFile.path, // source file
-      localFile, // target file. Overwrite the source with compressed.
-      quality: quality,
-    );
+    File file;
+    if (imageCompressor != null) {
+      file = imageCompressor(pickedFile.path, quality);
+    } else {
+      file = File(pickedFile.path);
+    }
 
     /// Upload
     return await uploadFile(

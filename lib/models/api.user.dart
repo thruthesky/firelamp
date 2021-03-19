@@ -25,7 +25,8 @@ class ApiUser {
     AgeDuration _age;
 
     // Set the age of the user
-    _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
+    _age = Age.dateDifference(
+        fromDate: birthday, toDate: today, includeToDate: false);
 
     return _age.years.toString();
   }
@@ -122,7 +123,8 @@ class ApiUser {
       photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
     }
 
-    point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
+    point =
+        json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
     createdAt = int.parse("${json['createdAt']}");
     updatedAt = int.parse("${json['updatedAt']}");
   }

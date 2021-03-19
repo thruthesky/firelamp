@@ -53,7 +53,8 @@ class _CommentViewState extends State<CommentView> {
 
       try {
         await Api.instance.commentDelete(widget.comment, widget.post);
-        if (widget.onCommentDeleteSuccess != null) widget.onCommentDeleteSuccess();
+        if (widget.onCommentDeleteSuccess != null)
+          widget.onCommentDeleteSuccess();
         widget.forum.render();
       } catch (e) {
         if (widget.onError != null) {
@@ -64,7 +65,8 @@ class _CommentViewState extends State<CommentView> {
   }
 
   bool get canCancel =>
-      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
+      widget.comment.mode == CommentMode.reply ||
+      widget.comment.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,8 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin: EdgeInsets.only(top: Space.sm, left: Space.sm * (widget.comment.depth - 1)),
+            margin: EdgeInsets.only(
+                top: Space.sm, left: Space.sm * (widget.comment.depth - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,9 +101,10 @@ class _CommentViewState extends State<CommentView> {
                           size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode = widget.comment.mode == CommentMode.reply
-                              ? CommentMode.none
-                              : CommentMode.reply;
+                          widget.comment.mode =
+                              widget.comment.mode == CommentMode.reply
+                                  ? CommentMode.none
+                                  : CommentMode.reply;
                         });
                       },
                     ),
@@ -114,14 +118,16 @@ class _CommentViewState extends State<CommentView> {
                       PopUpButton(items: [
                         PopupMenuItem(
                             child: Row(children: [
-                              Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
+                              Icon(Icons.edit,
+                                  size: Space.sm, color: Colors.greenAccent),
                               SizedBox(width: Space.xs),
                               Text('Edit')
                             ]),
                             value: 'edit'),
                         PopupMenuItem(
                             child: Row(children: [
-                              Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
+                              Icon(Icons.delete,
+                                  size: Space.sm, color: Colors.redAccent),
                               SizedBox(width: Space.xs),
                               Text('Delete')
                             ]),

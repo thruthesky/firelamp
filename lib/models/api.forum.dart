@@ -67,7 +67,8 @@ class ApiForum {
   bool get canLoad => loading == false && noMorePosts == false;
   bool get canList => postInEdit == null && posts.length > 0;
   final ItemScrollController listController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   Function render;
 
@@ -75,7 +76,8 @@ class ApiForum {
   bool get showDislike => showVoteButton('forum_dislike');
 
   // categories separated by comma.
-  String get searchCategories => Api.instance.settings['search_categories'] ?? '';
+  String get searchCategories =>
+      Api.instance.settings['search_categories'] ?? '';
 
   bool get canSearch {
     if (postInEdit != null) return false;
@@ -84,13 +86,15 @@ class ApiForum {
     return true;
   }
 
-  bool get canCreate => userIdx == null && categoryId != null && postInEdit == null;
+  bool get canCreate =>
+      userIdx == null && categoryId != null && postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;
   bool get noPosts => posts.isEmpty;
 
   bool showVoteButton(String str) {
-    if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
+    if (Api.instance.settings[str] != null &&
+        Api.instance.settings[str] == 'Y') {
       return true;
     }
     return false;

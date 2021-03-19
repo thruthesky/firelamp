@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CircleIcon extends StatelessWidget {
-  CircleIcon({@required this.icon, @required this.backgroundColor, @required this.onPressed});
+  CircleIcon(
+      {@required this.icon,
+      @required this.backgroundColor,
+      @required this.onPressed});
   final Widget icon;
   final Color backgroundColor;
   final Function onPressed;

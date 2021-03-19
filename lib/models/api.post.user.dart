@@ -8,7 +8,13 @@ class ApiPostUser {
   final int photoIdx;
   final String photoUrl;
 
-  ApiPostUser({this.idx, this.name, this.nickname, this.gender, this.photoIdx, this.photoUrl});
+  ApiPostUser(
+      {this.idx,
+      this.name,
+      this.nickname,
+      this.gender,
+      this.photoIdx,
+      this.photoUrl});
 
   factory ApiPostUser.fromJson(dynamic json) {
     if (json == null) return ApiPostUser();

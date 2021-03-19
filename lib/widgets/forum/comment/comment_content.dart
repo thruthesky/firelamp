@@ -12,7 +12,7 @@ class CommentContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return comment.content.isNotEmpty
         ? Padding(
-          padding: EdgeInsets.only(top: Space.sm),
+            padding: EdgeInsets.only(top: Space.sm),
             child: SelectableText('${comment.content}'),
           )
         : SizedBox.shrink();

@@ -32,5 +32,6 @@ Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
   );
   if (re == null) throw ERROR_IMAGE_NOT_SELECTED;
 
-  return Api.instance.takeUploadFile(source: re, quality: quality, onProgress: onProgress);
+  return Api.instance
+      .takeUploadFile(source: re, quality: quality, onProgress: onProgress);
 }

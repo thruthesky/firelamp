@@ -34,7 +34,8 @@ class Cart extends GetxController {
   int deliveryFeeFreeLimit = 0;
   int _deliveryFeePrice = 0;
 
-  int get deliveryFeePrice => priceInt() >= deliveryFeeFreeLimit ? 0 : _deliveryFeePrice;
+  int get deliveryFeePrice =>
+      priceInt() >= deliveryFeeFreeLimit ? 0 : _deliveryFeePrice;
 
   /// 결제(구매) 페이지에서 최종 결제 금액 제시
   int get paymentAmount => priceInt() + deliveryFeePrice - pointToUse;
