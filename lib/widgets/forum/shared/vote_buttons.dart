@@ -46,12 +46,14 @@ class _VoteButtonsState extends State<VoteButtons> {
                 TextButton(
                   child: Row(
                     children: [
-                      Icon(Icons.thumb_up_alt_outlined, color: Color(0xff8cff82), size: 20),
+                      Icon(Icons.thumb_up_alt_outlined,
+                          color: Color(0xff8cff82), size: 20),
                       if (widget.postOrComment.y > 0) ...[
                         SizedBox(width: Space.xs),
                         Text(
                           '${widget.postOrComment.y}',
-                          style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                          style: TextStyle(
+                              fontSize: Space.sm, color: Colors.black54),
                         )
                       ],
                     ],
@@ -62,12 +64,14 @@ class _VoteButtonsState extends State<VoteButtons> {
                 TextButton(
                   child: Row(
                     children: [
-                      Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
+                      Icon(Icons.thumb_down_outlined,
+                          color: Color(0xffff7575), size: 20),
                       if (widget.postOrComment.n > 0) ...[
                         SizedBox(width: Space.xs),
                         Text(
                           '${widget.postOrComment.n}',
-                          style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                          style: TextStyle(
+                              fontSize: Space.sm, color: Colors.black54),
                         )
                       ],
                     ],

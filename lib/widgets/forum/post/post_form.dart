@@ -126,7 +126,8 @@ class _PostFormState extends State<PostForm> {
               maxLines: 15,
               decoration: _inputDecoration,
             ),
-            DisplayUploadedFilesAndDeleteButtons(postOrComment: forum.postInEdit),
+            DisplayUploadedFilesAndDeleteButtons(
+                postOrComment: forum.postInEdit),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -163,7 +164,8 @@ class _PostFormState extends State<PostForm> {
                     TextButton(
                       child: loading
                           ? Spinner()
-                          : Text('Submit', style: TextStyle(color: Colors.green[300])),
+                          : Text('Submit',
+                              style: TextStyle(color: Colors.green[300])),
                       onPressed: onFormSubmit,
                     ),
                   ],

@@ -28,7 +28,8 @@ class PostMeta extends StatelessWidget {
         children: [
           if (isInlineName) ...[
             Text('${post.user.name}',
-                style: TextStyle(fontSize: Space.sm, fontWeight: FontWeight.w500)),
+                style:
+                    TextStyle(fontSize: Space.sm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),
           ],
           Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.sm)),

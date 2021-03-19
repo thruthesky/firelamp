@@ -36,7 +36,8 @@ class _CommentListState extends State<CommentList> {
                 SizedBox(height: Space.xsm),
                 Text(
                   listText,
-                  style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
+                  style:
+                      TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
                 ),
                 for (ApiComment comment in widget.post.comments)
                   CommentView(

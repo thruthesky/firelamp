@@ -18,7 +18,8 @@ class PopUpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: PopupMenuButton<dynamic>(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
         itemBuilder: (context) => items,
         icon: icon,
         offset: Offset(10.0, 10.0),

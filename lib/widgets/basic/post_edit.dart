@@ -84,12 +84,14 @@ class _ForumBasicPostEditState extends State<ForumBasicPostEdit> {
                               ListTile(
                                 leading: Icon(Icons.camera_alt),
                                 title: Text('카메라로 사진 찍기'),
-                                onTap: () => Get.back(result: ImageSource.camera),
+                                onTap: () =>
+                                    Get.back(result: ImageSource.camera),
                               ),
                               ListTile(
                                 leading: Icon(Icons.photo),
                                 title: Text('갤러리에서 사진 가져오기'),
-                                onTap: () => Get.back(result: ImageSource.gallery),
+                                onTap: () =>
+                                    Get.back(result: ImageSource.gallery),
                               ),
                               ListTile(
                                 leading: Icon(Icons.cancel),
@@ -125,7 +127,8 @@ class _ForumBasicPostEditState extends State<ForumBasicPostEdit> {
                       ? () async {
                           try {
                             // print('req: $post');
-                            ApiPost re = await Api.instance.postEdit(post: post);
+                            ApiPost re =
+                                await Api.instance.postEdit(post: post);
                             widget.onSuccess(re);
                           } catch (e) {
                             widget.onError(e);
@@ -158,7 +161,8 @@ class _ForumBasicPostEditState extends State<ForumBasicPostEdit> {
                           onPressed: () async {
                             // print('delete: ${file.id}');
                             try {
-                              await Api.instance.deleteFile(file.idx, postOrComment: post);
+                              await Api.instance
+                                  .deleteFile(file.idx, postOrComment: post);
                               // print('delete: success');
                               setState(() {});
                             } catch (e) {

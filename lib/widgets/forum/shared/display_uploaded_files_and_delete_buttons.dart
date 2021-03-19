@@ -5,7 +5,8 @@ import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 
 class DisplayUploadedFilesAndDeleteButtons extends StatefulWidget {
-  const DisplayUploadedFilesAndDeleteButtons({Key key, this.postOrComment, this.onError})
+  const DisplayUploadedFilesAndDeleteButtons(
+      {Key key, this.postOrComment, this.onError})
       : super(key: key);
 
   final postOrComment;

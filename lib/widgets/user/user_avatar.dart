@@ -1,4 +1,3 @@
-
 import 'package:firelamp/widgets/image.cache.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +22,8 @@ class UserAvatar extends StatelessWidget {
           shape: BoxShape.circle,
           color: Colors.blue,
           boxShadow: [
-            BoxShadow(color: Colors.black26, blurRadius: 1.0, spreadRadius: 1.0),
+            BoxShadow(
+                color: Colors.black26, blurRadius: 1.0, spreadRadius: 1.0),
           ],
         ),
       ),

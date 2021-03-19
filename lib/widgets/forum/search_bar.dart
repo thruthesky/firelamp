@@ -48,9 +48,12 @@ class _SearchBarState extends State<SearchBar> {
   void initState() {
     super.initState();
 
-    _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
-    subscription =
-        input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((value) {
+    _editingController =
+        TextEditingController(text: widget.defaultSearchKeyValue);
+    subscription = input
+        .debounceTime(Duration(milliseconds: 500))
+        .distinct((a, b) => a == b)
+        .listen((value) {
       searchKey = value;
       if (widget.onSearch != null) widget.onSearch(value);
     });
@@ -91,9 +94,11 @@ class _SearchBarState extends State<SearchBar> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: Space.sm),
                       border: OutlineInputBorder(
-                        borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
+                        borderRadius:
+                            const BorderRadius.all(const Radius.circular(25.0)),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(Icons.search),
@@ -121,7 +126,9 @@ class _SearchBarState extends State<SearchBar> {
                         child: Text('$category'),
                         value: category,
                         textStyle: selected == category
-                            ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
+                            ? TextStyle(
+                                color: Colors.green[600],
+                                fontWeight: FontWeight.w700)
                             : null,
                       )
                   ],

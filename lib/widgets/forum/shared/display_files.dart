@@ -41,10 +41,12 @@ class DisplayFiles extends StatelessWidget {
                         children: [
                           Text(
                             '+ $moreImage',
-                            style: TextStyle(color: Colors.white, fontSize: Space.md),
+                            style: TextStyle(
+                                color: Colors.white, fontSize: Space.md),
                           ),
                           SizedBox(width: Space.xxs),
-                          Icon(Icons.image_outlined, size: Space.lg, color: Colors.white)
+                          Icon(Icons.image_outlined,
+                              size: Space.lg, color: Colors.white)
                         ],
                       ),
                     ),

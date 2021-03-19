@@ -122,7 +122,10 @@ class ApiPost {
 
   /// Upload file/image
   String thumbnailUrl(src,
-      {int width = 320, int height = 320, int quality = 75, bool original = false}) {
+      {int width = 320,
+      int height = 320,
+      int quality = 75,
+      bool original = false}) {
     String url = Api.instance.thumbnailUrl;
     url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';
@@ -309,7 +312,8 @@ class ApiPost {
           : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
       comments: json["comments"] == null
           ? []
-          : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+          : List<ApiComment>.from(
+              json["comments"].map((x) => ApiComment.fromJson(x))),
 
       // DateTime.parse(json["post_date"] ?? DateTime.now().toString())
 
@@ -328,7 +332,8 @@ class ApiPost {
       widgetPhoto: json["widgetPhoto"],
       detailPhoto: json["detailPhoto"],
       keywords: json['keywords'] ?? '',
-      options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
+      options: _prepareOptions(
+          json['options'], json["optionItemPrice"] == 'Y' ? true : false),
 
       shortDateTime: json['shortDate'] ?? '',
     );
@@ -359,7 +364,8 @@ class ApiPost {
         "code": code,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
         if (comments != null)
-          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+          "comments":
+              List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
@@ -402,27 +408,31 @@ class ApiPost {
 
   /// '옵션에 상품가격지정' 방식에서, 옵션의 할인된 가격을 리턴한다.
   int optionDiscountedPrice(String option) {
-    return options[option].count * discount(options[option].price, options[option].discountRate);
+    return options[option].count *
+        discount(options[option].price, options[option].discountRate);
   }
 
   /// 상품의 옵션 정리(손질)
   ///
   /// [optionString] 은 DB(게시글)에 있는 옵션 문자열이다. 한 문자열에 여러개의 옵션이 들어가 있는데 이를 파싱하는 것이다.
   ///
-  static Map<String, ApiItemOption> _prepareOptions(String optionString, bool optionItemPrice) {
+  static Map<String, ApiItemOption> _prepareOptions(
+      String optionString, bool optionItemPrice) {
     Map<String, ApiItemOption> _options = {};
 
     /// 옵션이 없는 경우, 기본(DEFAULT_OPTION) 옵션을 하나 두어서, 사용자가
     /// 옵션을 선택하지 않고 주문을 할 수 있도록 해 준다.
     /// 이 것은, 나중에 사용자가 상품 페이지를 볼 때, 해당 상품 주문 로직에서, 기본(DEFAULT_OPTION) 옵션을 하나 추가 해 주어야 한다.
     if (optionString == null || optionString.trim() == '') {
-      _options[DEFAULT_OPTION] = ApiItemOption(price: 0, discountRate: 0, text: Text(''));
+      _options[DEFAULT_OPTION] =
+          ApiItemOption(price: 0, discountRate: 0, text: Text(''));
       return _options;
     }
 
     /// '옵션에 추가금액지정' 방식의 경우도 옵션이 없는 것과 마찬가지로 로직 처리.
     if (optionItemPrice == false) {
-      _options[DEFAULT_OPTION] = ApiItemOption(price: 0, discountRate: 0, text: Text(''));
+      _options[DEFAULT_OPTION] =
+          ApiItemOption(price: 0, discountRate: 0, text: Text(''));
     }
 
     // 콤마로 분리
@@ -445,7 +455,8 @@ class ApiPost {
           String optionName = kv[0].split('(').first.trim(); // 옵션 이름
 
           // @todo 옵션 포멧을 잘못 지정한 경우 에러가는데, 핸들링을 해야 한다.
-          discountRate = int.parse(kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
+          discountRate = int.parse(
+              kv[0].split('(').last.replaceAll(')', '').replaceAll('%', ''));
 
           String _discountedPrice = moneyFormat(discount(_price, discountRate));
 
@@ -454,13 +465,18 @@ class ApiPost {
             style: TextStyle(color: Colors.black),
             children: [
               TextSpan(text: "$optionName 할인 "),
-              TextSpan(text: "($discountRate%)", style: TextStyle(color: Colors.red)),
+              TextSpan(
+                  text: "($discountRate%)",
+                  style: TextStyle(color: Colors.red)),
               TextSpan(
                   text: " ${moneyFormat(_price)} ",
-                  style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
+                  style: TextStyle(
+                      decoration: TextDecoration.lineThrough,
+                      color: Colors.red)),
               WidgetSpan(
                   child: Transform.translate(
-                      offset: const Offset(0.0, 4.0), child: Icon(Icons.arrow_right_alt))),
+                      offset: const Offset(0.0, 4.0),
+                      child: Icon(Icons.arrow_right_alt))),
               TextSpan(text: "$_discountedPrice원"),
             ],
           ));
@@ -478,7 +494,8 @@ class ApiPost {
         // 옵션에 = 기호가 없는 경우, 무료 옵션
         text = Text("$option");
       }
-      _options[option] = ApiItemOption(discountRate: discountRate, price: _price, text: text);
+      _options[option] =
+          ApiItemOption(discountRate: discountRate, price: _price, text: text);
     }
     return _options;
   }
@@ -559,7 +576,8 @@ class ApiPost {
 
   /// 옵션의 개 수 증가. '옵션에 상품가격지정방식'만 가능.
   increaseItemOption(String option) {
-    assert(optionItemPrice || option == DEFAULT_OPTION, "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");
+    assert(optionItemPrice || option == DEFAULT_OPTION,
+        "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");
     options[option].count++;
   }
 

@@ -43,7 +43,8 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
                   minScale: .3,
                   imageProvider: NetworkImage(widget.files[i].url),
                   initialScale: PhotoViewComputedScale.contained * 1,
-                  heroAttributes: PhotoViewHeroAttributes(tag: widget.files[i].idx),
+                  heroAttributes:
+                      PhotoViewHeroAttributes(tag: widget.files[i].idx),
                 );
               },
               loadingBuilder: (context, event) => Center(
@@ -55,7 +56,8 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
           ),
           Container(
             child: IconButton(
-                icon: Icon(Icons.close_rounded, color: Colors.redAccent, size: Space.xl),
+                icon: Icon(Icons.close_rounded,
+                    color: Colors.redAccent, size: Space.xl),
                 onPressed: () => Get.back()),
           ),
           if (currentIndex != 0)
@@ -63,7 +65,8 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
               bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
               // left: Space.md,
               child: IconButton(
-                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xxl),
+                icon: Icon(Icons.arrow_left_rounded,
+                    color: Colors.white, size: Space.xxl),
                 onPressed: () => _controller.previousPage(
                     duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
@@ -73,9 +76,10 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
               bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
               right: Space.md,
               child: IconButton(
-                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xxl),
-                onPressed: () =>
-                    _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
+                icon: Icon(Icons.arrow_right_rounded,
+                    color: Colors.white, size: Space.xxl),
+                onPressed: () => _controller.nextPage(
+                    duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),
         ],
