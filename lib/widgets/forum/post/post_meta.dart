@@ -27,7 +27,8 @@ class PostMeta extends StatelessWidget {
       child: Row(
         children: [
           if (isInlineName) ...[
-            Text('${post.user.name}', style: TextStyle(fontSize: Space.sm, fontWeight: FontWeight.w500)),
+            Text('${post.user.name}',
+                style: TextStyle(fontSize: Space.sm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),
           ],
           Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.sm)),
@@ -48,7 +49,11 @@ class PostMeta extends StatelessWidget {
             Icon(Icons.thumb_down_rounded, size: Space.sm, color: iconColor),
             SizedBox(width: Space.xs),
             Text('${post.n}')
-          ]
+          ],
+          Text(
+            'No. ${post.idx}',
+            style: TextStyle(fontSize: Space.sm),
+          ),
         ],
       ),
     );
