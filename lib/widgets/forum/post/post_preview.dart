@@ -19,7 +19,7 @@ class PostPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget title = Text(
-      '${post.title} asd asd asd asd as dasdasdsadasd asds',
+      '${post.title}',
       style: stylePostTitle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
