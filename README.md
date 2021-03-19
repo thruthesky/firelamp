@@ -1,34 +1,77 @@
 # FireLamp
 
-A flutter package to support CMS(Content Management System) functionalities like user management, forum management, and more for building apps like social apps, shopping apps.
+A flutter package to support full CMS(Content Management System) functionalities like user management, forum management, and more for building apps like social & blog apps, shopping mall apps.
 
 It is based on Firebase and LAMP stack.
 
-## A story
-
-We have been working on a flutter package to support the basic functionalities that every app needs.
+## A story of Firelamp
 
 We first worked on Firebase with LAMP(or LEMP) stack for a while and we decided to remove LAMP stack since it is a hassle to maintain two stacks.
 
-After a couple of months, we had successfully built the first version of flutter package without LAMP stack named `fireflutter`. But we were not satisfied with the complex query on firestore. Then, without hesitate, we went back to LAMP stack with Firebase.
+After a couple of months, we had successfully built the first version of flutter package that work on Firebase alone without LAMP stack named `fireflutter`. But we were not satisfied with the complex query on firestore. Then, without hesitate, we went back to LAMP stack with Firebase.
 
 And here it is, `FireLamp`.
 
-## Reference
-
-### LAMP stack on Wordpress
-
-- We have built the backend on Wordpress.
-  - [sonub](https://github.com/thruthesky/sonub)
+We built our own PHP framework called [CenterX](https://github.com/thruthesky/centerx) to support firelamp.
 
 # Installation
 
-- Add latest version into pubspec.yaml
-- Set the Firebase settings on the project.
+- Add latest version of [Firelamp](https://pub.dev/packages/firelamp) into pubspec.yaml
 
-  - Add iOS `GoogleServices-info.plist` and Android `google-serfvices.json`.
+## CenterX Installation
 
-- The instance of FireLamp `Api` is a signleton.
+- To use CenterX without Firebase, simply add the apiUrl.
+
+```dart
+import 'package:firelamp/firelamp.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  MyApp() {
+    Api.instance.init(apiUrl: 'https://itsuda50.com/index.php');
+  }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String version = '';
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  init() async {
+    try {
+      version = (await Api.instance.version())['version'];
+      setState(() {});
+    } catch (e) {
+      print('Api error: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Text('Firelamp: version: $version')
+    );
+  }
+}
+```
 
 ## Put WithcenterApi instance as GetX controller
 
@@ -51,6 +94,13 @@ class _MainAppState extends State<MainApp> {
     });
   }
 ```
+
+## Firebase Installation
+
+- Set the Firebase settings on the project.
+
+  - Add iOS `GoogleServices-info.plist` and Android `google-serfvices.json`.
+
 
 ## Language Settings
 
@@ -95,6 +145,11 @@ class _MainAppState extends State<MainApp> {
   }
 }
 ```
+
+## Api controller
+
+
+- The instance of FireLamp `Api` is a signleton.
 
 ## App Settings
 

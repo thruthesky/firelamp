@@ -78,7 +78,10 @@ int discount(int price, int rate) {
 bool isImageUrl(t) {
   if (t == null || t == '') return false;
   if (t.startsWith('http://') || t.startsWith('https://')) {
-    if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
+    if (t.endsWith('.jpg') ||
+        t.endsWith('.jpeg') ||
+        t.endsWith('.gif') ||
+        t.endsWith('.png')) {
       return true;
     }
   }
