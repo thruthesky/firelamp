@@ -67,7 +67,7 @@ class _PostViewState extends State<PostView> {
           '${widget.post.content}',
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
-        FilesView(postOrComment: widget.post, isStaggered: widget.forum.listView == 'gallery'),
+        FilesView(postOrComment: widget.post),
         Divider(height: Space.xs, thickness: 1.3),
         Row(children: widget.actions),
         CommentForm(

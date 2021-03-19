@@ -38,6 +38,8 @@ class _PostFormState extends State<PostForm> {
   );
 
   onImageIconTap() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+
     try {
       final file = await imageUpload(
         quality: 95,
