@@ -1,4 +1,5 @@
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
+import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';
 import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
 import 'package:firelamp/widgets/rounded_box.dart';
@@ -8,7 +9,6 @@ import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/comment/comment_meta.dart';
 import 'package:firelamp/widgets/forum/comment/comment_form.dart';
 
-import 'package:firelamp/widgets/forum/shared/files_view.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 
 class CommentView extends StatefulWidget {
@@ -87,7 +87,7 @@ class _CommentViewState extends State<CommentView> {
                 if (widget.comment.mode == CommentMode.none ||
                     widget.comment.mode == CommentMode.reply) ...[
                   CommentContent(widget.comment),
-                  FilesView(postOrComment: widget.comment),
+                  DisplayFiles(postOrComment: widget.comment),
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(

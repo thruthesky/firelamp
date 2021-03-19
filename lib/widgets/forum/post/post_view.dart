@@ -1,4 +1,5 @@
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
+import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
@@ -6,7 +7,6 @@ import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/comment/comment_form.dart';
 import 'package:firelamp/widgets/forum/comment/comment_list.dart';
-import 'package:firelamp/widgets/forum/shared/files_view.dart';
 
 class PostView extends StatefulWidget {
   const PostView({
@@ -67,7 +67,7 @@ class _PostViewState extends State<PostView> {
           '${widget.post.content}',
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
-        FilesView(postOrComment: widget.post),
+        DisplayFiles(postOrComment: widget.post),
         Divider(height: Space.xs, thickness: 1.3),
         Row(children: widget.actions),
         CommentForm(

@@ -2,8 +2,8 @@ import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/basic/post_title.dart';
 import 'package:firelamp/widgets/forum/comment/comment_form.dart';
 import 'package:firelamp/widgets/forum/comment/comment_list.dart';
-import 'package:firelamp/widgets/forum/shared/files_view.dart';
 import 'package:firelamp/firelamp.dart';
+import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:flutter/material.dart';
 
 class PostViewWithAvatar extends StatefulWidget {
@@ -69,7 +69,7 @@ class DisplayContent extends StatelessWidget {
             // color: Colors.grey[100],
             child: Text(post.content),
           ),
-          if (post.files.length > 0) FilesView(postOrComment: post),
+          if (post.files.length > 0) DisplayFiles(postOrComment: post),
           Divider(thickness: 1.3),
         ],
       ),
