@@ -1017,6 +1017,8 @@ class Api extends GetxController {
   ///
   /// 이미지를 카메라 또는 갤러리로 부터 가져와서, 이미지 누어서 찍힌 이미지를 바로 보정을 하고, 압축을 하고, 서버에 업로드
   /// [deletePreviousUpload] 가 true 이면, 기존에 업로드된 동일한 taxonomy 와 entity 파일을 삭제한다.
+  ///
+  /// @todo flutter_image_compress 패키지가 웹을 지원하지 않는다. 옵션으로 앱에서만 처리를 할 수 있도록 해 준다.
   Future<ApiFile> takeUploadFile({
     @required ImageSource source,
     int quality = 90,
