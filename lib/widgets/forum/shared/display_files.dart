@@ -73,7 +73,7 @@ class DisplayFiles extends StatelessWidget {
                   ? SizedBox.shrink()
                   : _imageBuilder(
                       _files[index],
-                      withMoreImageOverlay: (index + 1) == displayedImage,
+                      withMoreImageOverlay: (index + 1) == (displayedImage - 1),
                     ),
             ),
             staggeredTileBuilder: (int index) => StaggeredTile.count(
