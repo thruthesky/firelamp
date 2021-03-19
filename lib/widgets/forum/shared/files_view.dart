@@ -69,7 +69,6 @@ class FilesView extends StatelessWidget {
             itemCount: displayedImage,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
-              color: Colors.green,
               child: (index + 1) > 4
                   ? SizedBox.shrink()
                   : _imageBuilder(

@@ -19,7 +19,7 @@ class PostPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget title = Text(
-      '${post.title}',
+      '${post.title} asd asd asd asd as dasdasdsadasd asds',
       style: stylePostTitle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -35,13 +35,15 @@ class PostPreview extends StatelessWidget {
                   children: [
                     UserAvatar(post.user.photoUrl),
                     SizedBox(width: Space.xs),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        title,
-                        SizedBox(height: Space.xxs),
-                        PostMeta(post, forum, isInlineName: true),
-                      ],
+                    Expanded(
+                                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          title,
+                          SizedBox(height: Space.xxs),
+                          PostMeta(post, forum, isInlineName: true),
+                        ],
+                      ),
                     )
                   ],
                 ),
