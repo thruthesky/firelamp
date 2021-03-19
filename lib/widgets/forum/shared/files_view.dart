@@ -10,21 +10,47 @@ class FilesView extends StatelessWidget {
   const FilesView({
     Key key,
     this.postOrComment,
-    this.isStaggered = false,
+    this.displayedImage = 4,
   }) : super(key: key);
 
   final dynamic postOrComment;
-  final bool isStaggered;
+  final int displayedImage;
+
+  int get moreImage => postOrComment.files.length - displayedImage;
 
   onImageTap(int idx) {
     final i = postOrComment.files.indexWhere((file) => file.idx == idx);
     Get.dialog(AppPhotoViewer(postOrComment.files, initialIndex: i));
   }
 
-  Widget _imageBuilder(file) {
+  Widget _imageBuilder(file, {bool withMoreImageOverlay = false}) {
+    Widget image = CachedImage(file.url);
+
     return ClipRRect(
       child: GestureDetector(
-        child: CachedImage(file.url),
+        child: moreImage > 0
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  image,
+                  if (moreImage > 0 && withMoreImageOverlay)
+                    Container(
+                      color: Color.fromARGB(100, 0, 0, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '+ $moreImage',
+                            style: TextStyle(color: Colors.white, fontSize: Space.md),
+                          ),
+                          SizedBox(width: Space.xxs),
+                          Icon(Icons.image_outlined, size: Space.lg, color: Colors.white)
+                        ],
+                      ),
+                    ),
+                ],
+              )
+            : image,
         onTap: () => onImageTap(file.idx),
       ),
       borderRadius: BorderRadius.circular(5.0),
@@ -36,15 +62,20 @@ class FilesView extends StatelessWidget {
         ? postOrComment.files.getRange(1, postOrComment.files.length).toList()
         : postOrComment.files;
 
-    return isStaggered && postOrComment.files.length != 3
+    return postOrComment.files.length > 3
         ? StaggeredGridView.countBuilder(
             shrinkWrap: true,
             crossAxisCount: 4,
-            itemCount: _files.length,
+            itemCount: displayedImage,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
               color: Colors.green,
-              child: _imageBuilder(_files[index]),
+              child: (index + 1) > 4
+                  ? SizedBox.shrink()
+                  : _imageBuilder(
+                      _files[index],
+                      withMoreImageOverlay: (index + 1) == displayedImage,
+                    ),
             ),
             staggeredTileBuilder: (int index) => StaggeredTile.count(
               2,
@@ -57,7 +88,7 @@ class FilesView extends StatelessWidget {
             padding: EdgeInsets.all(0),
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: postOrComment.files.length == 3 ? 2 : 3,
+            crossAxisCount: postOrComment.files.length <= 3 ? 2 : 3,
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 8.0,
             children: [
@@ -76,16 +107,18 @@ class FilesView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // if (!isStaggered) ...[
         SizedBox(height: Space.xsm),
         Text(
           'Attached files',
           style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
         ),
         Divider(),
-        // ],
         if (filesLength == 3) ...[
-          _imageBuilder(postOrComment.files.first),
+          Container(
+            height: 200,
+            width: double.maxFinite,
+            child: _imageBuilder(postOrComment.files.first),
+          ),
           SizedBox(height: Space.xsm),
         ],
         _gridBuilder(hideFirstImage: filesLength == 3),

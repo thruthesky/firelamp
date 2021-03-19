@@ -47,7 +47,7 @@ class PostPreview extends StatelessWidget {
                 ),
                 if (post.hasFiles) ...[
                   SizedBox(height: Space.xsm),
-                  FilesView(postOrComment: post, isStaggered: true),
+                  FilesView(postOrComment: post),
                 ],
               ],
             )
