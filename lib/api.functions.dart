@@ -22,17 +22,6 @@ String getRandomString({int len = 16, String prefix}) {
   return t;
 }
 
-/// Returns absolute file path from the relative path.
-/// [path] must include the file extension.
-/// @example
-/// ``` dart
-/// localFilePath('photo/baby.jpg');
-/// ```
-// Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
-//   var directory = await getTemporaryDirectory();
-//   return p.join(directory.path, relativePath);
-// }
-
 /// 예/아니오를 선택하게 하는 다이얼로그를 표시한다.
 ///
 /// 예를 선택하면 true, 아니오를 선택하면 false 를 리턴한다.
@@ -89,10 +78,7 @@ int discount(int price, int rate) {
 bool isImageUrl(t) {
   if (t == null || t == '') return false;
   if (t.startsWith('http://') || t.startsWith('https://')) {
-    if (t.endsWith('.jpg') ||
-        t.endsWith('.jpeg') ||
-        t.endsWith('.gif') ||
-        t.endsWith('.png')) {
+    if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
       return true;
     }
   }
