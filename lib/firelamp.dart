@@ -5,7 +5,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firelamp/models/api.post.user.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 
@@ -35,7 +34,3 @@ part 'models/api.post.dart';
 part 'models/api.category.dart';
 part 'models/api.user.dart';
 part 'models/api.forum.dart';
-part 'models/api.chat_helper.dart';
-part 'models/api.chat_room.dart';
-part 'models/api.chat_room_list.dart';
-part 'models/api.chat.model.dart';

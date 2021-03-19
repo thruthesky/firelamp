@@ -116,26 +116,6 @@ class Api extends GetxController {
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
 
-  /// [chat] is the chat room instance.
-  ///
-  /// The reason why it is declared in global scope is that; the app needs to know if the login user is
-  /// in a chat room. So, when he gets a push notification from the chat room where he is in,
-  /// the push messge will be ignored.
-  ApiChatRoom chat;
-
-  /// Return number of message the current ApiChatRoom has
-  int get getChatMessagesCount => chat?.messages?.length ?? 0;
-
-  /// [roomList] is the instance of ChatMyRoomList.
-  ///
-  /// The reason why it is declared in global scope is to listen all incoming message of the user's chat rooms
-  /// And display it as toast, and display the total number of new chat message as badge on menu icon.
-  ///
-  /// This will be instanciated in main.dart.
-  ChatRoomList roomList;
-
-  int get getChatRoomCount => roomList?.rooms?.length ?? 0;
-
   /// [roomListChanges] will be fired whenever/whatever events posted from the login user's chat rooms.
   /// When there are changes(events) on login user's chat room list,
   /// notify to listeners by posting `rxdart BehaviorSubject`.
@@ -221,7 +201,6 @@ class Api extends GetxController {
     Function onForegroundMessage,
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
-    bool enableChat = false,
     bool enableInAppPurchase = false,
   }) async {
     if (enableMessaging) {
@@ -243,7 +222,7 @@ class Api extends GetxController {
     if (enableMessaging) _initMessaging();
     _initTranslation();
     _initSettings();
-    if (enableChat) _initChat();
+
     if (enableInAppPurchase) _initInAppPurchase();
 
     _initFirebaseAuth();
@@ -296,30 +275,6 @@ class Api extends GetxController {
         } catch (e) {
           print(e);
         }
-      }
-    });
-  }
-
-  /// Initialize chat functionalities
-  ///
-  /// When chat is enabled, room messages will be observed for the login user.
-  _initChat() {
-    // when user login or logout, or change accounts.
-    authChanges.listen((user) {
-      // remove(leave) room list where user logged in or not.
-      if (roomList != null) {
-        roomList.leave();
-        roomList = null;
-      }
-
-      // Begin to listen login user's chat room event if user has logged in.
-      //
-      if (user != null) {
-        roomList = ChatRoomList(
-          onChange: () {
-            roomListChanges.add(roomList.rooms);
-          },
-        );
       }
     });
   }
