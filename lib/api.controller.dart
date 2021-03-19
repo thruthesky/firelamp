@@ -65,7 +65,7 @@ class Api extends GetxController {
   ///
   Map<String, dynamic> settings = {};
 
-  FirebaseDatabase get database => FirebaseDatabase.instance;
+  FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
   @Deprecated('Use userIdx')
   int get idx => user == null ? 0 : user.idx;
@@ -115,13 +115,6 @@ class Api extends GetxController {
   Function onForegroundMessage;
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
-
-  /// [roomListChanges] will be fired whenever/whatever events posted from the login user's chat rooms.
-  /// When there are changes(events) on login user's chat room list,
-  /// notify to listeners by posting `rxdart BehaviorSubject`.
-  /// Use case of this event is to display no of new messages on chat menu icon (as a badge).
-  /// - To achieve this, on the header, subscribe this event and display no of new messages.
-  BehaviorSubject roomListChanges = BehaviorSubject.seeded(null);
 
   /// 쇼핑몰 카트
   ///
@@ -295,16 +288,13 @@ class Api extends GetxController {
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    database
-        .reference()
-        .child('notifications')
-        .child('translations')
-        .onChildChanged
-        .listen((event) {
-      print('_initTranslation:: updated!');
-      _loadTranslations();
+    firestore
+        .collection('notifications')
+        .doc('translations')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      _loadTranslationFromCenterX();
     });
-    _loadTranslations();
   }
 
   /// Load app global settings and listen changes.
@@ -314,11 +304,13 @@ class Api extends GetxController {
   ///  - Get the whole settings from backend
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
-    database.reference().child('notifications').child('settings').onValue.listen((event) {
-      // print('_initSettings:: updated');
-      _loadSettings();
+    firestore
+        .collection('notifications')
+        .doc('settings')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      _loadSettingFromCenterX();
     });
-    _loadSettings();
   }
 
   /// If the input [data] does not have `session_id` property and the user had logged in,
@@ -1222,25 +1214,30 @@ class Api extends GetxController {
 
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
-  _loadTranslations() async {
+  _loadTranslationFromCenterX() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    // print('loadTranslations() res: $res');
+    print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (res is List) return;
     if (res is Map && res.keys.length == 0) return;
+
+    print('_loadTranslationFromCenterX();');
+    print(res);
+
     translationChanges.add(res);
   }
 
   /// loadSettings
-  _loadSettings() async {
+  _loadSettingFromCenterX() async {
     final _settings = await request({'route': 'app.settings'});
     if (_settings == null) return;
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (_settings is List) return;
     if (_settings is Map && _settings.keys.length == 0) return;
-    // print(_settings);
+    print('_loadSettingFromCenterX();');
+    print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
