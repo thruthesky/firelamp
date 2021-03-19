@@ -1,3 +1,9 @@
+## [0.0.5] - Removing path provider and upgrade Getx to support Web
+
+- Refactored to support web.
+  - The flutter_image_compress package has been removed since it does not suport web.
+  - Use updated Getx version that support web
+
 ## [0.0.4] - Remove Firebase Realtime Database to support Web
 
 - Since Firebase Realtime Database does not support web, it is replaced by Firestore.

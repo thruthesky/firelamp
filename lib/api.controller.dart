@@ -980,16 +980,16 @@ class Api extends GetxController {
     final pickedFile = await picker.getImage(source: source);
     if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
 
-    String localFile = await getAbsoluteTemporaryFilePath(getRandomString() + '.jpeg');
-    File file = await FlutterImageCompress.compressAndGetFile(
-      pickedFile.path, // source file
-      localFile, // target file. Overwrite the source with compressed.
-      quality: quality,
-    );
+    // String localFile = await getAbsoluteTemporaryFilePath(getRandomString() + '.jpeg');
+    // File file = await FlutterImageCompress.compressAndGetFile(
+    //   pickedFile.path, // source file
+    //   localFile, // target file. Overwrite the source with compressed.
+    //   quality: quality,
+    // );
 
     /// Upload
     return await uploadFile(
-      file: file,
+      file: File(pickedFile.path),
       deletePreviousUpload: deletePreviousUpload,
       onProgress: onProgress,
       taxonomy: taxonomy,

@@ -28,10 +28,10 @@ String getRandomString({int len = 16, String prefix}) {
 /// ``` dart
 /// localFilePath('photo/baby.jpg');
 /// ```
-Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
-  var directory = await getTemporaryDirectory();
-  return p.join(directory.path, relativePath);
-}
+// Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
+//   var directory = await getTemporaryDirectory();
+//   return p.join(directory.path, relativePath);
+// }
 
 /// 예/아니오를 선택하게 하는 다이얼로그를 표시한다.
 ///
@@ -95,4 +95,3 @@ bool isImageUrl(t) {
   }
   return false;
 }
-
