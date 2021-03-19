@@ -1,3 +1,7 @@
+## [0.0.7] - Lowering shared_preferences version
+
+- Lowering shared_preferences version
+
 ## [0.0.6] - Refactor to support web
 
 - Replace get_storage with shared_preferences.
