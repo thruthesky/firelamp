@@ -1,6 +1,6 @@
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
-import 'package:firelamp/widgets/forum/shared/files_view.dart';
+import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:firelamp/widgets/image.cache.dart';
 import 'package:firelamp/firelamp.dart';
@@ -35,19 +35,21 @@ class PostPreview extends StatelessWidget {
                   children: [
                     UserAvatar(post.user.photoUrl),
                     SizedBox(width: Space.xs),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        title,
-                        SizedBox(height: Space.xxs),
-                        PostMeta(post, forum, isInlineName: true),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          title,
+                          SizedBox(height: Space.xxs),
+                          PostMeta(post, forum, isInlineName: true),
+                        ],
+                      ),
                     )
                   ],
                 ),
                 if (post.hasFiles) ...[
                   SizedBox(height: Space.xsm),
-                  FilesView(postOrComment: post),
+                  DisplayFiles(postOrComment: post),
                 ],
               ],
             )

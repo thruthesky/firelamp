@@ -6,8 +6,8 @@ import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 
-class FilesView extends StatelessWidget {
-  const FilesView({
+class DisplayFiles extends StatelessWidget {
+  const DisplayFiles({
     Key key,
     this.postOrComment,
     this.displayedImage = 4,
@@ -108,11 +108,6 @@ class FilesView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: Space.xsm),
-        Text(
-          'Attached files',
-          style: TextStyle(color: Colors.grey, fontSize: Space.xsm),
-        ),
-        Divider(),
         if (filesLength == 3) ...[
           Container(
             height: 200,
