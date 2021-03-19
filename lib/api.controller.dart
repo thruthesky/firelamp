@@ -1216,14 +1216,14 @@ class Api extends GetxController {
   /// todo: make it one time call.
   _loadTranslationFromCenterX() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    print('loadTranslations() res: $res');
+    // print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (res is List) return;
     if (res is Map && res.keys.length == 0) return;
 
-    print('_loadTranslationFromCenterX();');
-    print(res);
+    // print('_loadTranslationFromCenterX();');
+    // print(res);
 
     translationChanges.add(res);
   }
@@ -1236,8 +1236,8 @@ class Api extends GetxController {
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (_settings is List) return;
     if (_settings is Map && _settings.keys.length == 0) return;
-    print('_loadSettingFromCenterX();');
-    print(_settings);
+    // print('_loadSettingFromCenterX();');
+    // print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
