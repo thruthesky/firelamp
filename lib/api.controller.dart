@@ -456,7 +456,7 @@ class Api extends GetxController {
 
   _saveUserProfile(ApiUser user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('user', user.toJson().toString());
+    prefs.setString('user', jsonEncode(user.toJson()));
   }
 
   /// Returns null if the user has not logged in.
