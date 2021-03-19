@@ -65,7 +65,7 @@ class Api extends GetxController {
   ///
   Map<String, dynamic> settings = {};
 
-  FirebaseDatabase get database => FirebaseDatabase.instance;
+  FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
   @Deprecated('Use userIdx')
   int get idx => user == null ? 0 : user.idx;
@@ -115,33 +115,6 @@ class Api extends GetxController {
   Function onForegroundMessage;
   Function onMessageOpenedFromTermiated;
   Function onMessageOpenedFromBackground;
-
-  /// [chat] is the chat room instance.
-  ///
-  /// The reason why it is declared in global scope is that; the app needs to know if the login user is
-  /// in a chat room. So, when he gets a push notification from the chat room where he is in,
-  /// the push messge will be ignored.
-  ApiChatRoom chat;
-
-  /// Return number of message the current ApiChatRoom has
-  int get getChatMessagesCount => chat?.messages?.length ?? 0;
-
-  /// [roomList] is the instance of ChatMyRoomList.
-  ///
-  /// The reason why it is declared in global scope is to listen all incoming message of the user's chat rooms
-  /// And display it as toast, and display the total number of new chat message as badge on menu icon.
-  ///
-  /// This will be instanciated in main.dart.
-  ChatRoomList roomList;
-
-  int get getChatRoomCount => roomList?.rooms?.length ?? 0;
-
-  /// [roomListChanges] will be fired whenever/whatever events posted from the login user's chat rooms.
-  /// When there are changes(events) on login user's chat room list,
-  /// notify to listeners by posting `rxdart BehaviorSubject`.
-  /// Use case of this event is to display no of new messages on chat menu icon (as a badge).
-  /// - To achieve this, on the header, subscribe this event and display no of new messages.
-  BehaviorSubject roomListChanges = BehaviorSubject.seeded(null);
 
   /// 쇼핑몰 카트
   ///
@@ -221,7 +194,6 @@ class Api extends GetxController {
     Function onForegroundMessage,
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
-    bool enableChat = false,
     bool enableInAppPurchase = false,
   }) async {
     if (enableMessaging) {
@@ -243,7 +215,7 @@ class Api extends GetxController {
     if (enableMessaging) _initMessaging();
     _initTranslation();
     _initSettings();
-    if (enableChat) _initChat();
+
     if (enableInAppPurchase) _initInAppPurchase();
 
     _initFirebaseAuth();
@@ -300,30 +272,6 @@ class Api extends GetxController {
     });
   }
 
-  /// Initialize chat functionalities
-  ///
-  /// When chat is enabled, room messages will be observed for the login user.
-  _initChat() {
-    // when user login or logout, or change accounts.
-    authChanges.listen((user) {
-      // remove(leave) room list where user logged in or not.
-      if (roomList != null) {
-        roomList.leave();
-        roomList = null;
-      }
-
-      // Begin to listen login user's chat room event if user has logged in.
-      //
-      if (user != null) {
-        roomList = ChatRoomList(
-          onChange: () {
-            roomListChanges.add(roomList.rooms);
-          },
-        );
-      }
-    });
-  }
-
   /// Firebase Initialization
   ///
   /// ! This must done after [init] because [init] sets the backend url,
@@ -340,16 +288,13 @@ class Api extends GetxController {
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    database
-        .reference()
-        .child('notifications')
-        .child('translations')
-        .onChildChanged
-        .listen((event) {
-      print('_initTranslation:: updated!');
-      _loadTranslations();
+    firestore
+        .collection('notifications')
+        .doc('translations')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      _loadTranslationFromCenterX();
     });
-    _loadTranslations();
   }
 
   /// Load app global settings and listen changes.
@@ -359,11 +304,13 @@ class Api extends GetxController {
   ///  - Get the whole settings from backend
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
-    database.reference().child('notifications').child('settings').onValue.listen((event) {
-      // print('_initSettings:: updated');
-      _loadSettings();
+    firestore
+        .collection('notifications')
+        .doc('settings')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      _loadSettingFromCenterX();
     });
-    _loadSettings();
   }
 
   /// If the input [data] does not have `session_id` property and the user had logged in,
@@ -1017,6 +964,8 @@ class Api extends GetxController {
   ///
   /// 이미지를 카메라 또는 갤러리로 부터 가져와서, 이미지 누어서 찍힌 이미지를 바로 보정을 하고, 압축을 하고, 서버에 업로드
   /// [deletePreviousUpload] 가 true 이면, 기존에 업로드된 동일한 taxonomy 와 entity 파일을 삭제한다.
+  ///
+  /// @todo flutter_image_compress 패키지가 웹을 지원하지 않는다. 옵션으로 앱에서만 처리를 할 수 있도록 해 준다.
   Future<ApiFile> takeUploadFile({
     @required ImageSource source,
     int quality = 90,
@@ -1265,25 +1214,30 @@ class Api extends GetxController {
 
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
-  _loadTranslations() async {
+  _loadTranslationFromCenterX() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    // print('loadTranslations() res: $res');
+    print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (res is List) return;
     if (res is Map && res.keys.length == 0) return;
+
+    print('_loadTranslationFromCenterX();');
+    print(res);
+
     translationChanges.add(res);
   }
 
   /// loadSettings
-  _loadSettings() async {
+  _loadSettingFromCenterX() async {
     final _settings = await request({'route': 'app.settings'});
     if (_settings == null) return;
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (_settings is List) return;
     if (_settings is Map && _settings.keys.length == 0) return;
-    // print(_settings);
+    print('_loadSettingFromCenterX();');
+    print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
