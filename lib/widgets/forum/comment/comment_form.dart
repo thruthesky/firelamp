@@ -45,6 +45,8 @@ class _CommentFormState extends State<CommentForm> {
 
   // file upload
   onImageIconPressed() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+
     try {
       final file = await imageUpload(
         quality: 95,
