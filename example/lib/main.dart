@@ -7,7 +7,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp() {
-    Api.instance.init(apiUrl: 'https://itsuda50.com/index.php');
+    Api.instance.init(apiUrl: 'https://local.itsuda50.com/index.php');
   }
   @override
   Widget build(BuildContext context) {

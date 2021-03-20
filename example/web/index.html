@@ -40,6 +40,23 @@
       });
     }
   </script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyDZ8Bfuxtp2uXZxgXM7Q9Kl4-ae034GQ5o",
+      authDomain: "itsuda50.firebaseapp.com",
+      databaseURL: "https://itsuda50-default-rtdb.firebaseio.com",
+      projectId: "itsuda50",
+      storageBucket: "itsuda50.appspot.com",
+      messagingSenderId: "559371413269",
+      appId: "1:559371413269:web:23570a748e08b7b00eeb1c"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
