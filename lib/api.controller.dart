@@ -1,13 +1,5 @@
 part of 'firelamp.dart';
 
-@Deprecated('No more bio table and bio related functionality.')
-
-/// Bio table name on backend server datagbase.
-const String BIO_TABLE = 'api_bio';
-
-/// Error codes
-const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
-
 /// Loading indicators.
 class Loading {
   bool profile = false;
@@ -18,8 +10,7 @@ class Loading {
 ///
 /// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
-/// ! @todo remove GetxController. Api class should not be depending on Getx.
-class Api extends GetxController {
+class Api {
   ApiUser user;
   Loading loading = Loading();
 
@@ -28,6 +19,14 @@ class Api extends GetxController {
   /// When user is logged in, the parameter will have value of `ApiUser`, or null.
   ///
   BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
+
+  /// The [profileChanges] is posted when user profile changed.
+  ///
+  /// Note that this event is posted when user is login or register. That is because
+  /// `login()` and `register()` method takes user profile to change.
+  /// More precisely, [profileChanges] event is posed on `_saveUserProfile` which is
+  /// being called on profile chagnes and login, logout.
+  BehaviorSubject<ApiUser> profileChanges = BehaviorSubject.seeded(null);
 
   /// [errror] is posted on any error.
   // ignore: close_sinks
@@ -124,28 +123,13 @@ class Api extends GetxController {
   static Api _instance;
   static Api get instance {
     if (_instance == null) {
-      _instance = Api._internal();
+      _instance ??= Api();
     }
     return _instance;
   }
 
-  Api._internal() {
-    // print('=> Api._internal()');
-  }
-
-  /// FireLamp Api init
-  ///
-  /// [onInit] does the basics like
-  /// - initalizing `GetStorage` and
-  /// - loading(checking) user login
-  /// - if the user logged in, then reload profile from backend.
-  ///
-  /// Note that, if you need to chagne the settings, you can do it with [init] method.
-  @override
-  void onInit() {
-    // print("--> Api::onInit()");
-    super.onInit();
-
+  Api() {
+    print('Api() must be called only one time!');
     _initUserLogin();
   }
 
@@ -382,51 +366,13 @@ class Api extends GetxController {
     });
   }
 
-  /// [data] will be saved as user property. You can save whatever but may need to update the ApiUser model accordingly.
-  Future<ApiUser> register({
-    @required String email,
-    @required String password,
-    Map<String, dynamic> data,
-  }) async {
-    if (data == null) data = {};
-    data['route'] = 'user.register';
-    data['email'] = email;
-    data['password'] = password;
-    data['sessionId'] = '';
-    data['token'] = token;
-    final Map<String, dynamic> res = await request(data);
-    // print('res: $res');
-    user = ApiUser.fromJson(res);
-    // print('user: $user');
-
-    await _saveUserProfile(user);
-
-    update();
-    return user;
-  }
-
-  Future<ApiUser> loginOrRegister({
-    @required String email,
-    @required String pass,
-    Map<String, dynamic> data,
-  }) async {
-    if (data == null) data = {};
-    data['route'] = 'user.loginOrRegister';
-    data['email'] = email;
-    data['password'] = pass;
-    data['sessionId'] = '';
-    data['token'] = token;
-    final Map<String, dynamic> res = await request(data);
-    // print(res);
-    user = ApiUser.fromJson(res);
-    await _saveUserProfile(user);
-    authChanges.add(user);
-    update();
-    return user;
-  }
-
+  /// Save user profile into storage.
+  ///
+  /// This method is being callled on user profile update(or change).
+  /// Be sure that this method is being called on login & regsiter.
   _saveUserProfile(ApiUser user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    profileChanges.add(user);
     prefs.setString('user', jsonEncode(user.toJson()));
   }
 
@@ -453,7 +399,7 @@ class Api extends GetxController {
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
     authChanges.add(user);
-    update();
+
     return user;
   }
 
@@ -462,33 +408,55 @@ class Api extends GetxController {
     prefs.remove('user');
     user = null;
     authChanges.add(null);
-    update();
   }
 
-  @Deprecated('use userUpdate()')
-
-  /// Update user key/value on user meta (Not on wp_users table)
-  Future<ApiUser> updateUserMeta(String key, String value) async {
-    final Map<String, dynamic> data = {
-      'route': 'user.profileUpdate',
-      key: value,
-    };
+  /// [data] will be saved as user property. You can save whatever but may need to update the ApiUser model accordingly.
+  Future<ApiUser> register({
+    @required String email,
+    @required String password,
+    Map<String, dynamic> data,
+  }) async {
+    if (data == null) data = {};
+    data['route'] = 'user.register';
+    data['email'] = email;
+    data['password'] = password;
+    data['sessionId'] = '';
+    data['token'] = token;
     final Map<String, dynamic> res = await request(data);
+    // print('res: $res');
     user = ApiUser.fromJson(res);
-    update();
+    // print('user: $user');
+
+    await _saveUserProfile(user);
+    authChanges.add(user);
     return user;
   }
 
-  @Deprecated('use userUpdate()')
-  Future<ApiUser> updateProfile(String key, String value) async {
-    return updateUserMeta(key, value);
+  Future<ApiUser> loginOrRegister({
+    @required String email,
+    @required String pass,
+    Map<String, dynamic> data,
+  }) async {
+    if (data == null) data = {};
+    data['route'] = 'user.loginOrRegister';
+    data['email'] = email;
+    data['password'] = pass;
+    data['sessionId'] = '';
+    data['token'] = token;
+    final Map<String, dynamic> res = await request(data);
+    // print(res);
+    user = ApiUser.fromJson(res);
+    await _saveUserProfile(user);
+    authChanges.add(user);
+
+    return user;
   }
 
   Future<ApiUser> userUpdate(Map<String, dynamic> data) async {
     data['route'] = 'user.update';
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
-    update();
+    _saveUserProfile(user);
     return user;
   }
 
@@ -500,7 +468,6 @@ class Api extends GetxController {
     final res = await request(req);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
-    update();
     return user;
   }
 
@@ -524,7 +491,7 @@ class Api extends GetxController {
     final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
-    update();
+
     return user;
   }
 
@@ -535,7 +502,6 @@ class Api extends GetxController {
   Future<ApiUser> otherUserProfile(String id) async {
     final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
     ApiUser otherUser = ApiUser.fromJson(res);
-    update();
     return otherUser;
   }
 
@@ -1184,7 +1150,6 @@ class Api extends GetxController {
     final res = await request(req);
     user = ApiUser.fromJson(res);
     await _saveUserProfile(user);
-    update();
     return user;
   }
 

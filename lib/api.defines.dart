@@ -5,6 +5,9 @@ const String ERROR_EMPTY_SESSION_ID = 'ERROR_EMPTY_SESSION_ID';
 const String ERROR_IMAGE_NOT_SELECTED = 'ERROR_IMAGE_NOT_SELECTED';
 const String ERROR_EMPTY_TOKENS = 'ERROR_EMPTY_TOKENS';
 
+/// Error codes
+const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
+
 /// todo put chat protocol into { protocol: ... }, not in { text: ... }
 class ChatProtocol {
   static String enter = 'ChatProtocol.enter';
