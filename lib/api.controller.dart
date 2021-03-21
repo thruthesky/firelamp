@@ -18,6 +18,7 @@ class Loading {
 ///
 /// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
+/// ! @todo remove GetxController. Api class should not be depending on Getx.
 class Api extends GetxController {
   ApiUser user;
   Loading loading = Loading();
@@ -25,6 +26,7 @@ class Api extends GetxController {
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
   ///
   /// When user is logged in, the parameter will have value of `ApiUser`, or null.
+  ///
   BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
 
   /// [errror] is posted on any error.
@@ -153,32 +155,11 @@ class Api extends GetxController {
   }
 
   _initUserLogin() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String user = prefs.getString('user');
-
     user = await _loadUserProfile();
     if (user != null) {
       await userProfile(sessionId);
       authChanges.add(user);
     }
-
-    // GetStorage.init().then((b) {
-    //   localStorage = GetStorage();
-    //   storageInitialized.add(true);
-
-    //   /// First, load user profile from localStorage if the user previouly logged in
-    //   ///
-    //   /// If the user has logged in previously, he will be auto logged in on next app running.
-    //   /// [user] will be null if the user has not logged in previously.
-    //   user = _loadUserProfile();
-
-    //   /// Get user profile from backend if the user previous logged in.
-    //   /// If user has logged in with localStorage data, refresh the user data from backend.
-    //   if (loggedIn) {
-    //     userProfile(sessionId);
-    //   }
-
-    // });
   }
 
   /// Initialization
