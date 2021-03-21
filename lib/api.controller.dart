@@ -18,6 +18,7 @@ class Loading {
 ///
 /// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
+/// ! @todo remove GetxController. Api class should not be depending on Getx.
 class Api extends GetxController {
   ApiUser user;
   Loading loading = Loading();
@@ -25,6 +26,7 @@ class Api extends GetxController {
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
   ///
   /// When user is logged in, the parameter will have value of `ApiUser`, or null.
+  ///
   BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
 
   /// [errror] is posted on any error.
@@ -73,19 +75,14 @@ class Api extends GetxController {
   String get fullName => user?.name;
   String get nickname => user?.nickname;
   bool get profileComplete =>
-      loggedIn &&
-      photoUrl != null &&
-      photoUrl.isNotEmpty &&
-      fullName != null &&
-      fullName.isNotEmpty;
+      loggedIn && photoUrl != null && photoUrl.isNotEmpty && fullName != null && fullName.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
   bool get notLoggedIn => !loggedIn;
 
   bool get isNewCommentOnMyPostOrComment {
     if (notLoggedIn) return false;
-    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
-        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
+    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null || user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
   }
 
   bool isSubscribeTopic(topic) {
@@ -153,9 +150,6 @@ class Api extends GetxController {
   }
 
   _initUserLogin() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String user = prefs.getString('user');
-
     user = await _loadUserProfile();
     if (user != null) {
       await userProfile(sessionId);
@@ -189,8 +183,8 @@ class Api extends GetxController {
     Function imageCompressor,
   }) async {
     if (enableMessaging) {
-      assert(onForegroundMessage != null,
-          'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
+      assert(
+          onForegroundMessage != null, 'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
       assert(onMessageOpenedFromTermiated != null);
       assert(onMessageOpenedFromBackground != null);
     }
@@ -211,8 +205,6 @@ class Api extends GetxController {
     if (enableMessaging) _initMessaging();
     _initTranslation();
     _initSettings();
-
-    if (enableInAppPurchase) _initInAppPurchase();
 
     _initFirebaseAuth();
 
@@ -244,16 +236,14 @@ class Api extends GetxController {
             user.createdAt.toString() +
             ' Wc~7 difficult to guess string salt %^.^%;';
         try {
-          await FirebaseAuth.instance
-              .createUserWithEmailAndPassword(email: user.email, password: password);
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email, password: password);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             print('The password provided is too weak.');
           } else if (e.code == 'email-already-in-use') {
             // User email already exists(registered), try to login.
             try {
-              await FirebaseAuth.instance
-                  .signInWithEmailAndPassword(email: email, password: password);
+              await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'user-not-found') {
                 print('No user found for that email.');
@@ -287,11 +277,7 @@ class Api extends GetxController {
   /// Load app translations and listen changes.
   _initTranslation() {
     if (enableFirebase == false) return;
-    firestore
-        .collection('notifications')
-        .doc('translations')
-        .snapshots()
-        .listen((DocumentSnapshot snapshot) {
+    firestore.collection('notifications').doc('translations').snapshots().listen((DocumentSnapshot snapshot) {
       _loadTranslationFromCenterX();
     });
   }
@@ -304,11 +290,7 @@ class Api extends GetxController {
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
     if (enableFirebase == false) return;
-    firestore
-        .collection('notifications')
-        .doc('settings')
-        .snapshots()
-        .listen((DocumentSnapshot snapshot) {
+    firestore.collection('notifications').doc('settings').snapshots().listen((DocumentSnapshot snapshot) {
       _loadSettingFromCenterX();
     });
   }
@@ -403,12 +385,13 @@ class Api extends GetxController {
   /// [data] will be saved as user property. You can save whatever but may need to update the ApiUser model accordingly.
   Future<ApiUser> register({
     @required String email,
-    @required String pass,
+    @required String password,
     Map<String, dynamic> data,
   }) async {
+    if (data == null) data = {};
     data['route'] = 'user.register';
     data['email'] = email;
-    data['password'] = pass;
+    data['password'] = password;
     data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
@@ -474,7 +457,7 @@ class Api extends GetxController {
     return user;
   }
 
-  logout() async {
+  Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('user');
     user = null;
@@ -538,8 +521,7 @@ class Api extends GetxController {
   Future<ApiUser> userProfile(String sessionId) async {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     loading.profile = true;
-    final Map<String, dynamic> res =
-        await request({'route': 'user.profile', 'sessionId': sessionId});
+    final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
     update();
@@ -752,10 +734,8 @@ class Api extends GetxController {
   }
 
   /// Returns a post of today based on the categoryId and userIdx.
-  Future<List<ApiPost>> postToday(
-      {@required String categoryId, int userIdx = 0, int limit = 10}) async {
-    final map = await request(
-        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
+  Future<List<ApiPost>> postToday({@required String categoryId, int userIdx = 0, int limit = 10}) async {
+    final map = await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -867,8 +847,7 @@ class Api extends GetxController {
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
-    if (searchKey != null && searchKey != '')
-      data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -1129,8 +1108,7 @@ class Api extends GetxController {
     return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
-  sendMessageToTokens(
-      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTokens({String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1142,8 +1120,7 @@ class Api extends GetxController {
     return request(req);
   }
 
-  sendMessageToTopic(
-      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1248,7 +1225,7 @@ class Api extends GetxController {
   /// Initialize Messaging
   _initMessaging() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
-    if (Platform.isAndroid == false) {
+    if (Platform.isIOS) {
       NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
@@ -1268,8 +1245,7 @@ class Api extends GetxController {
           if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
-          if (onNotificationPermissionNotDetermined != null)
-            onNotificationPermissionNotDetermined();
+          if (onNotificationPermissionNotDetermined != null) onNotificationPermissionNotDetermined();
           break;
         case AuthorizationStatus.provisional:
           break;
@@ -1339,47 +1315,47 @@ class Api extends GetxController {
   ///
   ///
   /// -------------------------------------------------------------------------
-  _initInAppPurchase() {
-    InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((dynamic purchaseDetailsList) {
-      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-        print('purchaseDetailsList.forEach( ... )');
-        // if it's pending, this mean, the user just started to pay.
-        // previous app session pending purchase is not `PurchaseStatus.pending`. It is either
-        // `PurchaseStatus.purchased` or `PurchaseStatus.error`
-        // if (purchaseDetails.status == PurchaseStatus.pending) {
-        //   print('=> pending on purchaseUpdatedStream');
-        //   pending.add(purchaseDetails);
-        //   _recordPending(purchaseDetails);
-        // } else if (purchaseDetails.status == PurchaseStatus.error) {
-        //   print('=> error on purchaseUpdatedStream');
-        //   error.add(purchaseDetails);
-        //   _recordFailure(purchaseDetails);
-        //   if (Platform.isIOS) {
-        //     connection.completePurchase(purchaseDetails);
-        //   }
-        // } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-        //   print(
-        //       '=> purchased on purchaseUpdatedStream: PurchaseStatus.purchased');
-        //   // for android & consumable product only.
-        //   if (Platform.isAndroid) {
-        //     if (!autoConsume &&
-        //         consumableIds.contains(purchaseDetails.productID)) {
-        //       await connection.consumePurchase(purchaseDetails);
-        //     }
-        //   }
-        //   if (purchaseDetails.pendingCompletePurchase) {
-        //     await connection.completePurchase(purchaseDetails);
-        //     final session = await _recordSuccess(purchaseDetails);
-        //     success.add(session);
-        //   }
-        // }
-      });
-    }, onDone: () {
-      print('onDone:');
-    }, onError: (error) {
-      print('onError: error on listening:');
-      print(error);
-    });
-  }
+  // _initInAppPurchase() {
+  //   InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((dynamic purchaseDetailsList) {
+  //     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+  //       print('purchaseDetailsList.forEach( ... )');
+  // if it's pending, this mean, the user just started to pay.
+  // previous app session pending purchase is not `PurchaseStatus.pending`. It is either
+  // `PurchaseStatus.purchased` or `PurchaseStatus.error`
+  // if (purchaseDetails.status == PurchaseStatus.pending) {
+  //   print('=> pending on purchaseUpdatedStream');
+  //   pending.add(purchaseDetails);
+  //   _recordPending(purchaseDetails);
+  // } else if (purchaseDetails.status == PurchaseStatus.error) {
+  //   print('=> error on purchaseUpdatedStream');
+  //   error.add(purchaseDetails);
+  //   _recordFailure(purchaseDetails);
+  //   if (Platform.isIOS) {
+  //     connection.completePurchase(purchaseDetails);
+  //   }
+  // } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+  //   print(
+  //       '=> purchased on purchaseUpdatedStream: PurchaseStatus.purchased');
+  //   // for android & consumable product only.
+  //   if (Platform.isAndroid) {
+  //     if (!autoConsume &&
+  //         consumableIds.contains(purchaseDetails.productID)) {
+  //       await connection.consumePurchase(purchaseDetails);
+  //     }
+  //   }
+  //   if (purchaseDetails.pendingCompletePurchase) {
+  //     await connection.completePurchase(purchaseDetails);
+  //     final session = await _recordSuccess(purchaseDetails);
+  //     success.add(session);
+  //   }
+  // }
+  //   });
+  // }, onDone: () {
+  //   print('onDone:');
+  // }, onError: (error) {
+  //   print('onError: error on listening:');
+  //   print(error);
+  // });
+  // }
   // EO In App Purchase
 }
