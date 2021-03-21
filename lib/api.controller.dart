@@ -96,8 +96,7 @@ class Api extends GetxController {
   bool enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
-  BehaviorSubject<bool> firebaseInitialized =
-      BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
   /// Firebase Messaging
   ///
@@ -162,24 +161,6 @@ class Api extends GetxController {
       await userProfile(sessionId);
       authChanges.add(user);
     }
-
-    // GetStorage.init().then((b) {
-    //   localStorage = GetStorage();
-    //   storageInitialized.add(true);
-
-    //   /// First, load user profile from localStorage if the user previouly logged in
-    //   ///
-    //   /// If the user has logged in previously, he will be auto logged in on next app running.
-    //   /// [user] will be null if the user has not logged in previously.
-    //   user = _loadUserProfile();
-
-    //   /// Get user profile from backend if the user previous logged in.
-    //   /// If user has logged in with localStorage data, refresh the user data from backend.
-    //   if (loggedIn) {
-    //     userProfile(sessionId);
-    //   }
-
-    // });
   }
 
   /// Initialization
@@ -217,8 +198,7 @@ class Api extends GetxController {
     this.enableFirebase = enableFirebase;
     this.enableMessaging = enableMessaging;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
-    this.onNotificationPermissionNotDetermined =
-        onNotificationPermissionNotDetermined;
+    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
 
     this.onForegroundMessage = onForegroundMessage;
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
@@ -264,8 +244,8 @@ class Api extends GetxController {
             user.createdAt.toString() +
             ' Wc~7 difficult to guess string salt %^.^%;';
         try {
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: user.email, password: password);
+          await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: user.email, password: password);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             print('The password provided is too weak.');
@@ -529,8 +509,7 @@ class Api extends GetxController {
     return user;
   }
 
-  Future<ApiUser> userOptionSwitch(
-      {String option, String route = 'user.switch'}) async {
+  Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
       'route': route,
       'option': option,
@@ -572,8 +551,7 @@ class Api extends GetxController {
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get it from server.
   Future<ApiUser> otherUserProfile(String id) async {
-    final Map<String, dynamic> res =
-        await request({'route': 'user.otherProfile', 'id': id});
+    final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
     ApiUser otherUser = ApiUser.fromJson(res);
     update();
     return otherUser;
@@ -620,8 +598,7 @@ class Api extends GetxController {
       if (post.idx != null) data['ID'] = post.idx;
       if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
@@ -671,8 +648,7 @@ class Api extends GetxController {
       if (post.relationIdx != null) data['relationIdx'] = post.relationIdx;
       if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.subcategory != null) data['subcategory'] = post.subcategory;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
@@ -767,8 +743,7 @@ class Api extends GetxController {
 
   Future<List<ApiPost>> postGets(List<int> idxes) async {
     if (idxes.length == 0) return [];
-    final jsonList =
-        await request({'route': 'post.gets', 'idxes': idxes.join(',')});
+    final jsonList = await request({'route': 'post.gets', 'idxes': idxes.join(',')});
     List<ApiPost> _posts = [];
     for (int i = 0; i < jsonList.length; i++) {
       _posts.add(ApiPost.fromJson(jsonList[i]));
@@ -779,12 +754,8 @@ class Api extends GetxController {
   /// Returns a post of today based on the categoryId and userIdx.
   Future<List<ApiPost>> postToday(
       {@required String categoryId, int userIdx = 0, int limit = 10}) async {
-    final map = await request({
-      'route': 'post.today',
-      'categoryId': categoryId,
-      'userIdx': userIdx,
-      'limit': limit
-    });
+    final map = await request(
+        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -800,8 +771,7 @@ class Api extends GetxController {
   }
 
   @Deprecated('')
-  Future<Map<dynamic, dynamic>> setFeaturedImage(
-      ApiPost post, ApiFile file) async {
+  Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
     final json = await request({
       'route': 'forum.setFeaturedImage',
       'idx': post.idx,
@@ -892,14 +862,10 @@ class Api extends GetxController {
     data['page'] = page;
     data['limit'] = limit;
 
-    if (userIdx != null)
-      data['where'] = data['where'] + " and userIdx=$userIdx";
-    if (relationIdx != null)
-      data['where'] = data['where'] + " and relationIdx=$relationIdx";
-    if (categoryId != null)
-      data['where'] = data['where'] + " and categoryId=<$categoryId>";
-    if (subcategory != null)
-      data['where'] = data['where'] + " and subcategory='$subcategory'";
+    if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
+    if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
     if (searchKey != null && searchKey != '')
       data['where'] = data['where'] + " and title like '%$searchKey%'";
@@ -935,11 +901,9 @@ class Api extends GetxController {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts(
-      {String category, int limit = 20, int paged = 1, int userIdx}) {
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, int userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
-    return postSearch(
-        categoryId: category, limit: limit, page: paged, userIdx: userIdx);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }
 
   ///
@@ -950,8 +914,7 @@ class Api extends GetxController {
     } else {
       route = 'post.vote';
     }
-    final re = await request(
-        {'route': route, 'idx': postOrComment.idx, 'choice': choice});
+    final re = await request({'route': route, 'idx': postOrComment.idx, 'choice': choice});
     if (postOrComment.parentIdx > 0) {
       return ApiComment.fromJson(re);
     } else {
@@ -1163,16 +1126,11 @@ class Api extends GetxController {
   ///
   /// `session_id` will be added if the user had logged in.
   Future updateToken(String token, {String topic = ''}) {
-    return request(
-        {'route': 'notification.updateToken', 'token': token, 'topic': topic});
+    return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
   sendMessageToTokens(
-      {String tokens,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1185,11 +1143,7 @@ class Api extends GetxController {
   }
 
   sendMessageToTopic(
-      {String topic,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1264,8 +1218,7 @@ class Api extends GetxController {
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
   _loadTranslationFromCenterX() async {
-    final res = await request(
-        {'route': 'translation.list', 'format': 'language-first'});
+    final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
@@ -1295,9 +1248,8 @@ class Api extends GetxController {
   /// Initialize Messaging
   _initMessaging() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
-    if (Platform.isIOS) {
-      NotificationSettings settings =
-          await FirebaseMessaging.instance.requestPermission(
+    if (Platform.isAndroid == false) {
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -1313,8 +1265,7 @@ class Api extends GetxController {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null)
-            onNotificationPermissionDenied();
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
           if (onNotificationPermissionNotDetermined != null)
@@ -1329,8 +1280,7 @@ class Api extends GetxController {
     FirebaseMessaging.onMessage.listen(onForegroundMessage);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       onMessageOpenedFromTermiated(initialMessage);
     }
@@ -1390,8 +1340,7 @@ class Api extends GetxController {
   ///
   /// -------------------------------------------------------------------------
   _initInAppPurchase() {
-    InAppPurchaseConnection.instance.purchaseUpdatedStream.listen(
-        (dynamic purchaseDetailsList) {
+    InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((dynamic purchaseDetailsList) {
       purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
         print('purchaseDetailsList.forEach( ... )');
         // if it's pending, this mean, the user just started to pay.
