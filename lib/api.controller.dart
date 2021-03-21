@@ -77,6 +77,7 @@ class Api {
       loggedIn && photoUrl != null && photoUrl.isNotEmpty && fullName != null && fullName.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
+  bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
   bool get notLoggedIn => !loggedIn;
 
   bool get isNewCommentOnMyPostOrComment {
@@ -387,12 +388,12 @@ class Api {
 
   Future<ApiUser> login({
     @required String email,
-    @required String pass,
+    @required String password,
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'user.login';
     data['email'] = email;
-    data['password'] = pass;
+    data['password'] = password;
     data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
@@ -716,14 +717,13 @@ class Api {
     return ApiCategory.fromJson(re);
   }
 
-  @Deprecated('')
-  Future<Map<dynamic, dynamic>> setFeaturedImage(ApiPost post, ApiFile file) async {
-    final json = await request({
-      'route': 'forum.setFeaturedImage',
-      'idx': post.idx,
-      'featured_image_ID': file.idx,
-    });
-    return json;
+  Future<List<ApiCategory>> categorySearch() async {
+    final re = await request({'route': 'category.search'});
+    final List<ApiCategory> rets = [];
+    for (final j in re) {
+      rets.add(ApiCategory.fromJson(j));
+    }
+    return rets;
   }
 
   /// Deletes a post.

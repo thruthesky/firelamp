@@ -2,6 +2,7 @@ part of '../firelamp.dart';
 
 class ApiUser {
   Map<String, dynamic> data;
+  bool admin;
   String nickname;
   String firstName;
   String lastName;
@@ -25,8 +26,7 @@ class ApiUser {
     AgeDuration _age;
 
     // Set the age of the user
-    _age = Age.dateDifference(
-        fromDate: birthday, toDate: today, includeToDate: false);
+    _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
 
     return _age.years.toString();
   }
@@ -65,6 +65,7 @@ class ApiUser {
   String photoUrl;
 
   ApiUser({
+    this.admin = false,
     this.nickname,
     this.firstName,
     this.lastName,
@@ -96,6 +97,7 @@ class ApiUser {
   ApiUser.fromJson(Map<String, dynamic> json) {
     if (json == null) return;
     data = json;
+    admin = json['admin'] == 'Y' ? true : false;
     nickname = json['nickname'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -123,15 +125,14 @@ class ApiUser {
       photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
     }
 
-    point =
-        json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
+    point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
     createdAt = int.parse("${json['createdAt']}");
     updatedAt = int.parse("${json['updatedAt']}");
   }
 
-  /// ! this data will be saved into cache(GetStorage)
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['admin'] = this.admin;
     data['nickname'] = this.nickname;
     data['first_name'] = this.firstName;
     data['last_name'] = this.lastName;
