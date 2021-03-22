@@ -67,7 +67,7 @@ class _CommentFormState extends State<CommentForm> {
 
   // form submit
   onFormSubmit() async {
-    if (Api.instance.notLoggedIn) return onError("Login First".tr);
+    if (Api.instance.notLoggedIn) return onError("login_first".tr);
     if (loading) return;
     setState(() => loading = true);
     FocusScope.of(context).requestFocus(FocusNode());

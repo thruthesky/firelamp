@@ -20,7 +20,7 @@ class VoteButtons extends StatefulWidget {
 
 class _VoteButtonsState extends State<VoteButtons> {
   onVote(String choice) async {
-    if (Api.instance.notLoggedIn) return widget.onError('Login First'.tr);
+    if (Api.instance.notLoggedIn) return widget.onError('login_first'.tr);
 
     try {
       final re = await Api.instance.vote(widget.postOrComment, choice);
