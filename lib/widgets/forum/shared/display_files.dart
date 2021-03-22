@@ -41,12 +41,10 @@ class DisplayFiles extends StatelessWidget {
                         children: [
                           Text(
                             '+ $moreImage',
-                            style: TextStyle(
-                                color: Colors.white, fontSize: Space.md),
+                            style: TextStyle(color: Colors.white, fontSize: Space.md),
                           ),
                           SizedBox(width: Space.xxs),
-                          Icon(Icons.image_outlined,
-                              size: Space.lg, color: Colors.white)
+                          Icon(Icons.image_outlined, size: Space.lg, color: Colors.white)
                         ],
                       ),
                     ),
@@ -103,12 +101,13 @@ class DisplayFiles extends StatelessWidget {
     int filesLength = postOrComment.files.length;
 
     if (filesLength == 0) return SizedBox.shrink();
-    if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
+    // if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: Space.xsm),
+        if (filesLength == 1) _imageBuilder(postOrComment.files.first),
         if (filesLength == 3) ...[
           Container(
             height: 200,
@@ -117,7 +116,7 @@ class DisplayFiles extends StatelessWidget {
           ),
           SizedBox(height: Space.xsm),
         ],
-        _gridBuilder(hideFirstImage: filesLength == 3),
+        if (filesLength > 1) _gridBuilder(hideFirstImage: filesLength == 3),
       ],
     );
   }

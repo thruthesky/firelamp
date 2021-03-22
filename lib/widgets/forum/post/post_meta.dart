@@ -29,31 +29,31 @@ class PostMeta extends StatelessWidget {
           if (isInlineName) ...[
             Text('${post.user.name}',
                 style:
-                    TextStyle(fontSize: Space.sm, fontWeight: FontWeight.w500)),
+                    TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),
           ],
-          Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.sm)),
+          Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.xsm)),
           SizedBox(width: Space.sm),
           if (post.comments.isNotEmpty) ...[
-            Icon(Icons.chat_bubble_outlined, size: Space.sm, color: iconColor),
+            Icon(Icons.chat_bubble_outlined, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
-            Text('${post.comments.length}'),
+            Text('${post.comments.length}', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.sm),
           ],
           if (forum.showLike && post.y > 0) ...[
-            Icon(Icons.thumb_up_rounded, size: Space.sm, color: iconColor),
+            Icon(Icons.thumb_up_rounded, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
-            Text('${post.y}'),
-            SizedBox(width: Space.sm),
+            Text('${post.y}', style: TextStyle(fontSize: Space.xsm)),
+            SizedBox(width: Space.xsm),
           ],
           if (forum.showDislike && post.n > 0) ...[
-            Icon(Icons.thumb_down_rounded, size: Space.sm, color: iconColor),
+            Icon(Icons.thumb_down_rounded, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
-            Text('${post.n}')
+            Text('${post.n}', style: TextStyle(fontSize: Space.xsm))
           ],
           Text(
             'No. ${post.idx}',
-            style: TextStyle(fontSize: Space.sm),
+            style: TextStyle(fontSize: Space.xsm),
           ),
         ],
       ),

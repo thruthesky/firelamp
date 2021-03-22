@@ -53,21 +53,26 @@ class _PostViewState extends State<PostView> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${widget.post.user.name}'),
-                  PostMeta(widget.post, widget.forum),
+                  Text('${widget.post.title}', style: stylePostTitle),
+                  SizedBox(height: Space.xs),
+                  // if (widget.post.user.name.isNotEmpty) ...[
+                  //   Text('${widget.post.user.name}'),
+                  //   SizedBox(height: Space.xs),
+                  // ],
+                  PostMeta(widget.post, widget.forum, isInlineName: true),
                 ],
               )
             ],
           ),
         ),
-        SizedBox(height: Space.sm),
-        Text('${widget.post.title}', style: stylePostTitle),
+        // SizedBox(height: Space.sm),
         SizedBox(height: Space.sm),
         SelectableText(
           '${widget.post.content}',
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
         DisplayFiles(postOrComment: widget.post),
+        SizedBox(height: Space.xs),
         Divider(height: Space.xs, thickness: 1.3),
         Row(children: widget.actions),
         CommentForm(
