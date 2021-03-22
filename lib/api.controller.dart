@@ -74,7 +74,11 @@ class Api {
   String get fullName => user?.name;
   String get nickname => user?.nickname;
   bool get profileComplete =>
-      loggedIn && photoUrl != null && photoUrl.isNotEmpty && fullName != null && fullName.isNotEmpty;
+      loggedIn &&
+      photoUrl != null &&
+      photoUrl.isNotEmpty &&
+      fullName != null &&
+      fullName.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
   bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
@@ -82,7 +86,8 @@ class Api {
 
   bool get isNewCommentOnMyPostOrComment {
     if (notLoggedIn) return false;
-    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null || user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
+    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
+        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
   }
 
   bool isSubscribeTopic(topic) {
@@ -90,6 +95,7 @@ class Api {
     return user.data[topic] != null && user.data[topic] == 'on';
   }
 
+  /// To use firebase or not.
   bool enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
@@ -130,7 +136,6 @@ class Api {
   }
 
   Api() {
-    print('Api() must be called only one time!');
     _initUserLogin();
   }
 
@@ -167,8 +172,8 @@ class Api {
     Function imageCompressor,
   }) async {
     if (enableMessaging) {
-      assert(
-          onForegroundMessage != null, 'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
+      assert(onForegroundMessage != null,
+          'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
       assert(onMessageOpenedFromTermiated != null);
       assert(onMessageOpenedFromBackground != null);
     }
@@ -220,19 +225,24 @@ class Api {
             user.createdAt.toString() +
             ' Wc~7 difficult to guess string salt %^.^%;';
         try {
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email, password: password);
+          await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: user.email, password: password);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             print('The password provided is too weak.');
           } else if (e.code == 'email-already-in-use') {
             // User email already exists(registered), try to login.
             try {
-              await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+              await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(email: email, password: password);
+              if (user.data['fbaUid'] == null) {
+                await userUpdate({'fbaUid': FirebaseAuth.instance.currentUser.uid});
+              }
             } on FirebaseAuthException catch (e) {
               if (e.code == 'user-not-found') {
                 print('No user found for that email.');
               } else if (e.code == 'wrong-password') {
-                print('Wrong password provided for that user.');
+                print('Firebase auth: Wrong password provided for that user.');
               }
             }
           }
@@ -261,7 +271,11 @@ class Api {
   /// Load app translations and listen changes.
   _initTranslation() {
     if (enableFirebase == false) return;
-    firestore.collection('notifications').doc('translations').snapshots().listen((DocumentSnapshot snapshot) {
+    firestore
+        .collection('notifications')
+        .doc('translations')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
       _loadTranslationFromCenterX();
     });
   }
@@ -274,7 +288,11 @@ class Api {
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
     if (enableFirebase == false) return;
-    firestore.collection('notifications').doc('settings').snapshots().listen((DocumentSnapshot snapshot) {
+    firestore
+        .collection('notifications')
+        .doc('settings')
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
       _loadSettingFromCenterX();
     });
   }
@@ -407,6 +425,7 @@ class Api {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('user');
     user = null;
+    FirebaseAuth.instance.signOut();
     authChanges.add(null);
   }
 
@@ -488,7 +507,8 @@ class Api {
   Future<ApiUser> userProfile(String sessionId) async {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     loading.profile = true;
-    final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
+    final Map<String, dynamic> res =
+        await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
 
@@ -700,8 +720,10 @@ class Api {
   }
 
   /// Returns a post of today based on the categoryId and userIdx.
-  Future<List<ApiPost>> postToday({@required String categoryId, int userIdx = 0, int limit = 10}) async {
-    final map = await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
+  Future<List<ApiPost>> postToday(
+      {@required String categoryId, int userIdx = 0, int limit = 10}) async {
+    final map = await request(
+        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -711,9 +733,25 @@ class Api {
   }
 
   ///
+  Future<ApiCategory> categoryCreate({String id, String title = ''}) async {
+    final re = await request({'route': 'category.create', 'id': id, 'title': title});
+    return ApiCategory.fromJson(re);
+  }
+
+  ///
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});
     return ApiCategory.fromJson(re);
+  }
+
+  ///
+  Future<List<ApiCategory>> categoryGets(List<String> ids) async {
+    final re = await request({'route': 'category.gets', 'ids': ids});
+    final List<ApiCategory> rets = [];
+    for (final j in re) {
+      rets.add(ApiCategory.fromJson(j));
+    }
+    return rets;
   }
 
   Future<List<ApiCategory>> categorySearch() async {
@@ -812,7 +850,8 @@ class Api {
     if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
-    if (searchKey != null && searchKey != '') data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '')
+      data['where'] = data['where'] + " and title like '%$searchKey%'";
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -1077,7 +1116,8 @@ class Api {
     return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
-  sendMessageToTokens({String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTokens(
+      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1089,7 +1129,8 @@ class Api {
     return request(req);
   }
 
-  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic(
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1213,7 +1254,8 @@ class Api {
           if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
-          if (onNotificationPermissionNotDetermined != null) onNotificationPermissionNotDetermined();
+          if (onNotificationPermissionNotDetermined != null)
+            onNotificationPermissionNotDetermined();
           break;
         case AuthorizationStatus.provisional:
           break;
