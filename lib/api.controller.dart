@@ -95,11 +95,11 @@ class Api {
     return user.data[topic] != null && user.data[topic] == 'on';
   }
 
+  /// To use firebase or not.
   bool enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
   BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
-  bool isFirebaseInitialized = false;
 
   /// Firebase Messaging
   ///
@@ -136,7 +136,6 @@ class Api {
   }
 
   Api() {
-    print('Api() must be called only one time!');
     _initUserLogin();
   }
 
@@ -216,7 +215,7 @@ class Api {
     });
 
     authChanges.listen((user) async {
-      print("_initFirebaseAuth() authChanges.listen((user) { ... }");
+      // print("_initFirebaseAuth() authChanges.listen((user) { ... }");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -243,7 +242,7 @@ class Api {
               if (e.code == 'user-not-found') {
                 print('No user found for that email.');
               } else if (e.code == 'wrong-password') {
-                print('Wrong password provided for that user.');
+                print('Firebase auth: Wrong password provided for that user.');
               }
             }
           }
@@ -263,10 +262,8 @@ class Api {
     try {
       await Firebase.initializeApp();
       firebaseInitialized.add(true);
-      isFirebaseInitialized = true;
       // print("App is connected to Firebase!");
     } catch (e) {
-      isFirebaseInitialized = false;
       // print("Error: failed to connect to Firebase!");
     }
   }
