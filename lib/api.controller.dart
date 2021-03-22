@@ -224,33 +224,38 @@ class Api {
             user.idx.toString() +
             user.createdAt.toString() +
             ' Wc~7 difficult to guess string salt %^.^%;';
+
+        // User email already exists(registered), try to login.
         try {
-          await FirebaseAuth.instance
-              .createUserWithEmailAndPassword(email: user.email, password: password);
+          await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+          await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
         } on FirebaseAuthException catch (e) {
-          if (e.code == 'weak-password') {
-            print('The password provided is too weak.');
-          } else if (e.code == 'email-already-in-use') {
-            // User email already exists(registered), try to login.
+          if (e.code == 'user-not-found') {
+            print('No user found for that email.');
+
             try {
               await FirebaseAuth.instance
-                  .signInWithEmailAndPassword(email: email, password: password);
-              if (user.data['fbaUid'] == null) {
-                await userUpdate({'fbaUid': FirebaseAuth.instance.currentUser.uid});
-              }
+                  .createUserWithEmailAndPassword(email: user.email, password: password);
+              await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
-              if (e.code == 'user-not-found') {
-                print('No user found for that email.');
-              } else if (e.code == 'wrong-password') {
-                print('Firebase auth: Wrong password provided for that user.');
-              }
+              if (e.code == 'weak-password') {
+                print('The password provided is too weak.');
+              } else if (e.code == 'email-already-in-use') {}
             }
+          } else if (e.code == 'wrong-password') {
+            print('Firebase auth: Wrong password provided for that user.');
           }
         } catch (e) {
           print(e);
         }
       }
     });
+  }
+
+  Future<void> userUpdateFirebaseUid(String uid) async {
+    if (user.firebaseUid.isEmpty) {
+      await userUpdate({FIREBASE_UID: FirebaseAuth.instance.currentUser.uid});
+    }
   }
 
   /// Firebase Initialization

@@ -42,6 +42,7 @@ class ApiUser {
 
   int idx;
   String email;
+  String firebaseUid;
   String userRegistered;
   String sessionId;
 
@@ -84,6 +85,7 @@ class ApiUser {
     this.birthdate,
     this.idx,
     this.email,
+    this.firebaseUid,
     this.userRegistered,
     this.sessionId,
     this.mode,
@@ -116,6 +118,7 @@ class ApiUser {
     birthdate = json['birthdate'];
     idx = int.parse("${json['idx']}");
     email = json['email'];
+    firebaseUid = json['firebaseUid'];
     userRegistered = json['user_registered'];
     sessionId = json['sessionId'];
     mode = json['mode'];
@@ -151,6 +154,7 @@ class ApiUser {
     data['birthdate'] = this.birthdate;
     data['idx'] = this.idx;
     data['email'] = this.email;
+    data['firebaseUid'] = this.firebaseUid;
     data['user_registered'] = this.userRegistered;
     data['sessionId'] = this.sessionId;
     data['mode'] = this.mode;
