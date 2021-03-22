@@ -9,6 +9,7 @@ class Admin extends GetxController {
   Api api = Api.instance;
 
   List<ApiCategory> checks;
+  List<ApiCategory> categories;
 
   categoryCheck(List<String> ids) async {
     try {
@@ -36,6 +37,15 @@ class Admin extends GetxController {
         }
       }
       update();
+    }
+  }
+
+  categorySearch() async {
+    try {
+      categories = await api.categorySearch(limit: 200);
+      update();
+    } catch (e) {
+      alert(e);
     }
   }
 }

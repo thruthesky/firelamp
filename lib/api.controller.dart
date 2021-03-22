@@ -764,8 +764,8 @@ class Api {
     return rets;
   }
 
-  Future<List<ApiCategory>> categorySearch() async {
-    final re = await request({'route': 'category.search'});
+  Future<List<ApiCategory>> categorySearch({int limit = 10}) async {
+    final re = await request({'route': 'category.search', 'limit': limit});
     final List<ApiCategory> rets = [];
     for (final j in re) {
       rets.add(ApiCategory.fromJson(j));
