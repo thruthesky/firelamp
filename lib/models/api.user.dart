@@ -129,8 +129,8 @@ class ApiUser {
     }
 
     point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
-    createdAt = int.parse("${json['createdAt']}");
-    updatedAt = int.parse("${json['updatedAt']}");
+    createdAt = int.parse("${json['createdAt'] ?? 0}");
+    updatedAt = int.parse("${json['updatedAt'] ?? 0}");
   }
 
   Map<String, dynamic> toJson() {

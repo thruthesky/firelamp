@@ -523,9 +523,14 @@ class Api {
   /// Returns other user profile data.
   ///
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
-  /// ! @todo cache it on memory, so, next time when it is called again, it will not get it from server.
-  Future<ApiUser> otherUserProfile(String id) async {
-    final Map<String, dynamic> res = await request({'route': 'user.otherProfile', 'id': id});
+  /// ! @todo cache it on memory, so, next time when it is called again, it will not get same information from server.
+  Future<ApiUser> otherUserProfile({String idx, String email, String firebaseUid}) async {
+    final Map<String, dynamic> res = await request({
+      'route': 'user.otherUserProfile',
+      if (idx != null) 'idx': idx,
+      if (email != null) 'email': email,
+      if (firebaseUid != null) 'firebaseUid': firebaseUid,
+    });
     ApiUser otherUser = ApiUser.fromJson(res);
     return otherUser;
   }
