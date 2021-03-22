@@ -72,27 +72,13 @@ class PostPreview extends StatelessWidget {
                           ),
                           Positioned(
                             left: 10,
-                            top: -15,
+                            top: -10,
                             child: UserAvatar(post.user.photoUrl, size: 40),
                           ),
                         ],
                       ),
                       SizedBox(width: Space.xsm),
                     ],
-                    // if ((!post.hasFiles && forum.listView == 'thumbnail') ||
-                    //     forum.listView == 'text') ...[
-                    //   Container(
-                    //     constraints: BoxConstraints(minWidth: 70),
-                    //     child: Column(
-                    //       children: [
-                    //         UserAvatar(post.user.photoUrl, size: 55),
-                    //         SizedBox(height: Space.xs),
-                    //         Text('${post.user.name}')
-                    //       ],
-                    //     ),
-                    //   ),
-                    //   SizedBox(width: Space.xsm),
-                    // ],
                     Expanded(
                       child: Column(
                         children: [
