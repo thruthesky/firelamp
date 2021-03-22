@@ -62,7 +62,7 @@ class _DisplayUploadedFilesAndDeleteButtonsState
                       onPressed: () async {
                         final re = await confirm(
                           'confirm'.tr,
-                          'Do you want to delete the photo?',
+                          'photo_confirm_delete_message'.tr,
                         );
                         // print('delete: $re');
                         if (re) {

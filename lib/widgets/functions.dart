@@ -22,7 +22,7 @@ Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
             ),
             ListTile(
               leading: Icon(Icons.cancel),
-              title: Text('cancel'),
+              title: Text('cancel'.tr),
               onTap: () => Get.back(result: null),
             ),
           ],

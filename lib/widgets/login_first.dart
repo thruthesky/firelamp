@@ -1,5 +1,6 @@
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoginFirst extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _LoginFirstState extends State<LoginFirst> {
         children: [
           SizedBox(width: Space.xxl, height: Space.xxl),
           Center(
-            child: Text('Login first!!'),
+            child: Text('login_first'.tr),
           ),
         ],
       ),
