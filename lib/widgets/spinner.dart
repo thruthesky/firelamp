@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Spinner extends StatelessWidget {
@@ -25,7 +26,7 @@ class Spinner extends StatelessWidget {
     Widget spinner = SizedBox(
       width: size,
       height: size,
-      child: Platform.isAndroid
+      child: kIsWeb || Platform.isAndroid
           ? CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(valueColor),
             )
