@@ -1,6 +1,7 @@
 import 'package:firelamp/widgets/image.cache.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
+import 'package:get/get.dart';
 
 import 'package:firelamp/widgets/defines.dart';
 
@@ -60,7 +61,7 @@ class _DisplayUploadedFilesAndDeleteButtonsState
                       ),
                       onPressed: () async {
                         final re = await confirm(
-                          'Delete Photo',
+                          'confirm'.tr,
                           'Do you want to delete the photo?',
                         );
                         // print('delete: $re');

@@ -1073,21 +1073,25 @@ class Api {
     return request({'route': 'app.get', 'table': table});
   }
 
+  /// ! remove. move it to inapp purchase
   recordFailurePurchase(Map<String, dynamic> data) {
     data['route'] = 'purchase.recordFailure';
     return request(data);
   }
 
+  /// ! remove. move it to inapp purchase
   recordPendingPurchase(Map<String, dynamic> data) {
     data['route'] = 'purchase.recordPending';
     return request(data);
   }
 
+  /// ! remove. move it to inapp purchase
   recordSuccessPurchase(Map<String, dynamic> data) {
     data['route'] = 'purchase.recordSuccess';
     return request(data);
   }
 
+  /// ! remove. move it to inapp purchase.
   getMyPurchases() {
     return request({'route': 'purchase.myPurchase'});
   }
@@ -1217,7 +1221,7 @@ class Api {
   /// Initialize Messaging
   _initMessaging() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
-    if (Platform.isIOS) {
+    if (kIsWeb || Platform.isIOS) {
       NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
@@ -1298,57 +1302,4 @@ class Api {
   restoreCart() {
     cart.items = _items;
   }
-
-  /// -------------------------------------------------------------------------
-  ///
-  ///
-  ///
-  /// In App Purchase
-  ///
-  ///
-  ///
-  /// -------------------------------------------------------------------------
-  // _initInAppPurchase() {
-  //   InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((dynamic purchaseDetailsList) {
-  //     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-  //       print('purchaseDetailsList.forEach( ... )');
-  // if it's pending, this mean, the user just started to pay.
-  // previous app session pending purchase is not `PurchaseStatus.pending`. It is either
-  // `PurchaseStatus.purchased` or `PurchaseStatus.error`
-  // if (purchaseDetails.status == PurchaseStatus.pending) {
-  //   print('=> pending on purchaseUpdatedStream');
-  //   pending.add(purchaseDetails);
-  //   _recordPending(purchaseDetails);
-  // } else if (purchaseDetails.status == PurchaseStatus.error) {
-  //   print('=> error on purchaseUpdatedStream');
-  //   error.add(purchaseDetails);
-  //   _recordFailure(purchaseDetails);
-  //   if (Platform.isIOS) {
-  //     connection.completePurchase(purchaseDetails);
-  //   }
-  // } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-  //   print(
-  //       '=> purchased on purchaseUpdatedStream: PurchaseStatus.purchased');
-  //   // for android & consumable product only.
-  //   if (Platform.isAndroid) {
-  //     if (!autoConsume &&
-  //         consumableIds.contains(purchaseDetails.productID)) {
-  //       await connection.consumePurchase(purchaseDetails);
-  //     }
-  //   }
-  //   if (purchaseDetails.pendingCompletePurchase) {
-  //     await connection.completePurchase(purchaseDetails);
-  //     final session = await _recordSuccess(purchaseDetails);
-  //     success.add(session);
-  //   }
-  // }
-  //   });
-  // }, onDone: () {
-  //   print('onDone:');
-  // }, onError: (error) {
-  //   print('onError: error on listening:');
-  //   print(error);
-  // });
-  // }
-  // EO In App Purchase
 }

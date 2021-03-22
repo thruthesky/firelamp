@@ -62,7 +62,7 @@ class _PostFormState extends State<PostForm> {
     if (loading) return;
     setState(() => loading = true);
 
-    if (Api.instance.notLoggedIn) return onError("Login First");
+    if (Api.instance.notLoggedIn) return onError("login_first".tr);
     try {
       final editedPost = await Api.instance.postEdit(
         idx: post.idx,
@@ -126,8 +126,7 @@ class _PostFormState extends State<PostForm> {
               maxLines: 15,
               decoration: _inputDecoration,
             ),
-            DisplayUploadedFilesAndDeleteButtons(
-                postOrComment: forum.postInEdit),
+            DisplayUploadedFilesAndDeleteButtons(postOrComment: forum.postInEdit),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -150,7 +149,7 @@ class _PostFormState extends State<PostForm> {
                     if (!loading)
                       TextButton(
                         child: Text(
-                          'Cancel',
+                          'cancel'.tr,
                           style: TextStyle(
                             color: Colors.red[300],
                           ),
@@ -164,8 +163,10 @@ class _PostFormState extends State<PostForm> {
                     TextButton(
                       child: loading
                           ? Spinner()
-                          : Text('Submit',
-                              style: TextStyle(color: Colors.green[300])),
+                          : Text(
+                              'submit'.tr,
+                              style: TextStyle(color: Colors.green[300]),
+                            ),
                       onPressed: onFormSubmit,
                     ),
                   ],

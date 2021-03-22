@@ -2,6 +2,7 @@ import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class VoteButtons extends StatefulWidget {
   VoteButtons(
@@ -19,7 +20,7 @@ class VoteButtons extends StatefulWidget {
 
 class _VoteButtonsState extends State<VoteButtons> {
   onVote(String choice) async {
-    if (Api.instance.notLoggedIn) return widget.onError('Login First.');
+    if (Api.instance.notLoggedIn) return widget.onError('login_first'.tr);
 
     try {
       final re = await Api.instance.vote(widget.postOrComment, choice);

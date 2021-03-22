@@ -1,7 +1,7 @@
 // To parse this JSON data, do
 //
 //     final apiCategory = apiCategoryFromJson(jsonString);
-
+//
 part of '../firelamp.dart';
 
 class ApiCategory {

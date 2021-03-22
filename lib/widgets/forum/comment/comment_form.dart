@@ -4,6 +4,7 @@ import 'package:firelamp/widgets/functions.dart';
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CommentForm extends StatefulWidget {
   const CommentForm({
@@ -66,7 +67,7 @@ class _CommentFormState extends State<CommentForm> {
 
   // form submit
   onFormSubmit() async {
-    if (Api.instance.notLoggedIn) return onError("Login First");
+    if (Api.instance.notLoggedIn) return onError("login_first".tr);
     if (loading) return;
     setState(() => loading = true);
     FocusScope.of(context).requestFocus(FocusNode());

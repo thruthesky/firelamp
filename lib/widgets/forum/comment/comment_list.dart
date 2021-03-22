@@ -53,7 +53,7 @@ class _CommentListState extends State<CommentList> {
           : Padding(
               padding: EdgeInsets.only(top: Space.xsm, left: Space.xsm),
               child: Text(
-                'No comments yet'.tr,
+                'no_comments_yet'.tr,
                 style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
               ),
             ),
