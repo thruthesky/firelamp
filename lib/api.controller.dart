@@ -930,7 +930,7 @@ class Api {
 
     File file;
     if (imageCompressor != null) {
-      file = imageCompressor(pickedFile.path, quality);
+      file = await imageCompressor(pickedFile.path, quality);
     } else {
       file = File(pickedFile.path);
     }
