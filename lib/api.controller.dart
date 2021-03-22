@@ -164,7 +164,6 @@ class Api {
     Function onForegroundMessage,
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
-    bool enableInAppPurchase = false,
     Function imageCompressor,
   }) async {
     if (enableMessaging) {
