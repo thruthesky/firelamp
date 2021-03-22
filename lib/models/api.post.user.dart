@@ -7,14 +7,17 @@ class ApiPostUser {
   final String gender;
   final int photoIdx;
   final String photoUrl;
+  final String firebaseUid;
 
-  ApiPostUser(
-      {this.idx,
-      this.name,
-      this.nickname,
-      this.gender,
-      this.photoIdx,
-      this.photoUrl});
+  ApiPostUser({
+    this.idx,
+    this.name,
+    this.nickname,
+    this.gender,
+    this.photoIdx,
+    this.photoUrl,
+    this.firebaseUid,
+  });
 
   factory ApiPostUser.fromJson(dynamic json) {
     if (json == null) return ApiPostUser();
@@ -34,6 +37,7 @@ class ApiPostUser {
       nickname: json['nickname'],
       photoIdx: photoIdx,
       photoUrl: url,
+      firebaseUid: json['firebaseUid'],
     );
   }
 
@@ -44,6 +48,7 @@ class ApiPostUser {
       'nickname': nickname,
       'photoIdx': photoIdx,
       'photoUrl': photoUrl,
+      'firebaseUid': firebaseUid,
     };
   }
 

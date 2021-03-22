@@ -8,6 +8,9 @@ const String ERROR_EMPTY_TOKENS = 'ERROR_EMPTY_TOKENS';
 /// Error codes
 const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
+/// Defines
+const String FIREBASE_UID = 'firebaseUid';
+
 /// todo put chat protocol into { protocol: ... }, not in { text: ... }
 class ChatProtocol {
   static String enter = 'ChatProtocol.enter';

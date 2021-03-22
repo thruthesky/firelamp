@@ -79,7 +79,8 @@ class PostPreview extends StatelessWidget {
                       ),
                       SizedBox(width: Space.xsm),
                     ],
-                    if ((!post.hasFiles && forum.listView == 'thumbnail') || forum.listView == 'text') ...[
+                    if ((!post.hasFiles && forum.listView == 'thumbnail') ||
+                        forum.listView == 'text') ...[
                       Container(
                         constraints: BoxConstraints(minWidth: 70),
                         child: Column(
