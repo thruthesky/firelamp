@@ -736,9 +736,25 @@ class Api {
   }
 
   ///
+  Future<ApiCategory> categoryCreate({String id, String title = ''}) async {
+    final re = await request({'route': 'category.create', 'id': id, 'title': title});
+    return ApiCategory.fromJson(re);
+  }
+
+  ///
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});
     return ApiCategory.fromJson(re);
+  }
+
+  ///
+  Future<List<ApiCategory>> categoryGets(List<String> ids) async {
+    final re = await request({'route': 'category.gets', 'ids': ids});
+    final List<ApiCategory> rets = [];
+    for (final j in re) {
+      rets.add(ApiCategory.fromJson(j));
+    }
+    return rets;
   }
 
   Future<List<ApiCategory>> categorySearch() async {
