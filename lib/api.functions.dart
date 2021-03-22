@@ -53,7 +53,7 @@ Future<bool> confirm(String title, String message) async {
   );
 }
 
-///
+/// Alert message
 Future alert(String message) async {
   await Get.defaultDialog(
     title: '알림',
