@@ -4,6 +4,7 @@ import 'package:firelamp/widgets/popup_button.dart';
 import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
 import 'package:firelamp/widgets/rounded_box.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/comment/comment_meta.dart';
@@ -46,15 +47,14 @@ class _CommentViewState extends State<CommentView> {
     /// Delete
     if (selected == 'delete') {
       bool conf = await confirm(
-        'Confirm',
-        'Delete Comment?',
+        'confirm'.tr,
+        'comment_confirm_delete_message'.tr,
       );
       if (conf == false) return;
 
       try {
         await Api.instance.commentDelete(widget.comment, widget.post);
-        if (widget.onCommentDeleteSuccess != null)
-          widget.onCommentDeleteSuccess();
+        if (widget.onCommentDeleteSuccess != null) widget.onCommentDeleteSuccess();
         widget.forum.render();
       } catch (e) {
         if (widget.onError != null) {
@@ -65,8 +65,7 @@ class _CommentViewState extends State<CommentView> {
   }
 
   bool get canCancel =>
-      widget.comment.mode == CommentMode.reply ||
-      widget.comment.mode == CommentMode.edit;
+      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +73,7 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin: EdgeInsets.only(
-                top: Space.sm, left: Space.sm * (widget.comment.depth - 1)),
+            margin: EdgeInsets.only(top: Space.sm, left: Space.sm * (widget.comment.depth - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,10 +99,9 @@ class _CommentViewState extends State<CommentView> {
                           size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode =
-                              widget.comment.mode == CommentMode.reply
-                                  ? CommentMode.none
-                                  : CommentMode.reply;
+                          widget.comment.mode = widget.comment.mode == CommentMode.reply
+                              ? CommentMode.none
+                              : CommentMode.reply;
                         });
                       },
                     ),
@@ -118,18 +115,16 @@ class _CommentViewState extends State<CommentView> {
                       PopUpButton(items: [
                         PopupMenuItem(
                             child: Row(children: [
-                              Icon(Icons.edit,
-                                  size: Space.sm, color: Colors.greenAccent),
+                              Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
                               SizedBox(width: Space.xs),
-                              Text('Edit')
+                              Text('edit'.tr)
                             ]),
                             value: 'edit'),
                         PopupMenuItem(
                             child: Row(children: [
-                              Icon(Icons.delete,
-                                  size: Space.sm, color: Colors.redAccent),
+                              Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
                               SizedBox(width: Space.xs),
-                              Text('Delete')
+                              Text('delete'.tr)
                             ]),
                             value: 'delete')
                       ], onSelected: onPopupMenuItemSelected)
