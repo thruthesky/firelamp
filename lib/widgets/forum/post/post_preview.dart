@@ -79,34 +79,52 @@ class PostPreview extends StatelessWidget {
                       ),
                       SizedBox(width: Space.xsm),
                     ],
-                    if ((!post.hasFiles && forum.listView == 'thumbnail') ||
-                        forum.listView == 'text') ...[
-                      Container(
-                        constraints: BoxConstraints(minWidth: 70),
-                        child: Column(
-                          children: [
-                            UserAvatar(post.user.photoUrl, size: 55),
-                            SizedBox(height: Space.xs),
-                            Text('${post.user.name}')
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: Space.xsm),
-                    ],
+                    // if ((!post.hasFiles && forum.listView == 'thumbnail') ||
+                    //     forum.listView == 'text') ...[
+                    //   Container(
+                    //     constraints: BoxConstraints(minWidth: 70),
+                    //     child: Column(
+                    //       children: [
+                    //         UserAvatar(post.user.photoUrl, size: 55),
+                    //         SizedBox(height: Space.xs),
+                    //         Text('${post.user.name}')
+                    //       ],
+                    //     ),
+                    //   ),
+                    //   SizedBox(width: Space.xsm),
+                    // ],
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${post.user.name}'),
-                          title,
-                          SizedBox(height: Space.xxs),
-                          Text(
-                            '${post.content}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            children: [
+                              if (!post.hasFiles && forum.listView == 'thumbnail' ||
+                                  forum.listView == 'text') ...[
+                                UserAvatar(post.user.photoUrl, size: 65),
+                                SizedBox(width: Space.xs),
+                              ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${post.user.name}'),
+                                    title,
+                                    SizedBox(height: Space.xxs),
+                                    Text(
+                                      '${post.content}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
-                          SizedBox(height: Space.xxs),
-                          PostMeta(post, forum),
+                          SizedBox(height: Space.xs),
+                          Padding(
+                            child: PostMeta(post, forum),
+                            padding: EdgeInsets.only(left: Space.xxs),
+                          ),
                         ],
                       ),
                     ),
