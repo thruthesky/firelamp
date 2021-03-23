@@ -339,7 +339,7 @@ class Api {
 
     dynamic res;
     try {
-      // _printDebugUrl(data);
+      _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
