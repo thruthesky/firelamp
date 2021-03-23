@@ -916,29 +916,53 @@ class Api {
   }
 
   Future<ApiFile> uploadFile(
-      {@required File file,
+      {File file,
+      Uint8List bytes,
       Function onProgress,
       bool deletePreviousUpload = false,
       String taxonomy = '',
       int entity = 0}) async {
-    /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
-    final formData = Prefix.FormData.fromMap({
-      /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
-      'route': 'file.upload',
-      'sessionId': sessionId,
+    Prefix.FormData formData;
+    if (file != null) {
+      /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
+      formData = Prefix.FormData.fromMap({
+        /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
+        'route': 'file.upload',
+        'sessionId': sessionId,
+        'taxonomy': taxonomy,
+        'entity': entity.toString(),
+        'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
 
-      'taxonomy': taxonomy,
-      'entity': entity.toString(),
-      'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
+        /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
+        'userfile': await Prefix.MultipartFile.fromFile(
+          file.path,
 
-      /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
-      'userfile': await Prefix.MultipartFile.fromFile(
-        file.path,
+          /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
+          filename: getFilenameFromPath(file.path),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      });
+    } else if (bytes != null) {
+      /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
+      formData = Prefix.FormData.fromMap({
+        /// `route` 와 `session_id` 등 추가 파라메타 값을 전달 할 수 있다.
+        'route': 'file.upload',
+        'sessionId': sessionId,
 
-        /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
-        filename: getFilenameFromPath(file.path),
-      ),
-    });
+        'taxonomy': taxonomy,
+        'entity': entity.toString(),
+        'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
+
+        /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
+        'userfile': Prefix.MultipartFile.fromBytes(
+          bytes,
+
+          /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
+          filename: getFilenameFromPath(DateTime.now().toString().replaceAll(' ', '') + '.jpg'),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      });
+    }
 
     final res = await dio.post(
       apiUrl,
@@ -947,6 +971,8 @@ class Api {
         if (onProgress != null) onProgress(sent * 100 / total);
       },
     );
+
+    print('res: $res');
 
     /// @todo  merge this error handling with [request]
     if (res.data is String || res.data['response'] == null) {
@@ -976,21 +1002,38 @@ class Api {
     final pickedFile = await picker.getImage(source: source);
     if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
 
-    File file;
-    if (imageCompressor != null) {
-      file = await imageCompressor(pickedFile.path, quality);
-    } else {
-      file = File(pickedFile.path);
-    }
+    if (kIsWeb) {
+      // final image = Image.network(pickedFile.path);
+      final bytes = await pickedFile.readAsBytes();
 
-    /// Upload
-    return await uploadFile(
-      file: file,
-      deletePreviousUpload: deletePreviousUpload,
-      onProgress: onProgress,
-      taxonomy: taxonomy,
-      entity: entity,
-    );
+      /// Upload with binary bytes
+      return await uploadFile(
+        bytes: bytes,
+        deletePreviousUpload: deletePreviousUpload,
+        onProgress: onProgress,
+        taxonomy: taxonomy,
+        entity: entity,
+      );
+    } else {
+      // If it's mobile.
+      File file;
+      // If there is image compressor (mostly only mobile.)
+      if (imageCompressor != null) {
+        file = await imageCompressor(pickedFile.path, quality);
+      } else {
+        // if there is no compresstor.
+        file = File(pickedFile.path);
+      }
+
+      /// Upload with file
+      return await uploadFile(
+        file: file,
+        deletePreviousUpload: deletePreviousUpload,
+        onProgress: onProgress,
+        taxonomy: taxonomy,
+        entity: entity,
+      );
+    }
   }
 
   /// Deletes a file.
