@@ -66,6 +66,7 @@ class PostPreview extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: CachedImage(
+                            
                               post.files[0].url,
                               width: 100,
                               height: 80,
