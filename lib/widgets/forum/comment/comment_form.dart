@@ -116,7 +116,7 @@ class _CommentFormState extends State<CommentForm> {
       child: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
                 alignment: Alignment.center,

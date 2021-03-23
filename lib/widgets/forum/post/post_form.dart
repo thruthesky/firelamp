@@ -71,9 +71,6 @@ class _PostFormState extends State<PostForm> {
         content: content.text,
         files: post.files,
       );
-      if (widget.forum.postView != 'slide') {
-        editedPost.display = true;
-      }
       widget.forum.insertOrUpdatePost(editedPost);
       setState(() => loading = false);
       if (widget.onSuccess != null) widget.onSuccess(editedPost);
