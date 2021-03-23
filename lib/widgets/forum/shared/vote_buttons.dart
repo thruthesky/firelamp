@@ -52,7 +52,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                         color: Color(0xff8cff82),
                         size: 20,
                       ),
-                      if (widget.postOrComment.y > 0) ...[
+                      if ("${widget.postOrComment.y}".toInt > 0) ...[
                         SizedBox(width: Space.xs),
                         Text(
                           '${widget.postOrComment.y}',
@@ -68,7 +68,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                   child: Row(
                     children: [
                       Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
-                      if (widget.postOrComment.n > 0) ...[
+                      if ("${widget.postOrComment.n}".toInt > 0) ...[
                         SizedBox(width: Space.xs),
                         Text(
                           '${widget.postOrComment.n}',
