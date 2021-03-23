@@ -45,7 +45,7 @@ class _VoteButtonsState extends State<VoteButtons> {
             children: [
               if (widget.forum.showLike)
                 Padding(
-                  padding: EdgeInsets.only(left: Space.xsm, right: 15),
+                  padding: EdgeInsets.only(left: Space.xsm, right: Space.md),
                   child: GestureDetector(
                     child: Row(
                       children: [

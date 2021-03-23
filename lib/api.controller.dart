@@ -865,7 +865,7 @@ class Api {
   }
 
   Future<List<ApiComment>> searchComments({
-    int userIdx,
+    String userIdx,
     int limit = 20,
     int page = 1,
     String order = 'DESC',

@@ -151,7 +151,8 @@ class _CommentFormState extends State<CommentForm> {
                   alignment: Alignment.center,
                   icon: Icon(Icons.send_rounded),
                   onPressed: onFormSubmit,
-                )
+                ),
+              if (canSubmit) SizedBox(width: Space.xsm),
             ],
           ),
           DisplayUploadedFilesAndDeleteButtons(postOrComment: comment),
