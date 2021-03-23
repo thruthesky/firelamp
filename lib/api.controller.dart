@@ -1372,14 +1372,33 @@ class Api {
   }
 
   /// Return thumbnail image url of an upload file/image.
-  String thumbnailUrl(
-      {String src, int width = 320, int height = 320, int quality = 75, bool original = false}) {
+  ///
+  /// The [src] is the URL of the image or file.idx.
+  /// The [code] is the code of the file.code, It can display a photo by the first image of the code.
+  /// 주의할 점은 [code] 를 사용하는 경우, 이미지 캐시를 하면, 새로 업로드를 해도, 캐시된 이미지가 변경되지 않을 수 있다. 이와 같은 경우, [src] 에 파일 번호를 사용하는 것이 좋다.
+  String thumbnailUrl({
+    String src,
+    String code,
+    int width = 320,
+    int height = 320,
+    int quality = 75,
+    bool original = false,
+  }) {
     String url = apiUrl.replaceAll('index.php', '');
     url += 'etc/phpThumb/phpThumb.php';
 
-    url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+    url = url + '?src=$src&code=$code&w=$width&h=$height&f=jpeg&q=$quality';
     if (original) url += '&original=Y';
-
     return url;
+  }
+
+  /// 설정을 서버에 저장한다.
+  /// 주의: 관리자만 사용 할 수 있다. 관리자가 아니면 백엔드에서 에러가 난다.
+  setConfig(String code, dynamic data) {
+    return request({
+      'route': 'app.setConfig',
+      'code': code,
+      'data': data,
+    });
   }
 }

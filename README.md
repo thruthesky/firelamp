@@ -489,3 +489,80 @@ match /chat {
   - protocol: chat event like 'roomCreate', 'enter', 'leave'.
 
 - When displaying user information like nickname, profile photo, the data will come from backend and cached.
+
+# 관리자 페이지에서 사진 업로드 후, 사용자 페이지에 보여주기
+
+- 아래에서, 사진을 업로드하고, `about` 에 저장한 다음, 사진의 파일 번호를 관리자 설정에 저장한다.
+
+```dart
+ApiFile about = ApiFile();
+uploadAbout() async {
+  try {
+    about = await imageUpload(
+      onProgress: (p) {
+        about.percentage = p;
+        update();
+      },
+      code: 'admin.app.about.setting',
+      deletePreviousUpload: true,
+    );
+    about.percentage = 0;
+    update();
+    await api.setConfig('admin.app.about.setting', about.idx);
+  } catch (e) {
+    app.error(e);
+  }
+}
+```
+
+- 관리자 페이지에서는 아래와 같이 코딩을 한다.
+
+```dart
+class AdminAboutSetting extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AdminAppBar(),
+      body: Container(
+        child: GetBuilder<Admin>(
+          builder: (_) => Column(
+            children: [
+              Row(
+                children: [
+                  ElevatedButton(onPressed: Admin.to.uploadAbout, child: Text('사진 등록')),
+                ],
+              ),
+              _.about.percentage == 0
+                  ? SizedBox.shrink()
+                  : LinearProgressIndicator(value: _.about.percentage),
+              CachedImage(_.about?.url ?? // 사진을 업로드했으면, 업로드한 사진을 보여준다.
+                 // 아니면, 이미 업르된 사진을 보여준다. 여기서는 code 를 통해서 사진을 보여준다. 또는 아래 처럼, src 로 보여주어도 된다.
+                 Api.instance.thumbnailUrl(code: 'admin.app.about.setting', original: true)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+- 사용자 페이지에서는 아래와 같이 src 로 보여준다. thumbnailUrl 에서 code 로 보여주면 이미지 캐시가 되어서 관리자가 바꾼 사진이 안나타날 수 있다.
+
+```dart
+class IntroductionScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppTitleBar('어플 소개'),
+      endDrawer: AppEndDrawer(),
+      body: SingleChildScrollView(
+        child: Container(
+          child: CachedImage(
+              api.thumbnailUrl(src: api.settings['admin.app.about.setting'], original: true)),
+        ),
+      ),
+    );
+  }
+}
+```
