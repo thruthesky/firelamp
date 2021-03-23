@@ -28,8 +28,10 @@ class ApiPostUser {
     int photoIdx = int.parse("${json['photoIdx'] ?? 0}");
     String url;
     if (photoIdx > 0) {
-      url = Api.instance.thumbnailUrl;
-      url = url + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
+      // url = Api.instance.thumbnailUrl;
+      // url = url + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
+      url =
+          Api.instance.thumbnailUrl(src: photoIdx.toString(), width: 100, height: 100, quality: 95);
     }
     return ApiPostUser(
       idx: int.parse("${json['idx']}"),

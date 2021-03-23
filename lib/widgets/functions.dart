@@ -7,7 +7,14 @@ import 'package:image_picker/image_picker.dart';
 /// The [imageUpload] is only a sample function to illustrate how you can upload a photo.
 /// You may copy this and change whatever to meet your design goal.
 /// [onProgress] will be called many times with percentage value.
-Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
+Future<ApiFile> imageUpload({
+  int quality = 90,
+  Function onProgress,
+  String taxonomy = '',
+  int entity = 0,
+  String code = '',
+  bool deletePreviousUpload = false,
+}) async {
   ImageSource re;
   if (kIsWeb) {
     re = ImageSource.gallery;
@@ -40,5 +47,14 @@ Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
     );
     if (re == null) throw ERROR_IMAGE_NOT_SELECTED;
   }
-  return Api.instance.takeUploadFile(source: re, quality: quality, onProgress: onProgress);
+  print('code: $code in function.dart::imageUpload');
+  return Api.instance.takeUploadFile(
+    source: re,
+    quality: quality,
+    onProgress: onProgress,
+    taxonomy: taxonomy,
+    entity: entity,
+    code: code,
+    deletePreviousUpload: deletePreviousUpload,
+  );
 }

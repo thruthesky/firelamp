@@ -37,13 +37,6 @@ class Api {
   /// [apiUrl] is the api url.
   String apiUrl;
 
-  /// [thumbnailUrl] return the phpThumb url.
-  String get thumbnailUrl {
-    String url = apiUrl.replaceAll('index.php', '');
-    url += 'etc/phpThumb/phpThumb.php';
-    return url;
-  }
-
   /// Translations
   ///
   /// Translation is enabled by default.
@@ -339,7 +332,7 @@ class Api {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -915,13 +908,15 @@ class Api {
     }
   }
 
-  Future<ApiFile> uploadFile(
-      {File file,
-      Uint8List bytes,
-      Function onProgress,
-      bool deletePreviousUpload = false,
-      String taxonomy = '',
-      int entity = 0}) async {
+  Future<ApiFile> uploadFile({
+    File file,
+    Uint8List bytes,
+    Function onProgress,
+    bool deletePreviousUpload = false,
+    String taxonomy = '',
+    int entity = 0,
+    String code = '',
+  }) async {
     Prefix.FormData formData;
     if (file != null) {
       /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
@@ -931,6 +926,7 @@ class Api {
         'sessionId': sessionId,
         'taxonomy': taxonomy,
         'entity': entity.toString(),
+        'code': code,
         'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
 
         /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
@@ -951,6 +947,7 @@ class Api {
 
         'taxonomy': taxonomy,
         'entity': entity.toString(),
+        'code': code,
         'deletePreviousUpload': deletePreviousUpload ? 'Y' : 'N',
 
         /// 아래에서 `userfile` 이, `$_FILES[userfile]` 와 같이 들어간다.
@@ -994,6 +991,7 @@ class Api {
     bool deletePreviousUpload = false,
     String taxonomy = '',
     int entity = 0,
+    String code = '',
     @required Function onProgress,
   }) async {
     /// Pick image
@@ -1013,6 +1011,7 @@ class Api {
         onProgress: onProgress,
         taxonomy: taxonomy,
         entity: entity,
+        code: code,
       );
     } else {
       // If it's mobile.
@@ -1025,6 +1024,8 @@ class Api {
         file = File(pickedFile.path);
       }
 
+      print('code: $code in api.controller.dart::takeUploadfile');
+
       /// Upload with file
       return await uploadFile(
         file: file,
@@ -1032,6 +1033,7 @@ class Api {
         onProgress: onProgress,
         taxonomy: taxonomy,
         entity: entity,
+        code: code,
       );
     }
   }
@@ -1043,7 +1045,7 @@ class Api {
   /// file will be removed from the `files` array after deletion.
   ///
   /// It returns deleted file id.
-  Future<int> deleteFile(int idx, {dynamic postOrComment}) async {
+  Future<int> deleteFile(String idx, {dynamic postOrComment}) async {
     final dynamic data = await request({
       'route': 'file.delete',
       'idx': idx,
@@ -1331,7 +1333,7 @@ class Api {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-    print('_initMessaging:: Getting token: $token');
+    // print('_initMessaging:: Getting token: $token');
     _saveTokenToDatabase(token);
 
     // Any time the token refreshes, store this in the database too.
@@ -1367,5 +1369,17 @@ class Api {
   /// 장바구니 복구
   restoreCart() {
     cart.items = _items;
+  }
+
+  /// Return thumbnail image url of an upload file/image.
+  String thumbnailUrl(
+      {String src, int width = 320, int height = 320, int quality = 75, bool original = false}) {
+    String url = apiUrl.replaceAll('index.php', '');
+    url += 'etc/phpThumb/phpThumb.php';
+
+    url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
+    if (original) url += '&original=Y';
+
+    return url;
   }
 }
