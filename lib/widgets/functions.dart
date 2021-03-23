@@ -4,6 +4,15 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
+  print('imageUpload:');
+  final picker = ImagePicker();
+  try {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  } catch (e) {
+    print('error;');
+    print(e);
+  }
+
   /// Ask user
   final re = await Get.bottomSheet(
     Container(
@@ -32,6 +41,5 @@ Future<ApiFile> imageUpload({int quality = 90, Function onProgress}) async {
   );
   if (re == null) throw ERROR_IMAGE_NOT_SELECTED;
 
-  return Api.instance
-      .takeUploadFile(source: re, quality: quality, onProgress: onProgress);
+  return Api.instance.takeUploadFile(source: re, quality: quality, onProgress: onProgress);
 }
