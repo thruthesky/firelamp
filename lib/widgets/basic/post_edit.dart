@@ -129,6 +129,7 @@ class _ForumBasicPostEditState extends State<ForumBasicPostEdit> {
                             // print('req: $post');
                             ApiPost re =
                                 await Api.instance.postEdit(post: post);
+                                re.display = false;
                             widget.onSuccess(re);
                           } catch (e) {
                             widget.onError(e);

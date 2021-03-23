@@ -44,40 +44,49 @@ class _VoteButtonsState extends State<VoteButtons> {
             child: Row(
             children: [
               if (widget.forum.showLike)
-                TextButton(
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.thumb_up_alt_outlined,
-                        color: Color(0xff8cff82),
-                        size: 20,
-                      ),
-                      if (widget.postOrComment.y > 0) ...[
-                        SizedBox(width: Space.xs),
-                        Text(
-                          '${widget.postOrComment.y}',
-                          style: TextStyle(fontSize: Space.sm, color: Colors.black54),
-                        )
+                Padding(
+                  padding: EdgeInsets.only(left: Space.xsm, right: Space.md),
+                  child: GestureDetector(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.thumb_up_alt_outlined,
+                          color: Color(0xff8cff82),
+                          size: 20,
+                        ),
+                        if ("${widget.postOrComment.y}".toInt > 0) ...[
+                          SizedBox(width: Space.xs),
+                          Text(
+                            '${widget.postOrComment.y}',
+                            style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                          )
+                        ],
                       ],
-                    ],
+                    ),
+                    onTap: () => onVote('Y'),
                   ),
-                  onPressed: () => onVote('Y'),
                 ),
               if (widget.forum.showDislike)
-                TextButton(
-                  child: Row(
-                    children: [
-                      Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
-                      if (widget.postOrComment.n > 0) ...[
-                        SizedBox(width: Space.xs),
-                        Text(
-                          '${widget.postOrComment.n}',
-                          style: TextStyle(fontSize: Space.sm, color: Colors.black54),
-                        )
-                      ],
-                    ],
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: widget.forum.showLike ? 0 : Space.xsm,
+                    right: Space.sm,
                   ),
-                  onPressed: () => onVote('N'),
+                  child: GestureDetector(
+                    child: Row(
+                      children: [
+                        Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
+                        if ("${widget.postOrComment.n}".toInt > 0) ...[
+                          SizedBox(width: Space.xs),
+                          Text(
+                            '${widget.postOrComment.n}',
+                            style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                          )
+                        ],
+                      ],
+                    ),
+                    onTap: () => onVote('N'),
+                  ),
                 ),
             ],
           ))

@@ -26,7 +26,7 @@ class PostMeta extends StatelessWidget {
     return Container(
       child: Row(
         children: [
-          if (isInlineName) ...[
+          if (isInlineName && post.user.name.isNotEmpty) ...[
             Text('${post.user.name}',
                 style: TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),

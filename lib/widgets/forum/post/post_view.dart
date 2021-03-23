@@ -50,17 +50,20 @@ class _PostViewState extends State<PostView> {
             children: [
               UserAvatar(widget.post.user.photoUrl),
               SizedBox(width: Space.xs),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${widget.post.title}', style: stylePostTitle),
-                  SizedBox(height: Space.xs),
-                  // if (widget.post.user.name.isNotEmpty) ...[
-                  //   Text('${widget.post.user.name}'),
-                  //   SizedBox(height: Space.xs),
-                  // ],
-                  PostMeta(widget.post, widget.forum, isInlineName: true),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${widget.post.title}',
+                      style: stylePostTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: Space.xs),
+                    PostMeta(widget.post, widget.forum, isInlineName: true),
+                  ],
+                ),
               )
             ],
           ),

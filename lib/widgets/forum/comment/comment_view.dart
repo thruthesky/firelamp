@@ -72,9 +72,10 @@ class _CommentViewState extends State<CommentView> {
     return widget.comment.isDeleted
         ? SizedBox.shrink()
         : RoundedBox(
+          
             padding: EdgeInsets.all(Space.xsm),
             margin:
-                EdgeInsets.only(top: Space.sm, left: Space.sm * (widget.comment.depth.toInt - 1)),
+                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
