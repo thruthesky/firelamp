@@ -39,13 +39,13 @@ class PostMeta extends StatelessWidget {
             Text('${post.comments.length}', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.sm),
           ],
-          if (forum.showLike && post.y > 0) ...[
+          if (forum.showLike && post.y.toInt > 0) ...[
             Icon(Icons.thumb_up_rounded, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
             Text('${post.y}', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.xsm),
           ],
-          if (forum.showDislike && post.n > 0) ...[
+          if (forum.showDislike && post.n.toInt > 0) ...[
             Icon(Icons.thumb_down_rounded, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
             Text('${post.n}', style: TextStyle(fontSize: Space.xsm))

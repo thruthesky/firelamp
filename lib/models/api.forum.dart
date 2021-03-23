@@ -31,8 +31,8 @@ class ApiForum {
     if (_limit != null) return _limit;
     // If setting is not set, then 10.
     if (setting == null) return 10;
-    if (setting.noOfPostsPerPage < 1) return 10;
-    return setting.noOfPostsPerPage;
+    if (setting.noOfPostsPerPage.toInt < 1) return 10;
+    return setting.noOfPostsPerPage.toInt;
   }
 
   /// The [categoryId] is used on fetching posts.
@@ -40,10 +40,10 @@ class ApiForum {
   String subcategory;
 
   /// The [userIdx] is used on fetching to get the user's posts only.
-  int userIdx;
+  String userIdx;
 
   /// The [relationIdx] is used to fetch posts related with an entity of [relationIdx].
-  int relationIdx;
+  String relationIdx;
 
   /// The [searchKey] is used on fetching to search posts
   String searchKey;
@@ -52,7 +52,7 @@ class ApiForum {
   /// Use this when user want to see(view) a post. It may serve as a view page.
   /// The following posts is coming same category if [category] is not set.
   /// It is ignored when [searchKey] is set.
-  int postOnTop;
+  String postOnTop;
 
   /// The post to be shown on top of the list.
   /// This may also serve as a post view page. Since it has a complete post information,
@@ -67,8 +67,7 @@ class ApiForum {
   bool get canLoad => loading == false && noMorePosts == false;
   bool get canList => postInEdit == null && posts.length > 0;
   final ItemScrollController listController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   Function render;
 
@@ -76,8 +75,7 @@ class ApiForum {
   bool get showDislike => showVoteButton('forum_dislike');
 
   // categories separated by comma.
-  String get searchCategories =>
-      Api.instance.settings['search_categories'] ?? '';
+  String get searchCategories => Api.instance.settings['search_categories'] ?? '';
 
   bool get canSearch {
     if (postInEdit != null) return false;
@@ -86,15 +84,13 @@ class ApiForum {
     return true;
   }
 
-  bool get canCreate =>
-      userIdx == null && categoryId != null && postInEdit == null;
+  bool get canCreate => userIdx == null && categoryId != null && postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;
   bool get noPosts => posts.isEmpty;
 
   bool showVoteButton(String str) {
-    if (Api.instance.settings[str] != null &&
-        Api.instance.settings[str] == 'Y') {
+    if (Api.instance.settings[str] != null && Api.instance.settings[str] == 'Y') {
       return true;
     }
     return false;

@@ -147,7 +147,7 @@ class _MainAppState extends State<MainApp> {
 
 ## Developer Coding Guideline
 
-- Everything that comes from backend is a string.
+- All the data value that comes from backend is a string.
   - For instance, user idx or post idx looks like a number. But when it is being used in flutter web, the parameta (on web) only accepts the key/value as string.
 
 ## Api controller

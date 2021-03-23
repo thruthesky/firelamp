@@ -1,5 +1,11 @@
 part of 'firelamp.dart';
 
+extension StringExtension on String {
+  int get toInt {
+    return int.parse(this);
+  }
+}
+
 /// Returns filename with extension.
 ///
 /// @example

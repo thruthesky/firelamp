@@ -73,7 +73,8 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin: EdgeInsets.only(top: Space.sm, left: Space.sm * (widget.comment.depth - 1)),
+            margin:
+                EdgeInsets.only(top: Space.sm, left: Space.sm * (widget.comment.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

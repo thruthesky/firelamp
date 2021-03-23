@@ -68,7 +68,7 @@ class Api {
 
   @Deprecated('Use userIdx')
   int get idx => user == null ? 0 : user.idx;
-  int get userIdx => user == null ? 0 : user.idx;
+  String get userIdx => user == null ? '0' : user.idx;
   String get sessionId => user?.sessionId;
   String get photoUrl => user?.photoUrl;
   String get fullName => user?.name;
@@ -589,8 +589,8 @@ class Api {
 
   ///
   Future<ApiPost> postEdit({
-    int idx,
-    int relationIdx,
+    String idx,
+    String relationIdx,
     String categoryId,
     String subcategory,
     String title,
@@ -665,9 +665,9 @@ class Api {
 
   ///
   Future<ApiComment> commentEdit({
-    int idx,
-    int rootIdx,
-    int parentIdx,
+    String idx,
+    String rootIdx,
+    String parentIdx,
     String content,
     List<ApiFile> files,
     Map<String, dynamic> data,
@@ -731,7 +731,7 @@ class Api {
 
   /// Returns a post of today based on the categoryId and userIdx.
   Future<List<ApiPost>> postToday(
-      {@required String categoryId, int userIdx = 0, int limit = 10}) async {
+      {@required String categoryId, String userIdx = '0', int limit = 10}) async {
     final map = await request(
         {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
@@ -839,13 +839,13 @@ class Api {
   }
 
   Future<List<ApiPost>> postSearch({
-    int postOnTop,
+    String postOnTop,
     String categoryId,
     String subcategory,
     int limit = 20,
     int page = 1,
-    int userIdx,
-    int relationIdx,
+    String userIdx,
+    String relationIdx,
     String searchKey = '',
   }) async {
     final Map<String, dynamic> data = {};
@@ -894,7 +894,7 @@ class Api {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, int userIdx}) {
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
     return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }

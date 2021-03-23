@@ -34,13 +34,13 @@ class ApiComment {
   }
 
   Map<String, dynamic> data;
-  int depth;
-  int idx;
-  int rootIdx;
-  int parentIdx;
-  int userIdx;
+  String depth;
+  String idx;
+  String rootIdx;
+  String parentIdx;
+  String userIdx;
   ApiPostUser user;
-  int categoryIdx;
+  String categoryIdx;
   String subcategory;
   String path;
 
@@ -48,11 +48,11 @@ class ApiComment {
   String title;
   String content;
   List<ApiFile> files;
-  int createdAt;
-  int updatedAt;
-  int deletedAt;
-  int y;
-  int n;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  String y;
+  String n;
 
   String shortDateTime;
 
@@ -65,9 +65,9 @@ class ApiComment {
   bool get isMine => userIdx == Api.instance.userIdx;
   bool get isNotMine => !isMine;
 
-  bool get isDeleted => deletedAt != 0;
+  bool get isDeleted => deletedAt.toInt != 0;
 
-  bool get isEdit => idx != null && idx > 0;
+  bool get isEdit => idx != null && idx.toInt > 0;
   bool get isCreate => !isEdit;
 
   String get authorName {
@@ -82,12 +82,11 @@ class ApiComment {
   factory ApiComment.fromJson(Map<String, dynamic> json) {
     return ApiComment(
       data: json,
-      idx: int.parse(
-          "${json['idx']}"), //    json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
-      rootIdx: int.parse("${json['rootIdx']}"),
-      parentIdx: int.parse("${json['parentIdx']}"),
+      idx: "${json['idx']}", //    json["idx"] is String ? int.parse(json["idx"]) : json["idx"],
+      rootIdx: "${json['rootIdx']}",
+      parentIdx: "${json['parentIdx']}",
       subcategory: json['subcategory'],
-      userIdx: int.parse("${json['userIdx']}"),
+      userIdx: "${json['userIdx']}",
       user: ApiPostUser.fromJson(json['user']),
       path: json['path'],
       title: json['title'] ?? '',
@@ -95,12 +94,12 @@ class ApiComment {
       files: json["files"] == null || json["files"] == ''
           ? []
           : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
-      depth: int.parse("${json['depth'] ?? 1}"),
-      createdAt: int.parse("${json['createdAt']}"),
-      updatedAt: int.parse("${json['updatedAt']}"),
-      deletedAt: int.parse("${json['deletedAt']}"),
-      y: int.parse("${json['Y']}"),
-      n: int.parse("${json['N']}"),
+      depth: "${json['depth'] ?? 1}",
+      createdAt: "${json['createdAt']}",
+      updatedAt: "${json['updatedAt']}",
+      deletedAt: "${json['deletedAt']}",
+      y: "${json['Y']}",
+      n: "${json['N']}",
       shortDateTime: json['shortDate'] ?? '',
     );
   }

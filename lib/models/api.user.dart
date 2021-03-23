@@ -11,7 +11,7 @@ class ApiUser {
   String autoStatusCheck;
   String plid;
   String agegroup;
-  int point;
+  String point;
 
   String get age {
     if (birthdate == null || birthdate == '') return '0';
@@ -40,14 +40,14 @@ class ApiUser {
   String birthday;
   String birthdate;
 
-  int idx;
+  String idx;
   String email;
   String firebaseUid;
   String userRegistered;
   String sessionId;
 
-  int createdAt;
-  int updatedAt;
+  String createdAt;
+  String updatedAt;
 
   /// [mode] is used only when `loginOrRegister` method is being invoked.
   /// It is one of `login` or `register`.
@@ -62,7 +62,7 @@ class ApiUser {
   // String drinking;
   // String smoking;
 
-  int photoIdx;
+  String photoIdx;
   String photoUrl;
 
   ApiUser({
@@ -116,21 +116,21 @@ class ApiUser {
     name = json['name'];
     birthday = json['birthday'];
     birthdate = json['birthdate'];
-    idx = int.parse("${json['idx']}");
+    idx = "${json['idx']}";
     email = json['email'];
     firebaseUid = json['firebaseUid'];
     userRegistered = json['user_registered'];
     sessionId = json['sessionId'];
     mode = json['mode'];
-    photoIdx = int.parse("${json['photoIdx'] ?? 0}");
-    if (photoIdx > 0) {
+    photoIdx = "${json['photoIdx'] ?? 0}";
+    if (photoIdx.toInt > 0) {
       photoUrl = Api.instance.thumbnailUrl;
       photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
     }
 
-    point = json['point'] is int ? json['point'] : int.parse(json['point'] ?? '0');
-    createdAt = int.parse("${json['createdAt'] ?? 0}");
-    updatedAt = int.parse("${json['updatedAt'] ?? 0}");
+    point = "${json['point']}";
+    createdAt = "${json['createdAt'] ?? 0}";
+    updatedAt = "${json['updatedAt'] ?? 0}";
   }
 
   Map<String, dynamic> toJson() {

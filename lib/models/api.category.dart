@@ -37,21 +37,21 @@ class ApiCategory {
     this.postViewWidget,
   });
 
-  int idx;
+  String idx;
   String id;
   String title;
   String description;
   List<String> subcategories;
-  int pointPostCreate;
-  int pointPostDelete;
-  int pointCommentCreate;
-  int pointCommentDelete;
+  String pointPostCreate;
+  String pointPostDelete;
+  String pointCommentCreate;
+  String pointCommentDelete;
   String banOnLimit;
-  int pointHourLimit;
-  int pointHourLimitCount;
-  int pointDailyLimitCount;
+  String pointHourLimit;
+  String pointHourLimitCount;
+  String pointDailyLimitCount;
   String listOnView;
-  int noOfPostsPerPage;
+  String noOfPostsPerPage;
   String mobilePostListWidget;
   String mobilePostViewWidget;
   String forumEditWidget;
@@ -59,9 +59,9 @@ class ApiCategory {
   String forumListHeaderWidget;
   String forumListWidget;
   String paginationWidget;
-  int noOfPagesOnNav;
-  int createdAt;
-  int updatedAt;
+  String noOfPagesOnNav;
+  String createdAt;
+  String updatedAt;
   String postEditWidget;
   String postListHeaderWidget;
   String postListWidget;
@@ -71,21 +71,21 @@ class ApiCategory {
     if (json is List) return ApiCategory();
     if (json == null || json.length == 0) return ApiCategory();
     return ApiCategory(
-      idx: int.parse("${json["idx"]}"),
+      idx: "${json["idx"]}",
       id: json["id"],
       title: json["title"],
       description: json["description"],
       subcategories: List<String>.from(json["subcategories"].map((x) => x)),
-      pointPostCreate: int.parse("${json["POINT_POST_CREATE"]}"),
-      pointPostDelete: int.parse("${json["POINT_POST_DELETE"]}"),
-      pointCommentCreate: int.parse("${json["POINT_COMMENT_CREATE"]}"),
-      pointCommentDelete: int.parse("${json["POINT_COMMENT_DELETE"]}"),
+      pointPostCreate: "${json["POINT_POST_CREATE"]}",
+      pointPostDelete: "${json["POINT_POST_DELETE"]}",
+      pointCommentCreate: "${json["POINT_COMMENT_CREATE"]}",
+      pointCommentDelete: "${json["POINT_COMMENT_DELETE"]}",
       banOnLimit: json["BAN_ON_LIMIT"],
-      pointHourLimit: int.parse("${json["POINT_HOUR_LIMIT"]}"),
-      pointHourLimitCount: int.parse("${json["POINT_HOUR_LIMIT_COUNT"]}"),
-      pointDailyLimitCount: int.parse("${json["POINT_DAILY_LIMIT_COUNT"]}"),
+      pointHourLimit: "${json["POINT_HOUR_LIMIT"]}",
+      pointHourLimitCount: "${json["POINT_HOUR_LIMIT_COUNT"]}",
+      pointDailyLimitCount: "${json["POINT_DAILY_LIMIT_COUNT"]}",
       listOnView: json["listOnView"],
-      noOfPostsPerPage: int.parse("${json["noOfPostsPerPage"]}"),
+      noOfPostsPerPage: "${json["noOfPostsPerPage"]}",
       mobilePostListWidget: json["mobilePostListWidget"],
       mobilePostViewWidget: json["mobilePostViewWidget"],
       forumEditWidget: json["forumEditWidget"],
@@ -93,9 +93,9 @@ class ApiCategory {
       forumListHeaderWidget: json["forumListHeaderWidget"],
       forumListWidget: json["forumListWidget"],
       paginationWidget: json["paginationWidget"],
-      noOfPagesOnNav: int.parse("${json["noOfPagesOnNav"]}"),
-      createdAt: int.parse("${json["createdAt"]}"),
-      updatedAt: int.parse("${json["updatedAt"]}"),
+      noOfPagesOnNav: "${json["noOfPagesOnNav"]}",
+      createdAt: "${json["createdAt"]}",
+      updatedAt: "${json["updatedAt"]}",
       postEditWidget: json["postEditWidget"],
       postListHeaderWidget: json["postListHeaderWidget"],
       postListWidget: json["postListWidget"],
