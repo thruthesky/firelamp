@@ -41,8 +41,7 @@ class _CommentFormState extends State<CommentForm> {
 
   bool loading = false;
 
-  bool get canSubmit =>
-      (content.text != '' || comment.files.isNotEmpty) && !loading;
+  bool get canSubmit => (content.text != '' || comment.files.isNotEmpty) && !loading;
   double percentage = 0;
 
   // file upload
@@ -141,10 +140,12 @@ class _CommentFormState extends State<CommentForm> {
                   ),
                 ),
               ),
+              if (!canSubmit) SizedBox(width: Space.sm),
               if (loading)
                 Padding(
-                    padding: EdgeInsets.all(Space.sm),
-                    child: Spinner(centered: false, size: 18)),
+                  padding: EdgeInsets.all(Space.sm),
+                  child: Spinner(centered: false, size: 18),
+                ),
               if (canSubmit)
                 IconButton(
                   alignment: Alignment.center,
