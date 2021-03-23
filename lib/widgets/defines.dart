@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Space {
@@ -9,6 +10,8 @@ class Space {
   static const double lg = 32;
   static const double xl = 40;
   static const double xxl = 56;
+
+  static double get forumViewPadding => kIsWeb ? 16.0 : 8.0;
 }
 
 const stylePostTitle = TextStyle(
