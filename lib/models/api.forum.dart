@@ -35,8 +35,12 @@ class ApiForum {
     return setting.noOfPostsPerPage.toInt;
   }
 
-  /// The [categoryId] is used on fetching posts.
-  String categoryId;
+  /// The [_categoryId] is used on fetching posts.
+  String _categoryId;
+
+  /// If [_categoryId] is not set, then use it from [setting.id]
+  String get categoryId => _categoryId ?? setting?.id;
+  set categoryId(String categoryId) => this._categoryId = categoryId;
   String subcategory;
 
   /// The [userIdx] is used on fetching to get the user's posts only.
@@ -109,7 +113,7 @@ class ApiForum {
     String categoryId,
     ApiPost post,
   })  : _limit = limit,
-        this.categoryId = categoryId ?? setting?.id,
+        this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [];
 
   /// Edit post or comment
