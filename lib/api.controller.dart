@@ -1288,7 +1288,7 @@ class Api {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-    // print('_initMessaging:: token: $token');
+    print('_initMessaging:: Getting token: $token');
     _saveTokenToDatabase(token);
 
     // Any time the token refreshes, store this in the database too.
