@@ -18,7 +18,7 @@ class DisplayFiles extends StatelessWidget {
 
   int get moreImage => postOrComment.files.length - displayedImage;
 
-  onImageTap(int idx) {
+  onImageTap(String idx) {
     final i = postOrComment.files.indexWhere((file) => file.idx == idx);
     Get.dialog(AppPhotoViewer(postOrComment.files, initialIndex: i));
   }
