@@ -123,11 +123,7 @@ class ApiPost {
   /// Upload file/image
   String thumbnailUrl(src,
       {int width = 320, int height = 320, int quality = 75, bool original = false}) {
-    String url = Api.instance.thumbnailUrl;
-    url = url + '?src=$src&w=$width&h=$height&f=jpeg&q=$quality';
-    if (original) url += '&original=Y';
-    // print('thumbnailUrl: $url');
-    return url;
+    return Api.instance.thumbnailUrl(src: src, width: width, height: height, original: original);
   }
 
   /// Returns true if the post(or comment) has any file.

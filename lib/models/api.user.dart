@@ -124,8 +124,9 @@ class ApiUser {
     mode = json['mode'];
     photoIdx = "${json['photoIdx'] ?? 0}";
     if (photoIdx.toInt > 0) {
-      photoUrl = Api.instance.thumbnailUrl;
-      photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
+      // photoUrl = Api.instance.thumbnailUrl;
+      // photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
+      photoUrl = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
     }
 
     point = "${json['point']}";
