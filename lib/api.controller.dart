@@ -339,7 +339,7 @@ class Api {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -1331,7 +1331,7 @@ class Api {
 
     // Get the token each time the application loads and save it to database.
     token = await FirebaseMessaging.instance.getToken();
-    print('_initMessaging:: Getting token: $token');
+    // print('_initMessaging:: Getting token: $token');
     _saveTokenToDatabase(token);
 
     // Any time the token refreshes, store this in the database too.
