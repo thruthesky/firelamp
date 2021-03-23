@@ -101,7 +101,6 @@ class _MainAppState extends State<MainApp> {
 
   - Add iOS `GoogleServices-info.plist` and Android `google-serfvices.json`.
 
-
 ## Language Settings
 
 - First, add `language codes` in `Info.plist` on iOS. For android, it work out of the box.
@@ -146,8 +145,12 @@ class _MainAppState extends State<MainApp> {
 }
 ```
 
-## Api controller
+## Developer Coding Guideline
 
+- Everything that comes from backend is a string.
+  - For instance, user idx or post idx looks like a number. But when it is being used in flutter web, the parameta (on web) only accepts the key/value as string.
+
+## Api controller
 
 - The instance of FireLamp `Api` is a signleton.
 
