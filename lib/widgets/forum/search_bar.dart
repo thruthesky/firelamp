@@ -16,6 +16,7 @@ class SearchBar extends StatefulWidget {
     @required this.onCancel,
     this.categories = '',
     this.defaultSearchKeyValue,
+    this.defaultSearchCategoryValue,
     this.searchOnInputChange = true,
     this.searchOnCategoryChange = true,
     this.backgroundColor = const Color(0xffebf0f7),
@@ -24,6 +25,7 @@ class SearchBar extends StatefulWidget {
   final String categories;
   final OnSearch onSearch;
   final Function onCancel;
+  final String defaultSearchCategoryValue;
   final String defaultSearchKeyValue;
   final Color backgroundColor;
 
@@ -54,6 +56,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void initState() {
     super.initState();
+    _selectedCategory = widget.defaultSearchCategoryValue;
 
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
     subscription = input
