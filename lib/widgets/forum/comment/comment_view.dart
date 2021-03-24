@@ -19,16 +19,14 @@ class CommentView extends StatefulWidget {
     this.post,
     this.onError,
     @required this.forum,
-    this.onCommentEditSuccess,
-    this.onCommentDeleteSuccess,
+    this.rerenderParent,
   }) : super(key: key);
 
   final ApiComment comment;
   final ApiPost post;
   final ApiForum forum;
   final Function onError;
-  final Function onCommentEditSuccess;
-  final Function onCommentDeleteSuccess;
+  final Function rerenderParent;
 
   @override
   _CommentViewState createState() => _CommentViewState();
@@ -54,7 +52,7 @@ class _CommentViewState extends State<CommentView> {
 
       try {
         await Api.instance.commentDelete(widget.comment, widget.post);
-        if (widget.onCommentDeleteSuccess != null) widget.onCommentDeleteSuccess();
+        if (widget.rerenderParent != null) widget.rerenderParent();
         widget.forum.render();
       } catch (e) {
         if (widget.onError != null) {
@@ -109,6 +107,7 @@ class _CommentViewState extends State<CommentView> {
                     VoteButtons(
                       widget.comment,
                       widget.forum,
+                      onSuccess: () => setState(() => null),
                       onError: widget.onError,
                     ),
                     Spacer(),
@@ -137,7 +136,7 @@ class _CommentViewState extends State<CommentView> {
                     comment: ApiComment(),
                     post: widget.post,
                     forum: widget.forum,
-                    onSuccess: widget.onCommentEditSuccess,
+                    onSuccess: widget.rerenderParent,
                     onError: widget.onError,
                   ),
                 if (widget.comment.mode == CommentMode.edit)
@@ -145,7 +144,7 @@ class _CommentViewState extends State<CommentView> {
                     comment: widget.comment,
                     post: widget.post,
                     forum: widget.forum,
-                    onSuccess: widget.onCommentEditSuccess,
+                    onSuccess: widget.rerenderParent,
                     onError: widget.onError,
                   ),
               ],

@@ -8,10 +8,12 @@ class VoteButtons extends StatefulWidget {
   VoteButtons(
     this.postOrComment,
     this.forum, {
+    this.onSuccess,
     this.onError,
   });
   final ApiForum forum;
   final dynamic postOrComment;
+  final Function onSuccess;
   final Function onError;
 
   @override
@@ -33,7 +35,7 @@ class _VoteButtonsState extends State<VoteButtons> {
   onVoteSuccess(dynamic re) {
     widget.postOrComment.y = re.y;
     widget.postOrComment.n = re.n;
-    widget.forum.render();
+    if (widget.onSuccess != null) widget.onSuccess();
     setState(() {});
   }
 

@@ -1,5 +1,6 @@
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
+import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
@@ -49,7 +50,7 @@ class _PostViewState extends State<PostView> {
           child: Row(
             children: [
               UserAvatar(widget.post.user.photoUrl),
-              SizedBox(width: Space.xs),
+              SizedBox(width: Space.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +78,15 @@ class _PostViewState extends State<PostView> {
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
         Divider(height: Space.xs, thickness: 1.3),
-        Row(children: widget.actions),
+        Row(children: [
+          VoteButtons(
+            widget.post,
+            widget.forum,
+            onSuccess: () => setState(() => null),
+            onError: widget.onError,
+          ),
+          ...widget.actions,
+        ]),
         CommentForm(
           post: widget.post,
           forum: widget.forum,
