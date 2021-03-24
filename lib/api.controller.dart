@@ -831,6 +831,9 @@ class Api {
     return _posts;
   }
 
+  /// Get posts from backend.
+  ///
+  /// You may use [fetchPosts] wich handles with pagination and more.
   Future<List<ApiPost>> postSearch({
     String postOnTop,
     String categoryId,
@@ -901,7 +904,7 @@ class Api {
       route = 'post.vote';
     }
     final re = await request({'route': route, 'idx': postOrComment.idx, 'choice': choice});
-    if ("${postOrComment.parentIdx}".toInt  > 0) {
+    if ("${postOrComment.parentIdx}".toInt > 0) {
       return ApiComment.fromJson(re);
     } else {
       return ApiPost.fromJson(re);
