@@ -1206,7 +1206,7 @@ class Api {
     return request(req);
   }
 
-  Future<dynamic> sendMessageToUsers(
+  Future<dynamic> sendPushNotificationToUsers(
       {List<String> users,
       String subscription,
       String title,
