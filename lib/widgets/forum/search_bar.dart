@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/popup_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,11 +12,12 @@ typedef OnSearch = Function(String searchKey, String category);
 class SearchBar extends StatefulWidget {
   SearchBar({
     @required this.display,
-    @required this.categories,
     @required this.onSearch,
     @required this.onCancel,
+    this.categories = '',
     this.defaultSearchKeyValue,
     this.searchOnInputChange = true,
+    this.searchOnCategoryChange = true,
     this.backgroundColor = const Color(0xffebf0f7),
   });
   final bool display;
@@ -28,6 +30,7 @@ class SearchBar extends StatefulWidget {
   /// When `true`, search will work everytime the text input changes.
   /// If `false`, the user must click the search icon button to search.
   final bool searchOnInputChange;
+  final bool searchOnCategoryChange;
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -37,20 +40,26 @@ class _SearchBarState extends State<SearchBar> {
   TextEditingController _editingController;
   FocusNode _focusNode = FocusNode();
 
-  String selected = '';
   PublishSubject<String> input = PublishSubject();
   StreamSubscription subscription;
+
+  String _selectedCategory;
+
+  String get selected => _selectedCategory ?? searchCategories.split(',').first;
+  set selected(String category) => setState(() => _selectedCategory = category);
   String searchKey;
 
-
+  String get searchCategories => Api.instance.settings['search_categories'] ?? widget.categories;
 
   @override
   void initState() {
     super.initState();
 
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
-    subscription =
-        input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((_searchKey) {
+    subscription = input
+        .debounceTime(Duration(milliseconds: 500))
+        .distinct((a, b) => a == b)
+        .listen((_searchKey) {
       searchKey = _searchKey;
       if (widget.onSearch != null) widget.onSearch(searchKey, selected);
     });
@@ -109,14 +118,14 @@ class _SearchBarState extends State<SearchBar> {
                   margin: EdgeInsets.only(left: Space.xsm),
                   constraints: BoxConstraints(minWidth: 50),
                   child: Text(
-                    '${selected.isNotEmpty ? selected : widget.categories.split(',').first}',
+                    '$selected',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                 ),
                 PopUpButton(
                   items: [
-                    for (final category in widget.categories.split(','))
+                    for (final category in searchCategories.split(','))
                       PopupMenuItem(
                         child: Text('$category'),
                         value: category,
@@ -127,7 +136,9 @@ class _SearchBarState extends State<SearchBar> {
                   ],
                   onSelected: (selectedCat) {
                     if (selected == selectedCat) return;
-                    setState(() => selected = selectedCat ?? '');
+                    selected = selectedCat;
+
+                    if (!widget.searchOnCategoryChange) return;
                     widget.onSearch(searchKey, selected);
                   },
                 ),
