@@ -756,3 +756,212 @@ class _PostListViewState extends State<PostListView> {
   }
 }
 ```
+
+# 글과 Code 별 사진 등록
+
+- 글에 사진을 표시 할 때, 사진의 code 에 따라 디자인을 다르게 보여주고자 할 때, 아래의 예제와 같이 글과 사진을 하면 된다.
+
+- 아래 예제는 글에 사진을 등록 할 때, 광고 배너 사진, 광고 내용 사진을 등록하거나, 쇼핑몰에서 대표 사진, 설명 사진 등과 같이 각 사진의 용도가 정해져 있는 경우, code 값에 banner, content, primary, description 등의 code 를 주어서, 사진을 업로드한다.
+
+- 그리고 사진을 변경하고자 하는 경우, 미리 삭제를 해서, 서버에 사용되지 않는 사진이남겨지는 일이 없도로 한다.
+
+```dart
+import 'package:dalgona/services/defines.dart';
+import 'package:dalgona/services/globals.dart';
+import 'package:firelamp/widgets/functions.dart';
+import 'package:firelamp/widgets/image.cache.dart';
+import 'package:firelamp/widgets/spinner.dart';
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:firelamp/widgets/defines.dart';
+
+class EventForm extends StatefulWidget {
+  EventForm(this.forum, {this.onSuccess, this.onError});
+
+  final ApiForum forum;
+  final Function onSuccess;
+  final Function onError;
+
+  @override
+  _EventFormState createState() => _EventFormState();
+}
+
+class _EventFormState extends State<EventForm> {
+  final title = TextEditingController();
+  final content = TextEditingController();
+  double percentage = 0;
+  bool loading = false;
+  ApiPost post;
+
+  InputDecoration roundBox = InputDecoration(
+    filled: true,
+    contentPadding: EdgeInsets.all(Space.sm),
+    border: OutlineInputBorder(borderRadius: const BorderRadius.all(const Radius.circular(10.0))),
+  );
+
+  onUploadImage(String code) async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    try {
+      final file = await imageUpload(
+          quality: 95, onProgress: (p) => setState(() => percentage = p), code: code);
+      percentage = 0;
+      post.files.add(file);
+      setState(() => null);
+    } catch (e) {
+      if (e != ERROR_IMAGE_NOT_SELECTED) {
+        onError(e);
+      }
+    }
+  }
+
+  onFormSubmit() async {
+    if (loading) return;
+    setState(() => loading = true);
+
+    if (Api.instance.notLoggedIn) return onError("login_first".tr);
+    try {
+      final editedPost = await Api.instance.postEdit(
+          idx: post.idx,
+          categoryId: widget.forum.categoryId,
+          title: title.text,
+          content: content.text,
+          files: post.files);
+      widget.forum.insertOrUpdatePost(editedPost);
+      setState(() => loading = false);
+      if (widget.onSuccess != null) widget.onSuccess(editedPost);
+    } catch (e) {
+      setState(() => loading = false);
+      onError(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    post = widget.forum.postInEdit ?? ApiPost();
+    title.text = post.title;
+    content.text = post.content;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ApiForum forum = widget.forum;
+
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(Space.sm),
+        decoration: BoxDecoration(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+                padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs), child: Text('이벤트 제목')),
+            TextFormField(controller: title, decoration: roundBox),
+            Padding(
+                padding: EdgeInsets.only(top: Space.md, bottom: Space.xs),
+                child: Text('이벤트 내용. 담첨자 목록 등.')),
+            TextFormField(controller: content, minLines: 5, maxLines: 15, decoration: roundBox),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                /// Submit button
+                Row(
+                  children: [
+                    if (!loading)
+                      TextButton(
+                          child: Text('취소', style: TextStyle(color: Colors.red[300])),
+                          onPressed: () {
+                            forum.postInEdit = null;
+                            forum..render();
+                          }),
+                    SizedBox(width: Space.xs),
+                    TextButton(
+                      child: loading
+                          ? Spinner()
+                          : Text('저장', style: TextStyle(color: Colors.green[300])),
+                      onPressed: onFormSubmit,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (percentage > 0) LinearProgressIndicator(value: percentage),
+            spaceSm,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      CachedImage(bannerUrl),
+                      bannerUrl == null
+                          ? ElevatedButton(
+                              child: Text('이벤트 배너 등록'),
+                              onPressed: () => onUploadImage('banner'),
+                            )
+                          : ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  await api.deleteFile(image('banner').idx, postOrComment: post);
+                                  setState(() {});
+                                } catch (e) {
+                                  app.error(e);
+                                }
+                              },
+                              child: Text('이벤트 배너 삭제')),
+                    ],
+                  ),
+                ),
+                spaceSm,
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      CachedImage(contentUrl),
+                      contentUrl == null
+                          ? ElevatedButton(
+                              child: Text('이벤트 내용 사진 등록'),
+                              onPressed: () => onUploadImage('content'),
+                            )
+                          : ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  await api.deleteFile(image('content').idx, postOrComment: post);
+                                  setState(() {});
+                                } catch (e) {
+                                  app.error(e);
+                                }
+                              },
+                              child: Text('이벤트 내용 사진 삭제')),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  onError(dynamic e) {
+    app.error(e);
+  }
+
+  ApiFile image(String code) {
+    if (this.post == null || this.post.files == null) return null;
+    return this.post.files.firstWhere((f) => f.code == code, orElse: () => null);
+  }
+
+  String get bannerUrl {
+    return image('banner')?.thumbnailUrl;
+  }
+
+  String get contentUrl {
+    return image('content')?.thumbnailUrl;
+  }
+}
+```

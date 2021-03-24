@@ -7,6 +7,9 @@ class ApiFile {
     this.type,
     this.name,
     this.thumbnailUrl,
+    this.taxonomy,
+    this.entity,
+    this.code,
   });
 
   String url;
@@ -14,6 +17,9 @@ class ApiFile {
   String type;
   String name;
   String thumbnailUrl;
+  String taxonomy;
+  String entity;
+  String code;
 
   /// File upload percentage
   /// 업로드 퍼센티지 변수. 파일을 업로드 할 때, 여기에 업로드 퍼센티지를 기록 할 수 있다. 클라이언트에서만 사용됨.
@@ -35,6 +41,9 @@ class ApiFile {
       type: json["type"],
       name: json["name"],
       thumbnailUrl: url,
+      taxonomy: json["taxonomy"],
+      entity: "${json["entity"]}",
+      code: json["code"],
     );
   }
 
@@ -43,6 +52,10 @@ class ApiFile {
         "idx": idx,
         "type": type,
         "name": name,
+        "thumbnialUrl": thumbnailUrl,
+        "taxonomy": taxonomy,
+        "entity": entity,
+        "code": code,
       };
 
   @override
