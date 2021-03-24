@@ -742,6 +742,12 @@ class Api {
   }
 
   ///
+  Future<ApiCategory> categoryUpdate({String id, String field, String value}) async {
+    final re = await request({'route': 'category.update', 'id': id, field: value});
+    return ApiCategory.fromJson(re);
+  }
+
+  ///
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});
     return ApiCategory.fromJson(re);
