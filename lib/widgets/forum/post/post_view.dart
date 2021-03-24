@@ -56,20 +56,25 @@ class _PostViewState extends State<PostView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${widget.post.title}',
-                      style: stylePostTitle,
+                      '${widget.post.user.name}',
+                      // style: stylePostTitle,
+                      style: TextStyle(fontWeight: FontWeight.w500),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: Space.xs),
-                    PostMeta(widget.post, widget.forum, isInlineName: true),
+                    PostMeta(widget.post, widget.forum),
                   ],
                 ),
               )
             ],
           ),
         ),
-        // SizedBox(height: Space.sm),
+        SizedBox(height: Space.sm),
+        Text(
+          '${widget.post.title}',
+          style: stylePostTitle,
+        ),
         SizedBox(height: Space.sm),
         SelectableText(
           '${widget.post.content}',

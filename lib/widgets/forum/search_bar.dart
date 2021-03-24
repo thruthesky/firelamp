@@ -6,24 +6,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+typedef OnSearch = Function(String searchKey, String category);
+
 class SearchBar extends StatefulWidget {
   SearchBar({
     @required this.display,
     @required this.categories,
-    @required this.onCategoryChange,
     @required this.onSearch,
     @required this.onCancel,
     this.defaultSearchKeyValue,
     this.searchOnInputChange = true,
     this.backgroundColor = const Color(0xffebf0f7),
-    // defaultCategoryValue,
   });
   final bool display;
   final String categories;
-  final Function onCategoryChange;
-  final Function onSearch;
+  final OnSearch onSearch;
   final Function onCancel;
-  // final String defaultCategoryValue;
   final String defaultSearchKeyValue;
   final Color backgroundColor;
 
@@ -52,9 +50,9 @@ class _SearchBarState extends State<SearchBar> {
 
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
     subscription =
-        input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((value) {
-      searchKey = value;
-      if (widget.onSearch != null) widget.onSearch(value);
+        input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((_searchKey) {
+      searchKey = _searchKey;
+      if (widget.onSearch != null) widget.onSearch(searchKey, selected);
     });
   }
 
@@ -101,7 +99,7 @@ class _SearchBarState extends State<SearchBar> {
                         icon: Icon(Icons.search),
                         onPressed: () {
                           _focusNode.unfocus();
-                          widget.onSearch(searchKey);
+                          widget.onSearch(searchKey, selected);
                         },
                       ),
                     ),
@@ -130,7 +128,7 @@ class _SearchBarState extends State<SearchBar> {
                   onSelected: (selectedCat) {
                     if (selected == selectedCat) return;
                     setState(() => selected = selectedCat ?? '');
-                    widget.onCategoryChange(selected);
+                    widget.onSearch(searchKey, selected);
                   },
                 ),
               ],
