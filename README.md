@@ -566,3 +566,193 @@ class IntroductionScreen extends StatelessWidget {
   }
 }
 ```
+
+# 글 목록 예제
+
+- 아래는 글 작성, 수정, 삭제 등의 기능 없이, 글을 목록과 글 읽기 페이지를 보여주는 것만 있다.
+
+```dart
+import 'package:dalgona/screens/forum/no_posts_yet.dart';
+import 'package:dalgona/screens/forum/post_more_buttons.dart';
+import 'package:dalgona/screens/forum/post_slide_view.dart';
+import 'package:dalgona/services/app.service.dart';
+import 'package:dalgona/services/defines.dart';
+import 'package:dalgona/services/globals.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:firelamp/widgets/defines.dart';
+import 'package:firelamp/widgets/forum/no_more_posts.dart';
+import 'package:firelamp/widgets/forum/post/post_preview.dart';
+import 'package:firelamp/widgets/forum/post/post_view.dart';
+import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
+import 'package:firelamp/widgets/rounded_box.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+/// 글 목록과 읽기만 하는 위젯
+///
+/// 새 글 작성이나, 기존글 수정, 삭제 등을 하지 않는다. 즉, 글을 보여주기만을 위한 용도이며, 디자인을 마음데로 추가 할 수 있다.
+class PostListView extends StatefulWidget {
+  PostListView({this.categoryId});
+
+  final String categoryId;
+
+  @override
+  _PostListViewState createState() => _PostListViewState();
+}
+
+class _PostListViewState extends State<PostListView> {
+  /// Declare forum model(setting)
+  ApiForum forum;
+
+  loadPosts() async {
+    try {
+      await api.fetchPosts(forum);
+      // Open(Show view page) if the post is on top to show.
+      if (forum.postOnTop != null || forum.post != null) {
+        forum.posts.first.display = true;
+        forum.setting = app.categorySettings[forum.posts.first.categoryId];
+      }
+    } catch (e) {
+      forum.loading = false;
+      forum.render();
+      app.error(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// Initialize the forum model
+    forum = ApiForum(
+      categoryId: widget.categoryId,
+      limit: 10,
+      render: () {
+        print("pageNo.: ${forum.pageNo}");
+        setState(() => null);
+      },
+    );
+
+    /// Load the first page.
+    loadPosts();
+
+    /// Load next page on user scroll.
+    forum.itemPositionsListener.itemPositions.addListener(() {
+      int lastVisibleIndex = forum.itemPositionsListener.itemPositions.value.last.index;
+      if (forum.canLoad == false) return;
+      if (lastVisibleIndex > forum.posts.length - 4) {
+        loadPosts();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Container(
+            color: Color(0xffebf0f7),
+            child: forum.posts.isNotEmpty
+                ? ScrollablePositionedList.builder(
+                    itemScrollController: forum.listController,
+                    itemPositionsListener: forum.itemPositionsListener,
+                    itemCount: forum.posts.length,
+                    itemBuilder: (_, i) {
+                      ApiPost post = forum.posts[i];
+
+                      return RoundedBox(
+                        margin: EdgeInsets.all(Space.xs),
+                        padding: EdgeInsets.all(Space.forumViewPadding),
+                        boxColor: Colors.white,
+                        radius: 10,
+                        child: post.display
+                            ? PostView(
+                                forum: forum,
+                                post: post,
+                                onError: error,
+                                actions: postActions(post),
+                                onTitleTap: () => openPostView(post),
+                              )
+                            : PostPreview(
+                                post,
+                                forum,
+                                onTap: () => openPostView(post),
+                              ),
+                      );
+                    },
+                  )
+                : NoPostsYet(forum),
+          ),
+        ),
+
+        if (forum.noMorePosts && !forum.noPosts) Center(child: NoMorePosts(forum: forum)),
+        //  Loader
+      ],
+    );
+  }
+
+  postActions(ApiPost post) {
+    return [
+      VoteButtons(
+        post,
+        forum,
+        onError: error,
+      ),
+      if (post.isNotMine) ...[
+        SizedBox(width: xs),
+        IconButton(
+          icon: Icon(Icons.message_outlined, color: Color(0xff7d7d7d), size: 20),
+          onPressed: () {
+            print(post);
+            app.openChatRoom(firebaseUid: post.user.firebaseUid);
+          },
+        ),
+      ],
+      Spacer(),
+      PostMoreButtons(post, forum)
+    ];
+  }
+
+  /// if [changeDisplay] is `false` it will not change the post display status
+  ///   - for instance it will not close the post view status after editting.
+  openPostView(ApiPost post) {
+    if (post == null) return;
+    if (forum.postView == 'slide') {
+      /// Define controller for scrollView
+      ScrollController _controller = ScrollController(
+        initialScrollOffset: 0.0,
+        keepScrollOffset: true,
+      );
+
+      showMaterialModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (ctx) {
+          return SingleChildScrollView(
+            reverse: true,
+            controller: _controller,
+            child: PostSlideView(
+              post,
+              forum,
+              actions: postActions(post),
+            ),
+          );
+        },
+      );
+
+      /// Move to bottom of scroll Extent (top since the scroll view is reversed)
+      SchedulerBinding.instance.addPostFrameCallback((_) => _controller.jumpTo(
+            _controller.position.maxScrollExtent,
+          ));
+    } else {
+      post.display = !post.display;
+      setState(() {});
+    }
+  }
+}
+```
