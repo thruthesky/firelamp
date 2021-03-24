@@ -27,12 +27,10 @@ class DisplayFiles extends StatelessWidget {
     Widget image = CachedImage(file.url);
 
     return ClipRRect(
-      
       child: GestureDetector(
         child: moreImage > 0
             ? Stack(
                 fit: StackFit.expand,
-                
                 children: [
                   image,
                   if (moreImage > 0 && withMoreImageOverlay)
@@ -66,27 +64,26 @@ class DisplayFiles extends StatelessWidget {
 
     return postOrComment.files.length > 3
         ? StaggeredGridView.countBuilder(
-
             shrinkWrap: true,
+            padding: EdgeInsets.all(0),
             crossAxisCount: 4,
             itemCount: displayedImage,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
-              child: (index + 1) > 4
-                  ? SizedBox.shrink()
-                  : _imageBuilder(
-                      _files[index],
-                      withMoreImageOverlay: (index + 1) == (displayedImage - 1),
-                    ),
-            ),
+                  child: (index + 1) > 4
+                      ? SizedBox.shrink()
+                      : _imageBuilder(
+                          _files[index],
+                          withMoreImageOverlay: (index + 1) == (displayedImage - 1),
+                        ),
+                ),
             staggeredTileBuilder: (int index) => StaggeredTile.count(
-              2,
-              index.isEven ? 2 : 1,
-            ),
+                  2,
+                  index.isEven ? 2 : 1,
+                ),
             mainAxisSpacing: 4.0,
             crossAxisSpacing: 4.0,
-            primary: false
-          )
+            primary: false)
         : GridView.count(
             padding: EdgeInsets.all(0),
             physics: NeverScrollableScrollPhysics(),
