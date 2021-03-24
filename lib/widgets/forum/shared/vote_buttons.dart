@@ -47,6 +47,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                 Padding(
                   padding: EdgeInsets.only(left: Space.xsm, right: Space.md),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     child: Row(
                       children: [
                         Icon(
@@ -73,6 +74,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                     right: Space.sm,
                   ),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     child: Row(
                       children: [
                         Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),

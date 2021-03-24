@@ -19,6 +19,7 @@ class CommentMeta extends StatelessWidget {
               fontSize: Space.sm,
             ),
           ),
+          SizedBox(height: Space.xs),
           Row(
             children: [
               Icon(
