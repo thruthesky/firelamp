@@ -16,14 +16,14 @@ class SearchBar extends StatefulWidget {
     this.defaultSearchKeyValue,
     this.searchOnInputChange = true,
     this.backgroundColor = const Color(0xffebf0f7),
-    defaultCategoryValue,
-  }) : this.defaultCategoryValue = defaultCategoryValue ?? '';
+    // defaultCategoryValue,
+  });
   final bool display;
   final String categories;
   final Function onCategoryChange;
   final Function onSearch;
   final Function onCancel;
-  final String defaultCategoryValue;
+  // final String defaultCategoryValue;
   final String defaultSearchKeyValue;
   final Color backgroundColor;
 
@@ -43,6 +43,8 @@ class _SearchBarState extends State<SearchBar> {
   PublishSubject<String> input = PublishSubject();
   StreamSubscription subscription;
   String searchKey;
+
+
 
   @override
   void initState() {
@@ -109,7 +111,7 @@ class _SearchBarState extends State<SearchBar> {
                   margin: EdgeInsets.only(left: Space.xsm),
                   constraints: BoxConstraints(minWidth: 50),
                   child: Text(
-                    '${selected.isNotEmpty ? selected : widget.defaultCategoryValue == null ? widget.defaultCategoryValue : widget.categories.split(',').first}',
+                    '${selected.isNotEmpty ? selected : widget.categories.split(',').first}',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -127,7 +129,7 @@ class _SearchBarState extends State<SearchBar> {
                   ],
                   onSelected: (selectedCat) {
                     if (selected == selectedCat) return;
-                    setState(() => selected = selectedCat);
+                    setState(() => selected = selectedCat ?? '');
                     widget.onCategoryChange(selected);
                   },
                 ),
