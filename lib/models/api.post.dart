@@ -116,7 +116,7 @@ class ApiPost {
   String shortDateTime;
 
   ///
-  ApiPostUser user;
+  ApiShortUser user;
 
   List<ApiComment> comments;
 
@@ -278,7 +278,7 @@ class ApiPost {
       title: json["title"] != '' ? json['title'] : 'No Title',
       content: json["content"] ?? '',
 
-      user: ApiPostUser.fromJson(json['user']),
+      user: ApiShortUser.fromJson(json['user']),
 
       /// Updates
       userIdx: "${json['userIdx']}",

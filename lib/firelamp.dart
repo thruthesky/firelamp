@@ -37,3 +37,4 @@ part 'models/api.post.dart';
 part 'models/api.category.dart';
 part 'models/api.user.dart';
 part 'models/api.forum.dart';
+part 'models/api.point_history.dart';

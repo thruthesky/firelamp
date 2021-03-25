@@ -39,7 +39,7 @@ class ApiComment {
   String rootIdx;
   String parentIdx;
   String userIdx;
-  ApiPostUser user;
+  ApiShortUser user;
   String categoryIdx;
   String subcategory;
   String path;
@@ -87,7 +87,7 @@ class ApiComment {
       parentIdx: "${json['parentIdx']}",
       subcategory: json['subcategory'],
       userIdx: "${json['userIdx']}",
-      user: ApiPostUser.fromJson(json['user']),
+      user: ApiShortUser.fromJson(json['user']),
       path: json['path'],
       title: json['title'] ?? '',
       content: json['content'] ?? '',

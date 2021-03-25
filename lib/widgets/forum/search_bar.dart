@@ -11,7 +11,6 @@ typedef OnSearch = Function(String searchKey, String category);
 
 class SearchBar extends StatefulWidget {
   SearchBar({
-    @required this.display,
     @required this.onSearch,
     @required this.onCancel,
     this.categories = '',
@@ -21,7 +20,6 @@ class SearchBar extends StatefulWidget {
     this.searchOnCategoryChange = true,
     this.backgroundColor = const Color(0xffebf0f7),
   });
-  final bool display;
   final String categories;
   final OnSearch onSearch;
   final Function onCancel;
@@ -76,77 +74,77 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.display == false
-        ? SizedBox.shrink()
-        : Container(
-            color: widget.backgroundColor,
-            padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.redAccent),
-                    onPressed: widget.onCancel,
-                  ),
+    return Container(
+      color: widget.backgroundColor,
+      padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            child: IconButton(
+              icon: Icon(Icons.close, color: Colors.redAccent),
+              onPressed: widget.onCancel,
+            ),
+          ),
+          Flexible(
+            child: TextField(
+              autofocus: false,
+              focusNode: _focusNode,
+              controller: _editingController,
+              textInputAction: TextInputAction.go,
+              onSubmitted: (value) => input.add(value),
+              onChanged: widget.searchOnInputChange
+                  ? (value) => input.add(value)
+                  : (value) => searchKey = value,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
+                border: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
                 ),
-                Flexible(
-                  child: TextField(
-                    autofocus: false,
-                    focusNode: _focusNode,
-                    controller: _editingController,
-                    textInputAction: TextInputAction.go,
-                    onSubmitted: (value) => input.add(value),
-                    onChanged: widget.searchOnInputChange
-                        ? (value) => input.add(value)
-                        : (value) => searchKey = value,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
-                      border: OutlineInputBorder(
-                        borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.search),
-                        onPressed: () {
-                          _focusNode.unfocus();
-                          widget.onSearch(searchKey, selected);
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: Space.xsm),
-                  constraints: BoxConstraints(minWidth: 50),
-                  child: Text(
-                    '$selected',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                PopUpButton(
-                  items: [
-                    for (final category in searchCategories.split(','))
-                      PopupMenuItem(
-                        child: Text('$category'),
-                        value: category,
-                        textStyle: selected == category
-                            ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
-                            : null,
-                      )
-                  ],
-                  onSelected: (selectedCat) {
-                    if (selected == selectedCat) return;
-                    selected = selectedCat;
-
-                    if (!widget.searchOnCategoryChange) return;
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _focusNode.unfocus();
                     widget.onSearch(searchKey, selected);
                   },
                 ),
-              ],
+              ),
             ),
-          );
+          ),
+          if (searchCategories != null && searchCategories != '') ...[
+            Container(
+              margin: EdgeInsets.only(left: Space.xsm),
+              constraints: BoxConstraints(maxWidth: 50),
+              child: Text(
+                '$selected',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+            PopUpButton(
+              items: [
+                for (final category in searchCategories.split(','))
+                  PopupMenuItem(
+                    child: Text('$category'),
+                    value: category,
+                    textStyle: selected == category
+                        ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
+                        : null,
+                  )
+              ],
+              onSelected: (selectedCat) {
+                if (selected == selectedCat) return;
+                selected = selectedCat;
+
+                if (!widget.searchOnCategoryChange) return;
+                widget.onSearch(searchKey, selected);
+              },
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

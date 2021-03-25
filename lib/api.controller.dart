@@ -741,9 +741,19 @@ class Api {
     return ApiCategory.fromJson(re);
   }
 
+  /// Category Update
   ///
-  Future<ApiCategory> categoryUpdate({String id, String field, String value}) async {
-    final re = await request({'route': 'category.update', 'id': id, field: value});
+  /// The [data] is a map of key/value pair to save.
+  /// You may save a value composing with [field] and [value].
+  Future<ApiCategory> categoryUpdate(
+      {@required String id, String field, String value, Map<String, dynamic> data}) async {
+    if (data == null) data = {};
+
+    data['route'] = 'category.update';
+    data['id'] = id;
+    if (field != null) data[field] = value;
+
+    final re = await request(data);
     return ApiCategory.fromJson(re);
   }
 
@@ -859,11 +869,16 @@ class Api {
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
-    if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (categoryId != null && categoryId != "")
+      data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
-    if (searchKey != null && searchKey != '')
-      data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '') {
+      data['where'] =
+          data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
+      // Deliver search key to backend to save.
+      data['searchKey'] = searchKey;
+    }
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
@@ -1409,5 +1424,24 @@ class Api {
       'code': code,
       'data': data,
     });
+  }
+
+  Future<List<ApiPointHistory>> pointHistorySearch(
+      {String select = 'idx, fromUserIdx, toUserIdx, createdAt',
+      String where = '1',
+      int page = 1,
+      int limit = 10}) async {
+    final histories = await request({
+      'route': 'pointHistory.search',
+      'select': select,
+      'where': where,
+      'page': page,
+      'limit': limit
+    });
+    List<ApiPointHistory> rets = [];
+    for (final history in histories) {
+      rets.add(ApiPointHistory.fromJson(history));
+    }
+    return rets;
   }
 }

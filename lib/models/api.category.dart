@@ -11,6 +11,7 @@ class ApiCategory {
     this.title,
     this.description,
     this.subcategories,
+    this.orgSubcategories,
     this.pointPostCreate,
     this.pointPostDelete,
     this.pointCommentCreate,
@@ -42,6 +43,9 @@ class ApiCategory {
   String title;
   String description;
   List<String> subcategories;
+
+  /// 콤마로 분리된 문자열을 가지고 있는 원래, 카테고리 문자열.
+  String orgSubcategories;
   String pointPostCreate;
   String pointPostDelete;
   String pointCommentCreate;
@@ -76,6 +80,7 @@ class ApiCategory {
       title: json["title"],
       description: json["description"],
       subcategories: List<String>.from(json["subcategories"].map((x) => x)),
+      orgSubcategories: List<String>.from(json["subcategories"].map((x) => x)).join(','),
       pointPostCreate: "${json["POINT_POST_CREATE"]}",
       pointPostDelete: "${json["POINT_POST_DELETE"]}",
       pointCommentCreate: "${json["POINT_COMMENT_CREATE"]}",
@@ -129,6 +134,35 @@ class ApiCategory {
         "noOfPagesOnNav": noOfPagesOnNav,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
+        "postEditWidget": postEditWidget,
+        "postListHeaderWidget": postListHeaderWidget,
+        "postListWidget": postListWidget,
+        "postViewWidget": postViewWidget,
+      };
+
+  /// Returns a map of category data to save.
+  Map<String, dynamic> toSave() => {
+        "title": title,
+        "description": description,
+        "subcategories": orgSubcategories,
+        "POINT_POST_CREATE": pointPostCreate,
+        "POINT_POST_DELETE": pointPostDelete,
+        "POINT_COMMENT_CREATE": pointCommentCreate,
+        "POINT_COMMENT_DELETE": pointCommentDelete,
+        "BAN_ON_LIMIT": banOnLimit,
+        "POINT_HOUR_LIMIT": pointHourLimit,
+        "POINT_HOUR_LIMIT_COUNT": pointHourLimitCount,
+        "POINT_DAILY_LIMIT_COUNT": pointDailyLimitCount,
+        "listOnView": listOnView,
+        "noOfPostsPerPage": noOfPostsPerPage,
+        "mobilePostListWidget": mobilePostListWidget,
+        "mobilePostViewWidget": mobilePostViewWidget,
+        "forumEditWidget": forumEditWidget,
+        "forumViewWidget": forumViewWidget,
+        "forumListHeaderWidget": forumListHeaderWidget,
+        "forumListWidget": forumListWidget,
+        "paginationWidget": paginationWidget,
+        "noOfPagesOnNav": noOfPagesOnNav,
         "postEditWidget": postEditWidget,
         "postListHeaderWidget": postListHeaderWidget,
         "postListWidget": postListWidget,

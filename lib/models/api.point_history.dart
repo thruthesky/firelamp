@@ -1,8 +1,12 @@
+part of '../firelamp.dart';
+
 class ApiPointHistory {
   ApiPointHistory({
     this.idx,
     this.fromUserIdx,
+    this.fromUser,
     this.toUserIdx,
+    this.toUser,
     this.reason,
     this.taxonomy,
     this.entity,
@@ -14,35 +18,39 @@ class ApiPointHistory {
     this.createdAt,
     this.updatedAt,
   });
-  int idx;
-  int fromUserIdx;
-  int toUserIdx;
+  String idx;
+  String fromUserIdx;
+  ApiShortUser fromUser;
+  String toUserIdx;
+  ApiShortUser toUser;
   String reason;
   String taxonomy;
-  int entity;
-  int categoryIdx;
-  int fromUserPointApply;
-  int fromUserPointAfter;
-  int toUserPointApply;
-  int toUserPointAfter;
-  int createdAt;
-  int updatedAt;
+  String entity;
+  String categoryIdx;
+  String fromUserPointApply;
+  String fromUserPointAfter;
+  String toUserPointApply;
+  String toUserPointAfter;
+  String createdAt;
+  String updatedAt;
 
   factory ApiPointHistory.fromJson(dynamic json) {
     return ApiPointHistory(
-      idx: int.parse("${json['idx']}"),
-      fromUserIdx: int.parse("${json['fromUserIdx']}"),
-      toUserIdx: int.parse("${json['toUserIdx']}"),
+      idx: "${json['idx']}",
+      fromUserIdx: "${json['fromUserIdx']}",
+      fromUser: ApiShortUser.fromJson(json['fromUser']),
+      toUserIdx: "${json['toUserIdx']}",
+      toUser: ApiShortUser.fromJson(json['toUser']),
       reason: json['reason'],
       taxonomy: json['taxonomy'],
-      entity: int.parse("${json['entity']}"),
-      categoryIdx: int.parse("${json['categoryIdx']}"),
-      fromUserPointApply: int.parse("${json['fromUserPointApply']}"),
-      fromUserPointAfter: int.parse("${json['fromUserPointAfter']}"),
-      toUserPointApply: int.parse("${json['toUserPointApply']}"),
-      toUserPointAfter: int.parse("${json['toUserPointAfter']}"),
-      createdAt: int.parse("${json['createdAt']}"),
-      updatedAt: int.parse("${json['updatedAt']}"),
+      entity: "${json['entity']}",
+      categoryIdx: "${json['categoryIdx']}",
+      fromUserPointApply: "${json['fromUserPointApply']}",
+      fromUserPointAfter: "${json['fromUserPointAfter']}",
+      toUserPointApply: "${json['toUserPointApply']}",
+      toUserPointAfter: "${json['toUserPointAfter']}",
+      createdAt: "${json['createdAt']}",
+      updatedAt: "${json['updatedAt']}",
     );
   }
 
