@@ -81,13 +81,6 @@ class ApiForum {
   // categories separated by comma.
   String get searchCategories => Api.instance.settings['search_categories'] ?? '';
 
-  bool get canSearch {
-    if (postInEdit != null) return false;
-    if (userIdx != null) return false;
-    if (searchCategories == '') return false;
-    return true;
-  }
-
   bool get canCreate => userIdx == null && categoryId != null && postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;

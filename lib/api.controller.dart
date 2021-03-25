@@ -741,9 +741,19 @@ class Api {
     return ApiCategory.fromJson(re);
   }
 
+  /// Category Update
   ///
-  Future<ApiCategory> categoryUpdate({String id, String field, String value}) async {
-    final re = await request({'route': 'category.update', 'id': id, field: value});
+  /// The [data] is a map of key/value pair to save.
+  /// You may save a value composing with [field] and [value].
+  Future<ApiCategory> categoryUpdate(
+      {@required String id, String field, String value, Map<String, dynamic> data}) async {
+    if (data == null) data = {};
+
+    data['route'] = 'category.update';
+    data['id'] = id;
+    if (field != null) data[field] = value;
+
+    final re = await request(data);
     return ApiCategory.fromJson(re);
   }
 
