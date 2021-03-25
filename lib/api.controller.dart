@@ -1410,4 +1410,23 @@ class Api {
       'data': data,
     });
   }
+
+  Future<List<ApiPointHistory>> pointHistorySearch(
+      {String select = 'idx, fromUserIdx, toUserIdx, createdAt',
+      String where = '1',
+      int page = 1,
+      int limit = 10}) async {
+    final histories = await request({
+      'route': 'pointHistory.search',
+      'select': select,
+      'where': where,
+      'page': page,
+      'limit': limit
+    });
+    List<ApiPointHistory> rets = [];
+    for (final history in histories) {
+      rets.add(ApiPointHistory.fromJson(history));
+    }
+    return rets;
+  }
 }

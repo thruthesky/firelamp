@@ -1,6 +1,6 @@
 import 'package:firelamp/firelamp.dart';
 
-class ApiPostUser {
+class ApiShortUser {
   final int idx;
   final String name;
   final String nickname;
@@ -9,7 +9,7 @@ class ApiPostUser {
   final String photoUrl;
   final String firebaseUid;
 
-  ApiPostUser({
+  ApiShortUser({
     this.idx,
     this.name,
     this.nickname,
@@ -19,11 +19,11 @@ class ApiPostUser {
     this.firebaseUid,
   });
 
-  factory ApiPostUser.fromJson(dynamic json) {
-    if (json == null) return ApiPostUser();
+  factory ApiShortUser.fromJson(dynamic json) {
+    if (json == null) return ApiShortUser();
 
     // 사용자 정보가 없는 경우, Map 대신 빈 배열(List)로 들어온다.
-    if (json is List) return ApiPostUser();
+    if (json is List) return ApiShortUser();
 
     int photoIdx = int.parse("${json['photoIdx'] ?? 0}");
     String url;
@@ -33,7 +33,7 @@ class ApiPostUser {
       url =
           Api.instance.thumbnailUrl(src: photoIdx.toString(), width: 100, height: 100, quality: 95);
     }
-    return ApiPostUser(
+    return ApiShortUser(
       idx: int.parse("${json['idx']}"),
       name: json['name'],
       nickname: json['nickname'],
