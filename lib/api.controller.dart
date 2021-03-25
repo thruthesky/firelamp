@@ -869,11 +869,16 @@ class Api {
 
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
-    if (categoryId != null) data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (categoryId != null && categoryId != "")
+      data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
-    if (searchKey != null && searchKey != '')
-      data['where'] = data['where'] + " and title like '%$searchKey%'";
+    if (searchKey != null && searchKey != '') {
+      data['where'] =
+          data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
+      // Deliver search key to backend to save.
+      data['searchKey'] = searchKey;
+    }
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
