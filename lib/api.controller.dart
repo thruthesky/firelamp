@@ -1166,29 +1166,6 @@ class Api {
     return request({'route': 'app.get', 'table': table});
   }
 
-  /// ! remove. move it to inapp purchase
-  recordFailurePurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordFailure';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase
-  recordPendingPurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordPending';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase
-  recordSuccessPurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordSuccess';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase.
-  getMyPurchases() {
-    return request({'route': 'purchase.myPurchase'});
-  }
-
   /// Save token to backend.
   ///
   /// `session_id` will be added if the user had logged in.
