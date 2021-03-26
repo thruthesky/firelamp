@@ -333,7 +333,7 @@ class Api {
 
     dynamic res;
     try {
-      _printDebugUrl(data);
+      // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -1164,29 +1164,6 @@ class Api {
   /// Possible errors: ERROR_APP_GET_NO_RECORD
   Future appGet(String table) {
     return request({'route': 'app.get', 'table': table});
-  }
-
-  /// ! remove. move it to inapp purchase
-  recordFailurePurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordFailure';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase
-  recordPendingPurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordPending';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase
-  recordSuccessPurchase(Map<String, dynamic> data) {
-    data['route'] = 'purchase.recordSuccess';
-    return request(data);
-  }
-
-  /// ! remove. move it to inapp purchase.
-  getMyPurchases() {
-    return request({'route': 'purchase.myPurchase'});
   }
 
   /// Save token to backend.
