@@ -1446,10 +1446,15 @@ class Api {
     return rets;
   }
 
-  Future<List<ApiSearchKeyStat>> searchKeyStats() async {
-    final Map searchKeys = await request({'route': 'searchKey.stats'});
+  /// Load search keywords from Backend
+  ///
+  /// There is no pagination. And the data from backend is minimum. So, it would be okay without pagination.
+  /// The [days] is the past days from today to get the searched keywords. It might be adjusted for the performance of getting resonable number of search results.
+  Future<List<ApiSearchKeyStat>> searchKeyStats({int days = 1}) async {
+    final searchKeys = await request({'route': 'searchKey.stats', 'days': days});
 
     List<ApiSearchKeyStat> rets = [];
+    if (searchKeys is List) return rets;
 
     searchKeys.entries.forEach((item) {
       rets.add(ApiSearchKeyStat.fromJson(item));
