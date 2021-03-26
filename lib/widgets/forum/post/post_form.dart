@@ -8,8 +8,20 @@ import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_buttons.dart';
 
 class PostForm extends StatefulWidget {
-  PostForm(this.forum, {this.onSuccess, this.onError});
+  PostForm(
+    this.forum, {
+    this.onSuccess,
+    this.onError,
+    this.formKey,
+    this.submitKey,
+    this.titleKey,
+    this.contentKey,
+  });
 
+  final String formKey;
+  final String submitKey;
+  final String titleKey;
+  final String contentKey;
   final ApiForum forum;
   final Function onSuccess;
   final Function onError;
@@ -99,6 +111,7 @@ class _PostFormState extends State<PostForm> {
     if (forum.postInEdit == null) return SizedBox.shrink();
     return SingleChildScrollView(
       child: Container(
+        key: ValueKey(widget.formKey),
         padding: EdgeInsets.all(Space.sm),
         decoration: BoxDecoration(),
         child: Column(
@@ -110,6 +123,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('title'.tr),
             ),
             TextFormField(
+              key: ValueKey('postFormTitleField'),
               controller: title,
               decoration: _inputDecoration,
             ),
@@ -118,6 +132,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('content'.tr),
             ),
             TextFormField(
+              key: ValueKey(widget.contentKey),
               controller: content,
               minLines: 5,
               maxLines: 15,
@@ -158,6 +173,7 @@ class _PostFormState extends State<PostForm> {
                       ),
                     SizedBox(width: Space.xs),
                     TextButton(
+                      key: ValueKey(widget.submitKey),
                       child: loading
                           ? Spinner()
                           : Text(

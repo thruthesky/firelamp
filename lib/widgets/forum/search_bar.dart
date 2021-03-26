@@ -18,7 +18,7 @@ class SearchBar extends StatefulWidget {
     this.defaultSearchCategoryValue,
     this.searchOnInputChange = true,
     this.searchOnCategoryChange = true,
-    this.backgroundColor = const Color(0xffebf0f7),
+    this.backgroundColor = const Color(0x000000),
   });
   final String categories;
   final OnSearch onSearch;
