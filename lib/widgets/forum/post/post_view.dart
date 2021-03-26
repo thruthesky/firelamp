@@ -18,6 +18,8 @@ class PostView extends StatefulWidget {
     this.onTitleTap,
     this.open = false,
     this.onError,
+    this.postTitleKey,
+    this.postContentKey,
   }) : super(key: key);
 
   final ApiForum forum;
@@ -27,6 +29,9 @@ class PostView extends StatefulWidget {
   final Function onTitleTap;
   final Function onError;
   final bool open;
+
+  final String postTitleKey;
+  final String postContentKey;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -73,11 +78,13 @@ class _PostViewState extends State<PostView> {
         SizedBox(height: Space.sm),
         Text(
           '${widget.post.title}',
+          key: ValueKey(widget.postTitleKey),
           style: stylePostTitle,
         ),
         SizedBox(height: Space.sm),
         SelectableText(
           '${widget.post.content}',
+          key: ValueKey(widget.postContentKey),
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
         DisplayFiles(postOrComment: widget.post),
