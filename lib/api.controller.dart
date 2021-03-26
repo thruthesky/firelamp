@@ -1445,4 +1445,16 @@ class Api {
     }
     return rets;
   }
+
+  Future<List<ApiSearchKeyStat>> searchKeyStats() async {
+    final Map searchKeys = await request({'route': 'searchKey.stats'});
+
+    List<ApiSearchKeyStat> rets = [];
+
+    searchKeys.entries.forEach((item) {
+      rets.add(ApiSearchKeyStat.fromJson(item));
+    });
+
+    return rets;
+  }
 }
