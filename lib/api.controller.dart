@@ -89,6 +89,11 @@ class Api {
     return user.data[topic] != null && user.data[topic] == 'on';
   }
 
+  bool isSubscribeChat(topic) {
+    if (notLoggedIn) return false;
+    return user.data[topic] == null || user.data[topic] == 'on';
+  }
+
   /// To use firebase or not.
   bool enableFirebase;
 
@@ -478,6 +483,10 @@ class Api {
     return user;
   }
 
+  /// Switch [option] to `on` and `off`.
+  /// If [option] doesnt exist it switch to `on`.
+  /// If [option] is `on` it switch to `off`.
+  /// If [option] is `off` it switch to `on`.
   Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
       'route': route,
@@ -489,10 +498,12 @@ class Api {
     return user;
   }
 
+  /// it will always switch the [option]:`on`
   Future<ApiUser> userOptionSwitchOn(String option) async {
     return userOptionSwitch(option: option, route: 'user.switchOn');
   }
 
+  /// it will always switch the [option]:`off`
   Future<ApiUser> userOptionSwitchOff(String option) async {
     return userOptionSwitch(option: option, route: 'user.switchOff');
   }
