@@ -1,3 +1,7 @@
+## [0.0.8] - Refacotring
+
+- A lot of changes had made. It is not recommended to use this version.
+
 ## [0.0.7] - Lowering shared_preferences version
 
 - Lowering shared_preferences version
