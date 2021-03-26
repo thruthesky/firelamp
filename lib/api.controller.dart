@@ -12,6 +12,7 @@ class Loading {
 /// It extends `GetxController` to update when user information changes.
 class Api {
   ApiUser user;
+  FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
   Loading loading = Loading();
 
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
