@@ -4,6 +4,22 @@ A flutter package to support full CMS(Content Management System) functionalities
 
 It is based on Firebase and LAMP stack.
 
+## TODos
+
+- API 전체를 재 작성.
+  - null safety 를 적용한다.
+  - 웹 지원을 한다.
+  - library 이름을 지정하지 않는다. 자동 지정된다.
+  - part, part of 를 사용하지 않고, mini library 를 사용한다.
+  - 패키지 명칭을 `centerx` 로 변경하고, centerx 백엔드만 연결한다. 파이어베이스 연결은 하지 않는다.
+  - lib/src 폴더를 활용하고, 외부에서 사용하게 할 것은 export 한다.
+  - api.controller.dart 를 api.dart 로 변경
+  - src/api.dart 에는 오직, CenterX 연결하는 코드만 넣는다.
+  - 관리자 페이지는 `centerx_admin` 패키지로 떼어낸다.
+  - firebase 를 연결하는 것은 `centerx_firebase` 패키지로 만든다.
+  - firechat 채팅은 현재 상태로 유지.
+  - 인앱결제는 `centerx_in_app_purchase` 로 변경한다.
+
 ## A story of Firelamp
 
 We first worked on Firebase with LAMP(or LEMP) stack for a while and we decided to remove LAMP stack since it is a hassle to maintain two stacks.

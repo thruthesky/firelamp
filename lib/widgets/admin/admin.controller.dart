@@ -100,9 +100,11 @@ class Admin extends GetxController {
   // 카테고리 검사 루틴, 끝 --
 
   /// 검색한 카테고리
+  ///
+  /// 관리자 페이지의 처음에서 한번 호출하면 된다.
   categorySearch() async {
     try {
-      searchedCategories = await api.categorySearch(limit: 200);
+      searchedCategories = await api.categorySearch(limit: 20000);
       update();
     } catch (e) {
       alert(e);
