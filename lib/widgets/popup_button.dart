@@ -7,22 +7,18 @@ class PopUpButton extends StatelessWidget {
   final OnSelectedFunction onSelected;
   final List<PopupMenuItem> items;
   final Widget icon;
-  final String popupButtonKey;
 
   PopUpButton({
     @required this.items,
     @required this.onSelected,
     this.icon = const Icon(Icons.more_vert),
-    this.popupButtonKey = 'popupButtonKey'
   }) : assert(icon != null);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: PopupMenuButton<dynamic>(
-        key: ValueKey(popupButtonKey),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
         itemBuilder: (context) => items,
         icon: icon,
         offset: Offset(10.0, 10.0),
