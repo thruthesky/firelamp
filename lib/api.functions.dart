@@ -31,7 +31,9 @@ String getRandomString({int len = 16, String prefix}) {
 /// 예/아니오를 선택하게 하는 다이얼로그를 표시한다.
 ///
 /// 예를 선택하면 true, 아니오를 선택하면 false 를 리턴한다.
-Future<bool> confirm(String title, String message) async {
+Future<bool> confirm(
+  String title,
+  String message) async {
   return await showDialog(
     context: Get.context,
     builder: (_) => AlertDialog(
@@ -44,10 +46,12 @@ Future<bool> confirm(String title, String message) async {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
+                key: ValueKey(FirelampWidgetKeys.confirmYesButton),
                 onPressed: () => Get.back(result: true),
                 child: Text('yes'.tr),
               ),
               TextButton(
+                key: ValueKey(FirelampWidgetKeys.confirmNoButton),
                 onPressed: () => Get.back(result: false),
                 child: Text('no'.tr),
               ),

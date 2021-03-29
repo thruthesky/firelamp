@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';
@@ -91,6 +92,7 @@ class _CommentViewState extends State<CommentView> {
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
+                      key: ValueKey(FirelampWidgetKeys.commentReplyButton),
                       icon: Icon(
                           widget.comment.mode == CommentMode.reply
                               ? Icons.close

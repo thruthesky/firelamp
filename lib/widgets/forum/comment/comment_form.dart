@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_buttons.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/functions.dart';
@@ -124,6 +125,7 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
+                  key: ValueKey(FirelampWidgetKeys.commentFormTextField),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,
@@ -148,6 +150,7 @@ class _CommentFormState extends State<CommentForm> {
                 ),
               if (canSubmit)
                 IconButton(
+                  key: ValueKey(FirelampWidgetKeys.commentFormSubmitButton),
                   alignment: Alignment.center,
                   icon: Icon(Icons.send_rounded),
                   onPressed: onFormSubmit,

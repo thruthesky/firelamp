@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
@@ -8,14 +9,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PostPreview extends StatelessWidget {
-  PostPreview(
-    this.post,
-    this.forum, {
-    this.onTap,
-  });
+  PostPreview(this.post, this.forum, {this.onTap, this.index});
   final ApiPost post;
   final ApiForum forum;
   final Function onTap;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +25,7 @@ class PostPreview extends StatelessWidget {
     );
 
     return GestureDetector(
+      key: ValueKey("${FirelampWidgetKeys.postPreview}$index"),
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: forum.listView == 'gallery'
