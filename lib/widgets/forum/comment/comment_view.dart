@@ -21,6 +21,7 @@ class CommentView extends StatefulWidget {
     this.onError,
     @required this.forum,
     this.rerenderParent,
+    this.index,
   }) : super(key: key);
 
   final ApiComment comment;
@@ -28,6 +29,7 @@ class CommentView extends StatefulWidget {
   final ApiForum forum;
   final Function onError;
   final Function rerenderParent;
+  final int index;
 
   @override
   _CommentViewState createState() => _CommentViewState();
@@ -114,8 +116,11 @@ class _CommentViewState extends State<CommentView> {
                     ),
                     Spacer(),
                     if (widget.comment.isMine)
-                      PopUpButton(items: [
+                      PopUpButton(
+                        popupButtonKey: '${FirelampWidgetKeys.commentMoreButton}${widget.index}',
+                        items: [
                         PopupMenuItem(
+                          key: ValueKey(FirelampWidgetKeys.commentEditButton),
                             child: Row(children: [
                               Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
                               SizedBox(width: Space.xs),
@@ -123,6 +128,7 @@ class _CommentViewState extends State<CommentView> {
                             ]),
                             value: 'edit'),
                         PopupMenuItem(
+                          key: ValueKey(FirelampWidgetKeys.commentDeleteButton),
                             child: Row(children: [
                               Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
                               SizedBox(width: Space.xs),
@@ -140,6 +146,7 @@ class _CommentViewState extends State<CommentView> {
                     forum: widget.forum,
                     onSuccess: widget.rerenderParent,
                     onError: widget.onError,
+                    index: widget.index,
                   ),
                 if (widget.comment.mode == CommentMode.edit)
                   CommentForm(
@@ -148,6 +155,7 @@ class _CommentViewState extends State<CommentView> {
                     forum: widget.forum,
                     onSuccess: widget.rerenderParent,
                     onError: widget.onError,
+                    index: widget.index,
                   ),
               ],
             ),

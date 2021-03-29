@@ -16,6 +16,7 @@ class CommentForm extends StatefulWidget {
     @required this.forum,
     this.onError,
     this.onSuccess,
+    this.index,
   }) : super(key: key);
 
   /// post of the comment
@@ -25,6 +26,7 @@ class CommentForm extends StatefulWidget {
   final ApiForum forum;
   final Function onError;
   final Function onSuccess;
+  final int index;
 
   @override
   _CommentFormState createState() => _CommentFormState();
@@ -125,7 +127,7 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  key: ValueKey(FirelampWidgetKeys.commentFormTextField),
+                  key: ValueKey("${FirelampWidgetKeys.commentFormTextField}${widget.index != null ? widget.index : ''}"),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,
