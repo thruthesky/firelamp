@@ -75,8 +75,7 @@ class Api {
       fullName.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
-  bool get isAdmin =>
-      user != null && user.sessionId != null && user.admin == true;
+  bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
   bool get notLoggedIn => !loggedIn;
 
   bool get isNewCommentOnMyPostOrComment {
@@ -99,8 +98,7 @@ class Api {
   bool enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
-  BehaviorSubject<bool> firebaseInitialized =
-      BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
   /// Firebase Messaging
   ///
@@ -182,8 +180,7 @@ class Api {
     this.enableFirebase = enableFirebase;
     this.enableMessaging = enableMessaging;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
-    this.onNotificationPermissionNotDetermined =
-        onNotificationPermissionNotDetermined;
+    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
 
     this.onForegroundMessage = onForegroundMessage;
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
@@ -229,18 +226,16 @@ class Api {
 
         // User email already exists(registered), try to login.
         try {
-          await FirebaseAuth.instance
-              .signInWithEmailAndPassword(email: email, password: password);
+          await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
           await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
             print('No user found for that email.');
 
             try {
-              await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                  email: user.email, password: password);
-              await userUpdateFirebaseUid(
-                  FirebaseAuth.instance.currentUser.uid);
+              await FirebaseAuth.instance
+                  .createUserWithEmailAndPassword(email: user.email, password: password);
+              await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
                 print('The password provided is too weak.');
@@ -343,7 +338,7 @@ class Api {
 
     dynamic res;
     try {
-      // _printDebugUrl(data);
+      _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
       print('Api.request() got error; apiUrl: $apiUrl');
@@ -492,8 +487,7 @@ class Api {
   /// If [option] doesnt exist it switch to `on`.
   /// If [option] is `on` it switch to `off`.
   /// If [option] is `off` it switch to `on`.
-  Future<ApiUser> userOptionSwitch(
-      {String option, String route = 'user.switch'}) async {
+  Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
       'route': route,
       'option': option,
@@ -535,8 +529,7 @@ class Api {
   ///
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get same information from server.
-  Future<ApiUser> otherUserProfile(
-      {String idx, String email, String firebaseUid}) async {
+  Future<ApiUser> otherUserProfile({String idx, String email, String firebaseUid}) async {
     final Map<String, dynamic> res = await request({
       'route': 'user.otherUserProfile',
       if (idx != null) 'idx': idx,
@@ -588,8 +581,7 @@ class Api {
       if (post.idx != null) data['ID'] = post.idx;
       if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
@@ -639,8 +631,7 @@ class Api {
       if (post.relationIdx != null) data['relationIdx'] = post.relationIdx;
       if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.subcategory != null) data['subcategory'] = post.subcategory;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
@@ -735,8 +726,7 @@ class Api {
 
   Future<List<ApiPost>> postGets(List<int> idxes) async {
     if (idxes.length == 0) return [];
-    final jsonList =
-        await request({'route': 'post.gets', 'idxes': idxes.join(',')});
+    final jsonList = await request({'route': 'post.gets', 'idxes': idxes.join(',')});
     List<ApiPost> _posts = [];
     for (int i = 0; i < jsonList.length; i++) {
       _posts.add(ApiPost.fromJson(jsonList[i]));
@@ -746,15 +736,9 @@ class Api {
 
   /// Returns a post of today based on the categoryId and userIdx.
   Future<List<ApiPost>> postToday(
-      {@required String categoryId,
-      String userIdx = '0',
-      int limit = 10}) async {
-    final map = await request({
-      'route': 'post.today',
-      'categoryId': categoryId,
-      'userIdx': userIdx,
-      'limit': limit
-    });
+      {@required String categoryId, String userIdx = '0', int limit = 10}) async {
+    final map = await request(
+        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -765,8 +749,7 @@ class Api {
 
   ///
   Future<ApiCategory> categoryCreate({String id, String title = ''}) async {
-    final re =
-        await request({'route': 'category.create', 'id': id, 'title': title});
+    final re = await request({'route': 'category.create', 'id': id, 'title': title});
     return ApiCategory.fromJson(re);
   }
 
@@ -775,10 +758,7 @@ class Api {
   /// The [data] is a map of key/value pair to save.
   /// You may save a value composing with [field] and [value].
   Future<ApiCategory> categoryUpdate(
-      {@required String id,
-      String field,
-      String value,
-      Map<String, dynamic> data}) async {
+      {@required String id, String field, String value, Map<String, dynamic> data}) async {
     if (data == null) data = {};
 
     data['route'] = 'category.update';
@@ -899,18 +879,15 @@ class Api {
     data['page'] = page;
     data['limit'] = limit;
 
-    if (userIdx != null)
-      data['where'] = data['where'] + " and userIdx=$userIdx";
-    if (relationIdx != null)
-      data['where'] = data['where'] + " and relationIdx=$relationIdx";
+    if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null && categoryId != "")
       data['where'] = data['where'] + " and categoryId=<$categoryId>";
-    if (subcategory != null)
-      data['where'] = data['where'] + " and subcategory='$subcategory'";
+    if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
     if (searchKey != null && searchKey != '') {
-      data['where'] = data['where'] +
-          " and (title like '%$searchKey%' or content like '%$searchKey%')";
+      data['where'] =
+          data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
       // Deliver search key to backend to save.
       data['searchKey'] = searchKey;
     }
@@ -946,11 +923,9 @@ class Api {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts(
-      {String category, int limit = 20, int paged = 1, String userIdx}) {
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
-    return postSearch(
-        categoryId: category, limit: limit, page: paged, userIdx: userIdx);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }
 
   ///
@@ -961,8 +936,7 @@ class Api {
     } else {
       route = 'post.vote';
     }
-    final re = await request(
-        {'route': route, 'idx': postOrComment.idx, 'choice': choice});
+    final re = await request({'route': route, 'idx': postOrComment.idx, 'choice': choice});
     if ("${postOrComment.parentIdx}".toInt > 0) {
       return ApiComment.fromJson(re);
     } else {
@@ -1017,8 +991,7 @@ class Api {
           bytes,
 
           /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
-          filename: getFilenameFromPath(
-              DateTime.now().toString().replaceAll(' ', '') + '.jpg'),
+          filename: getFilenameFromPath(DateTime.now().toString().replaceAll(' ', '') + '.jpg'),
           contentType: MediaType('image', 'jpeg'),
         ),
       });
@@ -1208,16 +1181,11 @@ class Api {
   ///
   /// `session_id` will be added if the user had logged in.
   Future updateToken(String token, {String topic = ''}) {
-    return request(
-        {'route': 'notification.updateToken', 'token': token, 'topic': topic});
+    return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
   sendMessageToTokens(
-      {String tokens,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1230,11 +1198,7 @@ class Api {
   }
 
   sendMessageToTopic(
-      {String topic,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1308,8 +1272,7 @@ class Api {
   /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
   /// todo: make it one time call.
   _loadTranslationFromCenterX() async {
-    final res = await request(
-        {'route': 'translation.list', 'format': 'language-first'});
+    final res = await request({'route': 'translation.list', 'format': 'language-first'});
     // print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
@@ -1340,8 +1303,7 @@ class Api {
   _initMessaging() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (kIsWeb || Platform.isIOS) {
-      NotificationSettings settings =
-          await FirebaseMessaging.instance.requestPermission(
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -1357,8 +1319,7 @@ class Api {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null)
-            onNotificationPermissionDenied();
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
           if (onNotificationPermissionNotDetermined != null)
@@ -1373,8 +1334,7 @@ class Api {
     FirebaseMessaging.onMessage.listen(onForegroundMessage);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       onMessageOpenedFromTermiated(initialMessage);
     }
@@ -1479,8 +1439,7 @@ class Api {
   /// There is no pagination. And the data from backend is minimum. So, it would be okay without pagination.
   /// The [days] is the past days from today to get the searched keywords. It might be adjusted for the performance of getting resonable number of search results.
   Future<List<ApiSearchKeyStat>> searchKeyStats({int days = 1}) async {
-    final searchKeys =
-        await request({'route': 'searchKey.stats', 'days': days});
+    final searchKeys = await request({'route': 'searchKey.stats', 'days': days});
 
     List<ApiSearchKeyStat> rets = [];
     if (searchKeys is List) return rets;
