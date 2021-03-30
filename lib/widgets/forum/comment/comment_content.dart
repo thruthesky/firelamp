@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +14,10 @@ class CommentContent extends StatelessWidget {
     return comment.content.isNotEmpty
         ? Padding(
             padding: EdgeInsets.only(top: Space.sm),
-            child: SelectableText('${comment.content}'),
+            child: SelectableText(
+              '${comment.content}',
+              key: ValueKey(FirelampKeys.element.commentContent),
+            ),
           )
         : SizedBox.shrink();
   }

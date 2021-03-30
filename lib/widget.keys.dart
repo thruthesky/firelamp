@@ -7,7 +7,12 @@ class ElementKeys {
   String postPreview = 'postPreview';
 
   String postTitle = 'postTitle';
-  String postContent = 'postTitle';
+  String postContent = 'postContent';
+
+  String postEditForm = 'postEditForm';
+
+  String postTitleInput = 'postTitleInput';
+  String postContentInput = 'postContentInput';
 
   String commentContent = 'commentContent';
 
@@ -15,6 +20,7 @@ class ElementKeys {
 }
 
 class ButtonKeys {
+  String postFormSubmit = 'postFormSubmitButton';
   String commentFormSubmit = 'commentFormSubmitButton';
   String confirmYes = 'confirmYesButton';
   String confirmNo = 'confirmNoButton';
