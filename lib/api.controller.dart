@@ -341,7 +341,7 @@ class Api {
       // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
-      print('Api.request() got error; apiUrl: $apiUrl');
+      print('dio.post() got error; apiUrl: $apiUrl');
       print(e);
       _printDebugUrl(data);
       rethrow;
