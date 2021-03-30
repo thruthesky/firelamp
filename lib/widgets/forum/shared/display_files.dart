@@ -90,7 +90,7 @@ class DisplayFiles extends StatelessWidget {
             shrinkWrap: true,
             crossAxisCount: postOrComment.files.length <= 3 ? 2 : 3,
             mainAxisSpacing: 5.0,
-            crossAxisSpacing: 8.0,
+            crossAxisSpacing: 4.0,
             children: [
               for (ApiFile file in _files) _imageBuilder(file),
             ],
@@ -115,7 +115,7 @@ class DisplayFiles extends StatelessWidget {
             width: double.maxFinite,
             child: _imageBuilder(postOrComment.files.first),
           ),
-          SizedBox(height: Space.xsm),
+          SizedBox(height: 4.0),
         ],
         if (filesLength > 1) _gridBuilder(hideFirstImage: filesLength == 3),
       ],
