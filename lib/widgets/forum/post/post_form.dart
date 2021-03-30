@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/functions.dart';
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:get/get.dart';
@@ -12,16 +13,7 @@ class PostForm extends StatefulWidget {
     this.forum, {
     this.onSuccess,
     this.onError,
-    this.formKey,
-    this.submitKey,
-    this.titleKey,
-    this.contentKey,
   });
-
-  final String formKey;
-  final String submitKey;
-  final String titleKey;
-  final String contentKey;
   final ApiForum forum;
   final Function onSuccess;
   final Function onError;
@@ -111,7 +103,7 @@ class _PostFormState extends State<PostForm> {
     if (forum.postInEdit == null) return SizedBox.shrink();
     return SingleChildScrollView(
       child: Container(
-        key: ValueKey(widget.formKey),
+        key: ValueKey(FirelampKeys.element.postEditForm),
         padding: EdgeInsets.all(Space.sm),
         decoration: BoxDecoration(),
         child: Column(
@@ -123,7 +115,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('title'.tr),
             ),
             TextFormField(
-              key: ValueKey('postFormTitleField'),
+              key: ValueKey(FirelampKeys.element.postTitleInput),
               controller: title,
               decoration: _inputDecoration,
             ),
@@ -132,7 +124,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('content'.tr),
             ),
             TextFormField(
-              key: ValueKey(widget.contentKey),
+              key: ValueKey(FirelampKeys.element.postContentInput),
               controller: content,
               minLines: 5,
               maxLines: 15,
@@ -173,7 +165,7 @@ class _PostFormState extends State<PostForm> {
                       ),
                     SizedBox(width: Space.xs),
                     TextButton(
-                      key: ValueKey(widget.submitKey),
+                      key: ValueKey(FirelampKeys.button.postFormSubmit),
                       child: loading
                           ? Spinner()
                           : Text(

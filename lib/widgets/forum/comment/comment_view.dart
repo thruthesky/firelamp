@@ -1,4 +1,3 @@
-import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';
@@ -94,7 +93,6 @@ class _CommentViewState extends State<CommentView> {
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
-                      key: ValueKey(FirelampWidgetKeys.commentReplyButton),
                       icon: Icon(
                           widget.comment.mode == CommentMode.reply
                               ? Icons.close
@@ -117,10 +115,8 @@ class _CommentViewState extends State<CommentView> {
                     Spacer(),
                     if (widget.comment.isMine)
                       PopUpButton(
-                        popupButtonKey: '${FirelampWidgetKeys.commentMoreButton}${widget.index}',
                         items: [
                         PopupMenuItem(
-                          key: ValueKey(FirelampWidgetKeys.commentEditButton),
                             child: Row(children: [
                               Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
                               SizedBox(width: Space.xs),
@@ -128,7 +124,6 @@ class _CommentViewState extends State<CommentView> {
                             ]),
                             value: 'edit'),
                         PopupMenuItem(
-                          key: ValueKey(FirelampWidgetKeys.commentDeleteButton),
                             child: Row(children: [
                               Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
                               SizedBox(width: Space.xs),

@@ -127,7 +127,7 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  key: ValueKey("${FirelampWidgetKeys.commentFormTextField}${widget.index != null ? widget.index : ''}"),
+                  key: ValueKey("${FirelampKeys.element.commentFormTextField}${widget.index != null ? widget.index : ''}"),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,
@@ -152,7 +152,7 @@ class _CommentFormState extends State<CommentForm> {
                 ),
               if (canSubmit)
                 IconButton(
-                  key: ValueKey(FirelampWidgetKeys.commentFormSubmitButton),
+                  key: ValueKey(FirelampKeys.button.commentFormSubmit),
                   alignment: Alignment.center,
                   icon: Icon(Icons.send_rounded),
                   onPressed: onFormSubmit,
