@@ -735,6 +735,7 @@ class Api {
   }
 
   /// Returns a post of today based on the categoryId and userIdx.
+  /// 오늘 작성한 글을 가져온다.
   Future<List<ApiPost>> postToday(
       {@required String categoryId, String userIdx = '0', int limit = 10}) async {
     final map = await request(

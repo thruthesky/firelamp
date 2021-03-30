@@ -82,11 +82,12 @@ class _SearchBarState extends State<SearchBar> {
           Container(
             width: 40,
             child: IconButton(
+              padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
               icon: Icon(Icons.close, color: Colors.redAccent),
               onPressed: widget.onCancel,
             ),
           ),
-          Flexible(
+          Expanded(
             child: TextField(
               autofocus: false,
               focusNode: _focusNode,
