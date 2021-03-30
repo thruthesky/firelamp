@@ -78,7 +78,7 @@ class _PostViewState extends State<PostView> {
           style: stylePostTitle,
         ),
         SizedBox(height: Space.sm),
-        SelectableText(
+        Text(
           '${widget.post.content}',
           key: ValueKey(FirelampKeys.element.postContent),
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),

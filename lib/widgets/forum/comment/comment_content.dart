@@ -14,7 +14,7 @@ class CommentContent extends StatelessWidget {
     return comment.content.isNotEmpty
         ? Padding(
             padding: EdgeInsets.only(top: Space.sm),
-            child: SelectableText(
+            child: Text(
               '${comment.content}',
               key: ValueKey(FirelampKeys.element.commentContent),
             ),
