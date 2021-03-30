@@ -23,7 +23,7 @@ class Api {
 
   /// The [profileChanges] is posted when user profile changed.
   ///
-  /// Note that this event is posted when user is login or register. That is because
+  /// Note that this event is posted not only for profile chages, but also user login/register. That is because
   /// `login()` and `register()` method takes user profile to change.
   /// More precisely, [profileChanges] event is posed on `_saveUserProfile` which is
   /// being called on profile chagnes and login, logout.
@@ -341,7 +341,7 @@ class Api {
       _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
-      print('Api.request() got error; apiUrl: $apiUrl');
+      print('dio.post() got error; apiUrl: $apiUrl');
       print(e);
       _printDebugUrl(data);
       rethrow;
@@ -735,6 +735,7 @@ class Api {
   }
 
   /// Returns a post of today based on the categoryId and userIdx.
+  /// 오늘 작성한 글을 가져온다.
   Future<List<ApiPost>> postToday(
       {@required String categoryId, String userIdx = '0', int limit = 10}) async {
     final map = await request(

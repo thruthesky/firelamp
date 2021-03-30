@@ -25,7 +25,7 @@ class PostPreview extends StatelessWidget {
     );
 
     return GestureDetector(
-      key: ValueKey("${FirelampWidgetKeys.postPreview}$index"),
+      key: ValueKey("${FirelampKeys.element.postPreview}$index"),
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: forum.listView == 'gallery'

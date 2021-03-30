@@ -74,13 +74,13 @@ class _PostViewState extends State<PostView> {
         SizedBox(height: Space.sm),
         Text(
           '${widget.post.title}',
-          key: ValueKey(FirelampWidgetKeys.postTitle),
+          key: ValueKey(FirelampKeys.element.postTitle),
           style: stylePostTitle,
         ),
         SizedBox(height: Space.sm),
-        SelectableText(
+        Text(
           '${widget.post.content}',
-          key: ValueKey(FirelampWidgetKeys.postContent),
+          key: ValueKey(FirelampKeys.element.postContent),
           style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
         ),
         DisplayFiles(postOrComment: widget.post),

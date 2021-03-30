@@ -14,7 +14,7 @@ class ApiUser {
   String point;
 
   String get age {
-    if (birthdate == null || birthdate == '') return '0';
+    if (birthdate == null || birthdate == '' || birthdate.length != 6) return '0';
     final _yy = int.parse(birthdate.substring(0, 2));
     final _mm = int.parse(birthdate.substring(2, 4));
     final _dd = int.parse(birthdate.substring(4, 6));

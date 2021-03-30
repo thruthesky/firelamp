@@ -46,12 +46,12 @@ Future<bool> confirm(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                key: ValueKey(FirelampWidgetKeys.confirmYesButton),
+                key: ValueKey(FirelampKeys.button.confirmYes),
                 onPressed: () => Get.back(result: true),
                 child: Text('yes'.tr),
               ),
               TextButton(
-                key: ValueKey(FirelampWidgetKeys.confirmNoButton),
+                key: ValueKey(FirelampKeys.button.confirmNo),
                 onPressed: () => Get.back(result: false),
                 child: Text('no'.tr),
               ),

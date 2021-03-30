@@ -131,6 +131,14 @@ class ApiPost {
     return files.isNotEmpty;
   }
 
+  ApiFile fileByCode(String code) {
+    if (hasFiles == false) return null;
+    for (final ApiFile file in files) {
+      if (file.code == code) return file;
+    }
+    return null;
+  }
+
   /// Returns true if the post has created but not updated.
   bool get created {
     return createdAt == updatedAt;
