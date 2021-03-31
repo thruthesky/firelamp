@@ -219,10 +219,8 @@ class Api {
         await FirebaseAuth.instance.signOut();
       } else {
         String email = user.email;
-        String password = user.email +
-            user.idx.toString() +
-            user.createdAt.toString() +
-            ' Wc~7 difficult to guess string salt %^.^%;';
+        String password =
+            user.email + user.idx + user.createdAt + ' Wc~7 difficult to guess string salt %^.^%;';
 
         // User email already exists(registered), try to login.
         try {
