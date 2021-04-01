@@ -101,6 +101,9 @@ class ApiForum {
     return false;
   }
 
+  int loadMoreOn;
+  Function loadMore;
+
   ///
   ApiPost postInEdit;
   ApiForum({
@@ -110,9 +113,9 @@ class ApiForum {
     this.relationIdx,
     this.searchKey,
     int limit,
-    @required this.render,
-    loadMoreOn,
-    loadMore,
+    this.render,
+    this.loadMoreOn,
+    this.loadMore,
     String categoryId,
     ApiPost post,
   })  : _limit = limit,
@@ -123,6 +126,7 @@ class ApiForum {
       itemPositionsListener.itemPositions.addListener(() {
         int lastVisibleIndex = itemPositionsListener.itemPositions.value.last.index;
         if (canLoad == false) return;
+        print('canLoad: $canLoad, lastVisibleIndex: $lastVisibleIndex');
         if (lastVisibleIndex > posts.length - loadMoreOn) {
           loadMore();
         }

@@ -18,6 +18,8 @@ It is based on Firebase and LAMP stack.
   - ApiForum 은 여러 게시판이 동시에 열려야하므로, GetX Controller 는 맞지 않다. 어떤 State manager 도 안된다.
     하지만, forum.render 가 여러가지로 문제가 많다.
     그래서, forum.changes.listen() 과 같이 RxDart 로 동작하게 한다.
+  - 그리고 scrollable_positioned_list 사용을 기본으로 하지 말고 옵션으로 사용하기 쉽도록 해 준다.
+    다른 list 위젯을 사용 할 수도 있고, single child scroll view 로 사용 할 수도 있다.
   - 관리자 페이지는 `centerx_admin` 패키지로 떼어낸다.
   - firebase 를 연결하는 것은 `centerx_firebase` 패키지로 만든다.
   - firechat 채팅은 현재 상태로 유지.

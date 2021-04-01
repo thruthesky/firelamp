@@ -12,10 +12,12 @@ class PostForm extends StatefulWidget {
   PostForm(
     this.forum, {
     this.onSuccess,
+    this.onCancel,
     this.onError,
   });
   final ApiForum forum;
   final Function onSuccess;
+  final Function onCancel;
   final Function onError;
 
   @override
@@ -160,7 +162,10 @@ class _PostFormState extends State<PostForm> {
                         ),
                         onPressed: () {
                           forum.postInEdit = null;
-                          forum..render();
+                          if (widget.onCancel != null)
+                            widget.onCancel();
+                          else
+                            forum.render();
                         },
                       ),
                     SizedBox(width: Space.xs),
