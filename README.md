@@ -16,7 +16,8 @@ It is based on Firebase and LAMP stack.
   - api.controller.dart 를 api.dart 로 변경
   - src/api.dart 에는 오직, CenterX 연결하는 코드만 넣는다.
   - ApiForum 은 여러 게시판이 동시에 열려야하므로, GetX Controller 는 맞지 않다. 어떤 State manager 도 안된다.
-    하지만, forum.render 가 여러가지로 문제가 많다.
+    하지만, forum.render 가 여러가지로 문제가 많다. 특히, 플러터의 경우, 플랫폼 구조적인 문제로 인해, 처음 부터 로직이 잘못되면, 시간이 흐를 수록 더욱 많은 시간과 노력을 낭비하게 된다.
+    위젯 랜더링과 관련해서는 Funtional Programming 으로는 안된다. RxDart 와 같은 방법으로 되어야 한다.
     그래서, forum.changes.listen() 과 같이 RxDart 로 동작하게 한다.
   - 그리고 scrollable_positioned_list 사용을 기본으로 하지 말고 옵션으로 사용하기 쉽도록 해 준다.
     다른 list 위젯을 사용 할 수도 있고, single child scroll view 로 사용 할 수도 있다.

@@ -1,5 +1,17 @@
 part of '../firelamp.dart';
 
+enum ForumEventType { edit }
+
+class ForumEvent {
+  ForumEventType _type;
+  dynamic _data;
+  type(t) => _type = t;
+  getType() => _type;
+
+  data(d) => _data = d;
+  getData() => _data;
+}
+
 /// Forum model
 ///
 /// [Forum] is a data model for a forum category.
@@ -14,6 +26,11 @@ part of '../firelamp.dart';
 class ApiForum {
   /// Forum category settings
   ApiCategory setting;
+
+  /// 2021. 04. 01. Forum 을 재 사용하는데에 있어서, [render] 콜백 함수를 사용하는 것에 너무 큰 제약이 있어 큰 어려움을 겪고 있다.
+  /// 이에 따라 Reactive Event Driven 방식으로 서서히 전환을 해 나간다.
+  /// 기본적으로는 렌더링을 해야할 시점에 changes 이벤트를 발생시킨다.
+  PublishSubject changes = PublishSubject();
 
   String get listView {
     if (setting == null) return 'text';
@@ -153,6 +170,9 @@ class ApiForum {
   editPost(ApiPost post) {
     postInEdit = post;
     render();
+    changes.add(ForumEvent()
+      ..type(ForumEventType.edit)
+      ..data(post));
   }
 
   /// Inserts a new post on top or updates an existing post.
