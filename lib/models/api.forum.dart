@@ -138,6 +138,8 @@ class ApiForum {
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {
+    print('ApiForum(categoryId: $categoryId)');
+
     /// 게시글 목록에서, 스크롤이 밑으로 내려가면, loadMoreOn 개수 만큼 남았을 때, 다음 페이지를 로드하는 콜백 함수를 호출한다.
     if (loadMoreOn != null) {
       itemPositionsListener.itemPositions.addListener(() {
