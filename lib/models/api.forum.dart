@@ -8,6 +8,9 @@ part of '../firelamp.dart';
 /// will use the instance of this forum model.
 ///
 /// [Forum] only manages the data of a category.
+///
+/// 사용자가 글 목록 스크린을 스크롤 할 때, 맨 아래 부분에 스크롤이 도달했을 때, 남은 아이템의 수가 [loadMoreOn] 보다 작다면,
+/// 다음 글 목록을 하는 콜백 함수 [loadMore] 를 호출 한다.
 class ApiForum {
   /// Forum category settings
   ApiCategory setting;
@@ -70,9 +73,14 @@ class ApiForum {
   int pageNo = 0;
   bool get canLoad => loading == false && noMorePosts == false;
   bool get canList => postInEdit == null && posts.length > 0;
+
+  /// 구글에서 제작한 Scrollable Positioned List https://pub.dev/packages/scrollable_positioned_list
+  /// 장점은 글 생성/수정 후, 해당(또는 특정) 글 위치로 이동을 할 수 있다.
+  /// 하지만, 다음 페이지 로딩을 할 때, 마지막에 몇개 아이템 남았을 때 이동할지 결정은 직접 코드를 작성해야 한다.
   final ItemScrollController listController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
+  /// [render] 는 게시판 목록을 다시 그려야 할 때, 사용되는데, 문제가 많다. GetX Controller 나 RxDart 로 변경을 해야 한다.
   Function render;
 
   bool get showLike => showVoteButton('forum_like');
@@ -103,11 +111,24 @@ class ApiForum {
     this.searchKey,
     int limit,
     @required this.render,
+    loadMoreOn,
+    loadMore,
     String categoryId,
     ApiPost post,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
-        this.posts = post != null ? [post] : [];
+        this.posts = post != null ? [post] : [] {
+    /// 게시글 목록에서, 스크롤이 밑으로 내려가면, loadMoreOn 개수 만큼 남았을 때, 다음 페이지를 로드하는 콜백 함수를 호출한다.
+    if (loadMoreOn != null) {
+      itemPositionsListener.itemPositions.addListener(() {
+        int lastVisibleIndex = itemPositionsListener.itemPositions.value.last.index;
+        if (canLoad == false) return;
+        if (lastVisibleIndex > posts.length - loadMoreOn) {
+          loadMore();
+        }
+      });
+    }
+  }
 
   /// Edit post or comment
   ///

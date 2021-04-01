@@ -15,6 +15,9 @@ It is based on Firebase and LAMP stack.
   - lib/src 폴더를 활용하고, 외부에서 사용하게 할 것은 export 한다.
   - api.controller.dart 를 api.dart 로 변경
   - src/api.dart 에는 오직, CenterX 연결하는 코드만 넣는다.
+  - ApiForum 은 여러 게시판이 동시에 열려야하므로, GetX Controller 는 맞지 않다. 어떤 State manager 도 안된다.
+    하지만, forum.render 가 여러가지로 문제가 많다.
+    그래서, forum.changes.listen() 과 같이 RxDart 로 동작하게 한다.
   - 관리자 페이지는 `centerx_admin` 패키지로 떼어낸다.
   - firebase 를 연결하는 것은 `centerx_firebase` 패키지로 만든다.
   - firechat 채팅은 현재 상태로 유지.
@@ -914,6 +917,91 @@ class _EventFormState extends State<EventForm> {
 
   String get contentUrl {
     return image('content')?.thumbnailUrl;
+  }
+}
+```
+
+# 글 목록 예제
+
+```dart
+import 'package:dalgona/screens/forum/create_button_on_no_post.dart';
+import 'package:dalgona/services/defines.dart';
+import 'package:dalgona/services/globals.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:firelamp/widgets/forum/no_more_posts.dart';
+import 'package:firelamp/widgets/spinner.dart';
+import 'package:flutter/material.dart';
+
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+/// 글 목록만 하는 위젯
+///
+/// 글 목록만 하고, 새 글 작성이나, 기존글 수정, 삭제 등을 하지 않는다. 즉, 글을 보여주기만을 위한 용도이며,
+/// [builder] 를 통해 디자인(UI)을 마음데로 할 수 있다.
+class PostListView extends StatefulWidget {
+  PostListView({this.categoryId, @required this.builder});
+  final String categoryId;
+  final Function builder;
+  @override
+  _PostListViewState createState() => _PostListViewState();
+}
+
+class _PostListViewState extends State<PostListView> {
+  /// 글 목록 설정 변수
+  ApiForum forum;
+
+  loadPosts() async {
+    try {
+      await api.fetchPosts(forum);
+    } catch (e) {
+      forum.loading = false;
+      forum.render();
+      app.error(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// 글 목록 설정. 스크롤을 아래로 하는 경우, 글이 4개 이하로 남으면, 다음 페이지 로드.
+    forum = ApiForum(
+      categoryId: widget.categoryId,
+      limit: 10,
+      render: () {
+        print("pageNo.: ${forum.pageNo}");
+        setState(() => null);
+      },
+      loadMoreOn: 4,
+      loadMore: () => loadPosts(),
+    );
+
+    /// 첫 페이지 로드
+    loadPosts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Container(
+            color: Color(0xffebf0f7),
+            child: forum.posts.isNotEmpty
+                ? ScrollablePositionedList.builder(
+                    itemScrollController: forum.listController,
+                    itemPositionsListener: forum.itemPositionsListener,
+                    itemCount: forum.posts.length,
+                    itemBuilder: (c, i) => widget.builder(c, forum.posts[i]),
+                  )
+                : CreateButtonOnNoPost(forum),
+          ),
+        ),
+        if (forum.loading && forum.pageNo > 1) Spinner(padding: EdgeInsets.all(sm)),
+        if (forum.noMorePosts && !forum.noPosts) Center(child: NoMorePosts(forum: forum)),
+      ],
+    );
   }
 }
 ```
