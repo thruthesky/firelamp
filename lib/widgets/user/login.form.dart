@@ -14,6 +14,7 @@ class LoginForm extends StatelessWidget {
       children: [
         TextFormField(
           controller: email,
+          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(hintText: '이메일 주소를 입력하세요.'),
           onFieldSubmitted: (x) => onPressed(email.text, password.text),
         ),
@@ -22,9 +23,10 @@ class LoginForm extends StatelessWidget {
           decoration: InputDecoration(hintText: '비밀번호를 입력하세요.'),
           onFieldSubmitted: (x) => onPressed(email.text, password.text),
         ),
+        SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
+          child: TextButton(
             onPressed: () => onPressed(email.text, password.text),
             child: Text('로그인'),
           ),

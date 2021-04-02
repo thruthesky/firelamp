@@ -134,12 +134,11 @@ class Api {
     return _instance;
   }
 
-  Api() {
-    _initUserLogin();
-  }
-
   _initUserLogin() async {
     user = await _loadUserProfile();
+
+    /// 로컬 캐시에 있는 데이터가 로드되는데로 한번 authChanges 가 호출된다.
+    if (user != null) authChanges.add(user);
     if (user != null) {
       await userProfile(sessionId);
       authChanges.add(user);
@@ -154,6 +153,7 @@ class Api {
   /// You can set all the settings with this [init].
   ///
   ///
+  /// The [initUser] callback will be called after user login initialization.
   ///
   /// ```dart
   /// Api.init(apiUrl: apiUrl);
@@ -169,6 +169,7 @@ class Api {
     Function onMessageOpenedFromTermiated,
     Function onMessageOpenedFromBackground,
     Function imageCompressor,
+    Function initUser,
   }) async {
     if (enableMessaging) {
       assert(onForegroundMessage != null,
@@ -189,6 +190,14 @@ class Api {
     this.imageCompressor = imageCompressor;
 
     this.apiUrl = apiUrl;
+
+    try {
+      /// 주의: session id 가 잘못된 경우, exception 이 발생하는데, 그래도 이 함수의 나머지 코드는 실행되어야 한다.
+      /// 그래서, try / catch block 을 사용한다.
+      await _initUserLogin();
+    } catch (e) {
+      print('app.controller::init() _initUserLogin() throw an error: $e');
+    }
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
     _initTranslation();
@@ -1286,14 +1295,14 @@ class Api {
 
   /// loadSettings
   _loadSettingFromCenterX() async {
-    final _settings = await request({'route': 'app.settings'});
+    final _settings = await request({'route': 'app.settings', 'sessionId': ''});
     if (_settings == null) return;
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (_settings is List) return;
     if (_settings is Map && _settings.keys.length == 0) return;
-    // print('_loadSettingFromCenterX();');
-    // print(_settings);
+    print('_loadSettingFromCenterX();');
+    print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }

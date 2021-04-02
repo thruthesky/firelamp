@@ -8,14 +8,15 @@ It is based on Firebase and LAMP stack.
 
 - API 전체를 재 작성.
 
-  - null safety 를 적용한다.
-  - 웹 지원을 한다.
+  - Flutter 2.0 null safety 를 적용한다.
+  - 웹 지원은 필요 없다.
   - library 이름을 지정하지 않는다. 자동 지정된다.
   - part, part of 를 사용하지 않고, mini library 를 사용한다.
   - 패키지 명칭을 `centerx` 로 변경하고, centerx 백엔드만 연결한다. 파이어베이스 연결은 하지 않는다.
   - lib/src 폴더를 활용하고, 외부에서 사용하게 할 것은 export 한다.
   - api.controller.dart 를 api.dart 로 변경
   - src/api.dart 에는 오직, CenterX 연결하는 코드만 넣는다.
+  - Api.instance.authChanges 는 nullable 이다. 즉, null 이면, 최초 1회 event 가 발생하는 것이고, 캐시 로그인 정보가 없어도 ApiUser 객체를 리턴한다.
   - ApiForum 은 여러 게시판이 동시에 열려야하므로, GetX Controller 는 맞지 않다. 어떤 State manager 도 안된다.
     하지만, forum.render 가 여러가지로 문제가 많다. 특히, 플러터의 경우, 플랫폼 구조적인 문제로 인해, 처음 부터 로직이 잘못되면, 시간이 흐를 수록 더욱 많은 시간과 노력을 낭비하게 된다.
     위젯 랜더링과 관련해서는 Funtional Programming 으로는 안된다. RxDart 와 같은 방법으로 되어야 한다.
