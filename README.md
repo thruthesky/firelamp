@@ -410,6 +410,17 @@ ApiCategory reminder = await api.categoryGet('reminder');
 ApiCategory discussion = await api.categoryGet('discussion');
 ```
 
+## Forum changes
+
+- 다음 버전에서 `render` 는 deprecated 될 것이다. 대신 `addListener` 를 사용한다.
+
+```dart
+ApiForum forum = ApiForum();
+forum.addListener((ForumEvent event) {
+  setState(() {});
+});
+```
+
 # Push Notification
 
 - When user login, the app sends push token to backend and update it on backend.
