@@ -7,6 +7,7 @@ It is based on Firebase and LAMP stack.
 ## TODos
 
 - API 전체를 재 작성.
+
   - null safety 를 적용한다.
   - 웹 지원을 한다.
   - library 이름을 지정하지 않는다. 자동 지정된다.
@@ -21,10 +22,30 @@ It is based on Firebase and LAMP stack.
     그래서, forum.changes.listen() 과 같이 RxDart 로 동작하게 한다.
   - 그리고 scrollable_positioned_list 사용을 기본으로 하지 말고 옵션으로 사용하기 쉽도록 해 준다.
     다른 list 위젯을 사용 할 수도 있고, single child scroll view 로 사용 할 수도 있다.
-  - 관리자 페이지는 `centerx_admin` 패키지로 떼어낸다.
-  - firebase 를 연결하는 것은 `centerx_firebase` 패키지로 만든다.
-  - firechat 채팅은 현재 상태로 유지.
-  - 인앱결제는 `centerx_in_app_purchase` 로 변경한다.
+  - ApiForum() 클래스는 게시판의 전체적인 UI/UX 를 관리하는 컨트롤러이다.
+    코멘트 읽기에서 버튼을 표시 할 때, builderCommentButtons: (ApiPost, ApiComment) { ... } 와 같이 처리를 할 수 있도록 한다.
+    아래와 같이 게시판을 구성하는 모든 위젯을 커스터마이징 할 수도 있다.
+
+```dart
+ApiForum(
+  builderPostMeta: (post) { return Rows(...); },
+  builderPostTitle: (post) { return Text(post.title); },
+  builderCommentButtons: () {},
+  builderCommentContent: (comment) {
+    return Text(comment.content);
+  },
+  onChatIconPressed: (ApiPost post, ApiComment comment) {
+    app.openChatRoom(firebaseUid: comment.user.firebaseUid);
+  },
+);
+```
+
+- 게시판 위젯에 들어가는 모든 위젯을 micro 위젯으로 만들고, functional programming 을 해서, 재 사용가능하도록 한다.
+
+- 관리자 페이지는 `centerx_admin` 패키지로 떼어낸다.
+- firebase 를 연결하는 것은 `centerx_firebase` 패키지로 만든다.
+- firechat 채팅은 현재 상태로 유지.
+- 인앱결제는 `centerx_in_app_purchase` 로 변경한다.
 
 ## A story of Firelamp
 

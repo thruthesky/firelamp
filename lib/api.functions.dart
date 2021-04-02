@@ -31,9 +31,7 @@ String getRandomString({int len = 16, String prefix}) {
 /// 예/아니오를 선택하게 하는 다이얼로그를 표시한다.
 ///
 /// 예를 선택하면 true, 아니오를 선택하면 false 를 리턴한다.
-Future<bool> confirm(
-  String title,
-  String message) async {
+Future<bool> confirm(String title, String message) async {
   return await showDialog(
     context: Get.context,
     builder: (_) => AlertDialog(
@@ -94,3 +92,24 @@ bool isImageUrl(t) {
   }
   return false;
 }
+
+/// The [birthdate] must be in 'YYMMDD' format. ie) 001122
+age(String birthdate) {
+  if (birthdate == null || birthdate == '' || birthdate.length != 6) return '0';
+  final _yy = int.parse(birthdate.substring(0, 2));
+  final _mm = int.parse(birthdate.substring(2, 4));
+  final _dd = int.parse(birthdate.substring(4, 6));
+
+  DateTime birthday = DateTime(_yy < 20 ? 2000 + _yy : 1900 + _yy, _mm, _dd);
+
+  DateTime today = DateTime.now();
+
+  AgeDuration _age;
+
+  // Set the age of the user
+  _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
+
+  return _age.years.toString();
+}
+
+calAge(String birthdate) => age(birthdate);

@@ -112,10 +112,15 @@ class _CommentViewState extends State<CommentView> {
                       onSuccess: () => setState(() => null),
                       onError: widget.onError,
                     ),
+                    if (widget.forum.onChatIconPressed != null)
+                      IconButton(
+                        icon: Icon(Icons.message_outlined, color: Color(0xff7d7d7d), size: 20),
+                        onPressed: () =>
+                            widget.forum.onChatIconPressed(widget.post, widget.comment),
+                      ),
                     Spacer(),
                     if (widget.comment.isMine)
-                      PopUpButton(
-                        items: [
+                      PopUpButton(items: [
                         PopupMenuItem(
                             child: Row(children: [
                               Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),

@@ -14,21 +14,22 @@ class ApiUser {
   String point;
 
   String get age {
-    if (birthdate == null || birthdate == '' || birthdate.length != 6) return '0';
-    final _yy = int.parse(birthdate.substring(0, 2));
-    final _mm = int.parse(birthdate.substring(2, 4));
-    final _dd = int.parse(birthdate.substring(4, 6));
+    return calAge(birthdate);
+    // if (birthdate == null || birthdate == '' || birthdate.length != 6) return '0';
+    // final _yy = int.parse(birthdate.substring(0, 2));
+    // final _mm = int.parse(birthdate.substring(2, 4));
+    // final _dd = int.parse(birthdate.substring(4, 6));
 
-    DateTime birthday = DateTime(_yy < 20 ? 2000 + _yy : 1900 + _yy, _mm, _dd);
+    // DateTime birthday = DateTime(_yy < 20 ? 2000 + _yy : 1900 + _yy, _mm, _dd);
 
-    DateTime today = DateTime.now();
+    // DateTime today = DateTime.now();
 
-    AgeDuration _age;
+    // AgeDuration _age;
 
-    // Set the age of the user
-    _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
+    // // Set the age of the user
+    // _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
 
-    return _age.years.toString();
+    // return _age.years.toString();
   }
 
   String gender;

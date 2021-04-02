@@ -121,6 +121,8 @@ class ApiForum {
   int loadMoreOn;
   Function loadMore;
 
+  Function onChatIconPressed;
+
   ///
   ApiPost postInEdit;
   ApiForum({
@@ -135,6 +137,7 @@ class ApiForum {
     this.loadMore,
     String categoryId,
     ApiPost post,
+    this.onChatIconPressed,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {

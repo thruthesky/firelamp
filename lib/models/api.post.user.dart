@@ -1,11 +1,13 @@
 import 'package:firelamp/firelamp.dart';
 
 class ApiShortUser {
-  final int idx;
+  final String idx;
   final String name;
   final String nickname;
   final String gender;
-  final int photoIdx;
+  final String birthdate;
+  final String point;
+  final String photoIdx;
   final String photoUrl;
   final String firebaseUid;
 
@@ -14,6 +16,8 @@ class ApiShortUser {
     this.name,
     this.nickname,
     this.gender,
+    this.birthdate,
+    this.point,
     this.photoIdx,
     this.photoUrl,
     this.firebaseUid,
@@ -25,18 +29,18 @@ class ApiShortUser {
     // 사용자 정보가 없는 경우, Map 대신 빈 배열(List)로 들어온다.
     if (json is List) return ApiShortUser();
 
-    int photoIdx = int.parse("${json['photoIdx'] ?? 0}");
+    String photoIdx = "${json['photoIdx']}";
     String url;
-    if (photoIdx > 0) {
-      // url = Api.instance.thumbnailUrl;
-      // url = url + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
-      url =
-          Api.instance.thumbnailUrl(src: photoIdx.toString(), width: 100, height: 100, quality: 95);
+    if (photoIdx != '' && photoIdx != '0') {
+      url = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
     }
     return ApiShortUser(
-      idx: int.parse("${json['idx']}"),
+      idx: "${json['idx']}",
       name: json['name'],
       nickname: json['nickname'],
+      gender: json['gender'],
+      birthdate: "${json['birthdate']}",
+      point: "${json['point']}",
       photoIdx: photoIdx,
       photoUrl: url,
       firebaseUid: json['firebaseUid'],
@@ -48,6 +52,9 @@ class ApiShortUser {
       'idx': idx,
       'name': name,
       'nickname': nickname,
+      'gender': gender,
+      'birthdate': birthdate,
+      'point': point,
       'photoIdx': photoIdx,
       'photoUrl': photoUrl,
       'firebaseUid': firebaseUid,
