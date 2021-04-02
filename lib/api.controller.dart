@@ -250,6 +250,7 @@ class Api {
             }
           } else if (e.code == 'wrong-password') {
             print('Firebase auth: Wrong password provided for that user.');
+            alert('앗! 데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
           }
         } catch (e) {
           print(e);
@@ -1295,14 +1296,14 @@ class Api {
 
   /// loadSettings
   _loadSettingFromCenterX() async {
-    final _settings = await request({'route': 'app.settings', 'sessionId': ''});
+    final _settings = await request({'route': 'app.settings'});
     if (_settings == null) return;
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (_settings is List) return;
     if (_settings is Map && _settings.keys.length == 0) return;
-    print('_loadSettingFromCenterX();');
-    print(_settings);
+    // print('_loadSettingFromCenterX();');
+    // print(_settings);
     settings = {...settings, ..._settings};
     settingChanges.add(settings);
   }
