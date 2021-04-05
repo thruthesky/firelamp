@@ -45,7 +45,7 @@ class _SearchBarState extends State<SearchBar> {
 
   String _selectedCategory;
 
-  String get selected => _selectedCategory ?? 'choose';
+  String get selected => _selectedCategory ?? '';
   set selected(String category) => setState(() => _selectedCategory = category);
   String searchKey;
 
@@ -110,6 +110,7 @@ class _SearchBarState extends State<SearchBar> {
                     icon: Icon(Icons.search),
                     onPressed: () {
                       _focusNode.unfocus();
+                      print('$searchKey, $selected');
                       widget.onSearch(searchKey, selected);
                     },
                   ),
@@ -132,7 +133,7 @@ class _SearchBarState extends State<SearchBar> {
                 PopupMenuItem(
                   child: Text('All'),
                   value: '',
-                  textStyle: selected == 'all'
+                  textStyle: selected == ''
                       ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
                       : null,
                 ),
