@@ -4,6 +4,10 @@ extension StringExtension on String {
   int get toInt {
     return int.parse(this);
   }
+
+  String get moneyFormat {
+    return NumberFormat.currency(locale: 'ko_KR', symbol: '').format(this.toInt);
+  }
 }
 
 /// Returns filename with extension.
