@@ -126,6 +126,13 @@ class _SearchBarState extends State<SearchBar> {
             ),
             PopUpButton(
               items: [
+                PopupMenuItem(
+                  child: Text('All'),
+                  value: '',
+                  textStyle: selected == 'all'
+                      ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
+                      : null,
+                ),
                 for (final category in searchCategories.split(','))
                   PopupMenuItem(
                     child: Text('$category'),
