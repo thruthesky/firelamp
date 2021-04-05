@@ -45,7 +45,7 @@ class _SearchBarState extends State<SearchBar> {
 
   String _selectedCategory;
 
-  String get selected => _selectedCategory ?? searchCategories.split(',').first;
+  String get selected => _selectedCategory ?? 'choose';
   set selected(String category) => setState(() => _selectedCategory = category);
   String searchKey;
 
