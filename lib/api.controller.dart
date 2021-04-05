@@ -1465,4 +1465,9 @@ class Api {
     return request({'route': 'friend.add', 'otherIdx': otherIdx})
         .then((value) => ApiFriend.fromMap(value));
   }
+
+  Future<List<ApiShortUser>> listFriend() async {
+    final List list = await request({'route': 'friend.list'});
+    return list.map((e) => ApiShortUser.fromJson(e)).toList();
+  }
 }
