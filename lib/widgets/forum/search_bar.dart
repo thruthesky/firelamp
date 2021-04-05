@@ -88,28 +88,31 @@ class _SearchBarState extends State<SearchBar> {
             ),
           ),
           Expanded(
-            child: TextField(
-              autofocus: false,
-              focusNode: _focusNode,
-              controller: _editingController,
-              textInputAction: TextInputAction.go,
-              onSubmitted: (value) => input.add(value),
-              onChanged: widget.searchOnInputChange
-                  ? (value) => input.add(value)
-                  : (value) => searchKey = value,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
-                border: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    _focusNode.unfocus();
-                    widget.onSearch(searchKey, selected);
-                  },
+            child: Container(
+              height: kToolbarHeight - Space.xsm,
+              child: TextField(
+                autofocus: false,
+                focusNode: _focusNode,
+                controller: _editingController,
+                textInputAction: TextInputAction.go,
+                onSubmitted: (value) => input.add(value),
+                onChanged: widget.searchOnInputChange
+                    ? (value) => input.add(value)
+                    : (value) => searchKey = value,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      _focusNode.unfocus();
+                      widget.onSearch(searchKey, selected);
+                    },
+                  ),
                 ),
               ),
             ),
@@ -119,7 +122,7 @@ class _SearchBarState extends State<SearchBar> {
               margin: EdgeInsets.only(left: Space.xsm),
               constraints: BoxConstraints(maxWidth: 50),
               child: Text(
-                '$selected',
+                '${selected != '' ? selected : 'all'}',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
