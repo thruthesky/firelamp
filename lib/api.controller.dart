@@ -223,8 +223,8 @@ class Api {
     });
 
     authChanges.listen((user) async {
-      print(
-          "_initFirebaseAuth() authChanges.listen((user) { ... }. user session id: ${user?.sessionId}");
+      // print(
+      //     "_initFirebaseAuth() authChanges.listen((user) { ... }. user session id: ${user?.sessionId}");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -1459,5 +1459,10 @@ class Api {
     });
 
     return rets;
+  }
+
+  Future<ApiFriend> addFriend({@required String otherIdx}) {
+    return request({'route': 'friend.add', 'otherIdx': otherIdx})
+        .then((value) => ApiFriend.fromMap(value));
   }
 }

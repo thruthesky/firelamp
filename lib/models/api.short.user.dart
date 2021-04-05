@@ -1,4 +1,4 @@
-import 'package:firelamp/firelamp.dart';
+part of '../firelamp.dart';
 
 class ApiShortUser {
   final String idx;
@@ -10,6 +10,10 @@ class ApiShortUser {
   final String photoIdx;
   final String photoUrl;
   final String firebaseUid;
+
+  String get age {
+    return calAge(birthdate);
+  }
 
   ApiShortUser({
     this.idx,
