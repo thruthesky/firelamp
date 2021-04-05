@@ -223,7 +223,8 @@ class Api {
     });
 
     authChanges.listen((user) async {
-      // print("_initFirebaseAuth() authChanges.listen((user) { ... }");
+      print(
+          "_initFirebaseAuth() authChanges.listen((user) { ... }. user session id: ${user?.sessionId}");
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
@@ -249,7 +250,7 @@ class Api {
               } else if (e.code == 'email-already-in-use') {}
             }
           } else if (e.code == 'wrong-password') {
-            print('Firebase auth: Wrong password provided for that user.');
+            print('Firebase auth: Wrong password provided for that user. user: ${user.email}');
             alert('앗! 데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
           }
         } catch (e) {
