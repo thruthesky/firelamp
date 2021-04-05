@@ -148,7 +148,8 @@ class _CommentViewState extends State<CommentView> {
                     onError: widget.onError,
                     index: widget.index,
                   ),
-                if (widget.comment.mode == CommentMode.edit)
+                if (widget.comment.mode == CommentMode.edit) ...[
+                  SizedBox(height: Space.sm),
                   CommentForm(
                     comment: widget.comment,
                     post: widget.post,
@@ -157,6 +158,7 @@ class _CommentViewState extends State<CommentView> {
                     onError: widget.onError,
                     index: widget.index,
                   ),
+                ],
               ],
             ),
           );
