@@ -25,7 +25,7 @@ class Api {
   ///
   /// Note that this event is posted not only for profile chages, but also user login/register. That is because
   /// `login()` and `register()` method takes user profile to change.
-  /// More precisely, [profileChanges] event is posed on `_saveUserProfile` which is
+  /// More precisely, [profileChanges] event is posed on `_saveProfileAndNotify` which is
   /// being called on profile chagnes and login, logout.
   BehaviorSubject<ApiUser> profileChanges = BehaviorSubject.seeded(null);
 
@@ -140,7 +140,7 @@ class Api {
     /// 로컬 캐시에 있는 데이터가 로드되는데로 한번 authChanges 가 호출된다.
     if (user != null) authChanges.add(user);
     if (user != null) {
-      await userProfile(sessionId);
+      await refreshProfile(sessionId);
       authChanges.add(user);
     }
   }
@@ -397,13 +397,20 @@ class Api {
     });
   }
 
-  /// Save user profile into storage.
+  /// Save user profile into storage and notify listeners.
   ///
   /// This method is being callled on user profile update(or change).
   /// Be sure that this method is being called on login & regsiter.
-  _saveUserProfile(ApiUser user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  _saveProfileAndNotify(ApiUser user) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setString('user', jsonEncode(user.toJson()));
+    await _saveProfile(user);
     profileChanges.add(user);
+  }
+
+  /// Save profile only without notifications.
+  _saveProfile(ApiUser user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('user', jsonEncode(user.toJson()));
   }
 
@@ -428,7 +435,7 @@ class Api {
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
-    await _saveUserProfile(user);
+    await _saveProfileAndNotify(user);
     authChanges.add(user);
 
     return user;
@@ -459,7 +466,7 @@ class Api {
     user = ApiUser.fromJson(res);
     // print('user: $user');
 
-    await _saveUserProfile(user);
+    await _saveProfileAndNotify(user);
     authChanges.add(user);
     return user;
   }
@@ -478,7 +485,7 @@ class Api {
     final Map<String, dynamic> res = await request(data);
     // print(res);
     user = ApiUser.fromJson(res);
-    await _saveUserProfile(user);
+    await _saveProfileAndNotify(user);
     authChanges.add(user);
 
     return user;
@@ -488,7 +495,7 @@ class Api {
     data['route'] = 'user.update';
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
-    _saveUserProfile(user);
+    _saveProfileAndNotify(user);
     return user;
   }
 
@@ -503,7 +510,7 @@ class Api {
     };
     final res = await request(req);
     user = ApiUser.fromJson(res);
-    await _saveUserProfile(user);
+    await _saveProfileAndNotify(user);
     return user;
   }
 
@@ -517,19 +524,26 @@ class Api {
     return userOptionSwitch(option: option, route: 'user.switchOff');
   }
 
-  /// User profile data
+  /// Refresh user profile
+  ///
+  /// ! warning: Use this method only to refresh the login user's profile.
+  ///
+  /// * Note, this method updates(saves) user profile into local storage but
+  /// * does not notify `profileChanges` listeners.
+  ///
   ///
   /// * logic
   ///   - load user profile data
   ///   - update app
   ///   - return user
-  Future<ApiUser> userProfile(String sessionId) async {
+  Future<ApiUser> refreshProfile(String sessionId) async {
     if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
     loading.profile = true;
     final Map<String, dynamic> res =
         await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
+    _saveProfile(user);
 
     return user;
   }
@@ -549,11 +563,13 @@ class Api {
     return otherUser;
   }
 
+  @Deprecated('Use refreshProfile')
+
   /// Refresh user profile
   ///
   /// It is a helper function of [userProfile].
   Future<ApiUser> refreshUserProfile() {
-    return userProfile(sessionId);
+    return refreshProfile(sessionId);
   }
 
   @Deprecated('user postEdit()')
@@ -1264,6 +1280,7 @@ class Api {
     );
   }
 
+  /// @todo change method name.
   Future<ApiUser> subscribeOrUnsubscribe({String route, String topic}) async {
     Map<String, dynamic> req = {
       'route': route,
@@ -1271,7 +1288,7 @@ class Api {
     };
     final res = await request(req);
     user = ApiUser.fromJson(res);
-    await _saveUserProfile(user);
+    await _saveProfileAndNotify(user);
     return user;
   }
 
