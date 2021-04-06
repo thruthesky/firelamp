@@ -17,6 +17,9 @@ class ElementKeys {
   String commentContent = 'commentContent';
 
   String commentFormTextField = 'commentFormTextField';
+
+  String loginForm = 'loginForm';
+  String communityPostList = 'communityPostList';
 }
 
 class ButtonKeys {
