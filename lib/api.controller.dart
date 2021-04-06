@@ -1466,8 +1466,33 @@ class Api {
         .then((value) => ApiFriend.fromMap(value));
   }
 
+  Future<ApiFriend> deleteFriend({@required String otherIdx}) {
+    return request({'route': 'friend.delete', 'otherIdx': otherIdx})
+        .then((value) => ApiFriend.fromMap(value));
+  }
+
+  Future<ApiFriend> blockFriend({@required String otherIdx}) {
+    return request({'route': 'friend.block', 'otherIdx': otherIdx})
+        .then((value) => ApiFriend.fromMap(value));
+  }
+
+  Future<ApiFriend> unblockFriend({@required String otherIdx}) {
+    return request({'route': 'friend.unblock', 'otherIdx': otherIdx})
+        .then((value) => ApiFriend.fromMap(value));
+  }
+
+  Future<ApiFriend> friendRelationship({@required String otherIdx}) {
+    return request({'route': 'friend.relationship', 'otherIdx': otherIdx})
+        .then((value) => ApiFriend.fromMap(value));
+  }
+
   Future<List<ApiShortUser>> listFriend() async {
     final List list = await request({'route': 'friend.list'});
+    return list.map((e) => ApiShortUser.fromJson(e)).toList();
+  }
+
+  Future<List<ApiShortUser>> blockListFriend() async {
+    final List list = await request({'route': 'friend.blockList'});
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
   }
 }
