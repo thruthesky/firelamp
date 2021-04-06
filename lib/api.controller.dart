@@ -140,7 +140,7 @@ class Api {
     /// 로컬 캐시에 있는 데이터가 로드되는데로 한번 authChanges 가 호출된다.
     if (user != null) authChanges.add(user);
     if (user != null) {
-      await refreshProfile(sessionId);
+      await refreshProfile(sessionId: sessionId);
       authChanges.add(user);
     }
   }
@@ -536,8 +536,8 @@ class Api {
   ///   - load user profile data
   ///   - update app
   ///   - return user
-  Future<ApiUser> refreshProfile(String sessionId) async {
-    if (sessionId == null) throw ERROR_EMPTY_SESSION_ID;
+  Future<ApiUser> refreshProfile({String sessionId}) async {
+    if (sessionId == null) sessionId = this.sessionId;
     loading.profile = true;
     final Map<String, dynamic> res =
         await request({'route': 'user.profile', 'sessionId': sessionId});
@@ -569,7 +569,7 @@ class Api {
   ///
   /// It is a helper function of [userProfile].
   Future<ApiUser> refreshUserProfile() {
-    return refreshProfile(sessionId);
+    return refreshProfile(sessionId: sessionId);
   }
 
   @Deprecated('user postEdit()')
