@@ -1041,3 +1041,13 @@ class _PostListViewState extends State<PostListView> {
   }
 }
 ```
+
+# Widgets
+
+## FirebaseReady
+
+Show child widget only after firebase has initialized.
+
+## UserReady
+
+Show `login` child widget when user logged in. Or show `logout` widget.
