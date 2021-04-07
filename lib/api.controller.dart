@@ -283,14 +283,18 @@ class Api {
 
   /// Load app translations and listen changes.
   _initTranslation() {
-    if (enableFirebase == false) return;
-    firestore
-        .collection('notifications')
-        .doc('translations')
-        .snapshots()
-        .listen((DocumentSnapshot snapshot) {
+    // Firebase 를 사용하지 않으면, 1번만 로드한다.
+    if (enableFirebase == false) {
       _loadTranslationFromCenterX();
-    });
+    } else {
+      firestore
+          .collection('notifications')
+          .doc('translations')
+          .snapshots()
+          .listen((DocumentSnapshot snapshot) {
+        _loadTranslationFromCenterX();
+      });
+    }
   }
 
   /// Load app global settings and listen changes.
@@ -1292,22 +1296,20 @@ class Api {
     return user;
   }
 
-  Future translationList() {
-    return request({'route': 'translation.list', 'format': 'language-first'});
-  }
+  ///
+  // Future translationList() {
+  //   return request({'route': 'translation.list', 'format': 'language-first'});
+  // }
 
-  /// todo: [loadTranslations] may be called twice at start up. One from [onInit], the other from [onFirebaseReady].
-  /// todo: make it one time call.
+  /// Load and notify translation
+  ///
+  /// This should called at least one time even if firebase is not initialized.
   _loadTranslationFromCenterX() async {
     final res = await request({'route': 'translation.list', 'format': 'language-first'});
-    // print('loadTranslations() res: $res');
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (res is List) return;
     if (res is Map && res.keys.length == 0) return;
-
-    // print('_loadTranslationFromCenterX();');
-    // print(res);
 
     translationChanges.add(res);
   }

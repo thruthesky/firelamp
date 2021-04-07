@@ -1042,6 +1042,20 @@ class _PostListViewState extends State<PostListView> {
 }
 ```
 
+# Extensions
+
+- See [app.translation.dart](https://github.com/thruthesky/dalgona/blob/main/lib/services/app.translations.dart) for how to update translation data.
+
+- `String.t` extension to translate case-insenstively.
+
+```dart
+extension MyTrans on String {
+  String get t {
+    return this.toLowerCase().tr;
+  }
+}
+```
+
 # Widgets
 
 ## FirebaseReady
