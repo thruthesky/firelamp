@@ -801,13 +801,13 @@ class Api {
     return ApiCategory.fromJson(re);
   }
 
-  ///
+  /// Get a category
   Future<ApiCategory> categoryGet(String id) async {
     final re = await request({'route': 'category.get', 'id': id});
     return ApiCategory.fromJson(re);
   }
 
-  ///
+  /// Gets a list of category
   Future<List<ApiCategory>> categoryGets(List<String> ids) async {
     final re = await request({'route': 'category.gets', 'ids': ids});
     final List<ApiCategory> rets = [];
