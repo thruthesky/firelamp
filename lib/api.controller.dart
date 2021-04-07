@@ -262,10 +262,11 @@ class Api {
     });
   }
 
+  /// Save firebase uid into centerx.
+  ///
+  /// This should be called whenever user log into firebase.
   Future<void> userUpdateFirebaseUid(String uid) async {
-    if (user.firebaseUid.isEmpty) {
-      await userUpdate({FIREBASE_UID: FirebaseAuth.instance.currentUser.uid});
-    }
+    await userUpdate({FIREBASE_UID: FirebaseAuth.instance.currentUser.uid});
   }
 
   /// Firebase Initialization
