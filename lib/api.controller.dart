@@ -1516,4 +1516,8 @@ class Api {
     final List list = await request({'route': 'friend.blockList'});
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
   }
+
+  Future<String> userHeart() async {
+    return await request({'route': 'user.heart'});
+  }
 }
