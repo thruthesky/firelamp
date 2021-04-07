@@ -28,9 +28,7 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
 
     /// Get latest user's profile from backend
     if (api.loggedIn) {
-      api
-          .refreshUserProfile()
-          .then((profile) => setState(() => loading = false));
+      api.refreshProfile().then((profile) => setState(() => loading = false));
     } else {
       setState(() => loading = false);
     }
@@ -49,8 +47,7 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                       child: Row(
                         children: [
                           Icon(
-                            api.isSubscribeTopic(NotificationOptions.post(
-                                    widget.forum.categoryId))
+                            api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId))
                                 ? Icons.notifications_on
                                 : Icons.notifications_off,
                             color: Colors.blue,
@@ -64,8 +61,8 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                         child: Row(
                           children: [
                             Icon(
-                              api.isSubscribeTopic(NotificationOptions.comment(
-                                      widget.forum.categoryId))
+                              api.isSubscribeTopic(
+                                      NotificationOptions.comment(widget.forum.categoryId))
                                   ? Icons.notifications_on
                                   : Icons.notifications_off,
                               color: Colors.blue,
@@ -78,21 +75,17 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                   icon: Icon(Icons.notifications),
                   onSelected: onNotificationSelected,
                 ),
-                if (api.isSubscribeTopic(
-                    NotificationOptions.post(widget.forum.categoryId)))
+                if (api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId)))
                   Positioned(
                     top: 15,
                     left: 5,
-                    child: Icon(Icons.comment,
-                        size: Space.xsm, color: Colors.greenAccent),
+                    child: Icon(Icons.comment, size: Space.xsm, color: Colors.greenAccent),
                   ),
-                if (api.isSubscribeTopic(
-                    NotificationOptions.comment(widget.forum.categoryId)))
+                if (api.isSubscribeTopic(NotificationOptions.comment(widget.forum.categoryId)))
                   Positioned(
                     top: 15,
                     right: 5,
-                    child: Icon(Icons.comment,
-                        size: Space.xsm, color: Colors.greenAccent),
+                    child: Icon(Icons.comment, size: Space.xsm, color: Colors.greenAccent),
                   ),
               ],
             )
