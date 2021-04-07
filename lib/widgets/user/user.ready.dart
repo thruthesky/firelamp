@@ -8,7 +8,7 @@ class UserReady extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: Api.instance.authChanges,
+        stream: Api.instance.profileChanges,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
           ApiUser user = snapshot.data;

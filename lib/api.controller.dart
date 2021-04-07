@@ -21,7 +21,7 @@ class Api {
   ///
   BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
 
-  /// The [profileChanges] is posted when user profile changed.
+  /// The [profileChanges] is posted when user profile changed and login & logout.
   ///
   /// Note that this event is posted not only for profile chages, but also user login/register. That is because
   /// `login()` and `register()` method takes user profile to change.
@@ -238,11 +238,13 @@ class Api {
           await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
-            print('No user found for that email.');
+            print('No user found for that email. going to register.');
 
             try {
               await FirebaseAuth.instance
                   .createUserWithEmailAndPassword(email: user.email, password: password);
+              print(
+                  'Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
               await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
@@ -451,6 +453,7 @@ class Api {
     user = null;
     FirebaseAuth.instance.signOut();
     authChanges.add(null);
+    profileChanges.add(null);
   }
 
   /// [data] will be saved as user property. You can save whatever but may need to update the ApiUser model accordingly.
@@ -528,9 +531,7 @@ class Api {
     return userOptionSwitch(option: option, route: 'user.switchOff');
   }
 
-  /// Refresh user profile
-  ///
-  /// ! warning: Use this method only to refresh the login user's profile.
+  /// Refresh user profile and notify
   ///
   /// * Note, this method updates(saves) user profile into local storage but
   /// * does not notify `profileChanges` listeners.
@@ -547,7 +548,7 @@ class Api {
         await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
-    _saveProfile(user);
+    _saveProfileAndNotify(user);
 
     return user;
   }

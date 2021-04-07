@@ -9,6 +9,7 @@ const String ERROR_EMPTY_TOKENS = 'ERROR_EMPTY_TOKENS';
 const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
 const String ERROR_ALREADY_ADDED_AS_FRIEND = 'error_already_added_as_friend';
+const String ERROR_NO_RELATIONSHIP = 'error_no_relationship';
 
 /// Defines
 const String FIREBASE_UID = 'firebaseUid';
