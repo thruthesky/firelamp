@@ -844,6 +844,11 @@ class Api {
     return data['idx'];
   }
 
+  ///
+  Future<String> postCount(String where) async {
+    return await request({'route': 'post.count', 'where': where});
+  }
+
   /// Deletes a comment.
   ///
   /// [comment] is the comment to be deleted.
