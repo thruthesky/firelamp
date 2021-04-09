@@ -73,6 +73,7 @@ class _PostFormState extends State<PostForm> {
       final editedPost = await Api.instance.postEdit(
         idx: post.idx,
         categoryId: widget.forum.categoryId,
+        subcategory: widget.forum.subcategory,
         title: title.text,
         content: content.text,
         files: post.files,
