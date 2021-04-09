@@ -865,7 +865,6 @@ class _EventFormState extends State<EventForm> {
                           child: Text('취소', style: TextStyle(color: Colors.red[300])),
                           onPressed: () {
                             forum.postInEdit = null;
-                            forum..render();
                           }),
                     SizedBox(width: Space.xs),
                     TextButton(

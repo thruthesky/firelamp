@@ -162,10 +162,7 @@ class _PostFormState extends State<PostForm> {
                         ),
                         onPressed: () {
                           forum.postInEdit = null;
-                          if (widget.onCancel != null)
-                            widget.onCancel();
-                          else
-                            forum.render();
+                          if (widget.onCancel != null) widget.onCancel();
                         },
                       ),
                     SizedBox(width: Space.xs),

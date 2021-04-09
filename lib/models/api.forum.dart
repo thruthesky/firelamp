@@ -80,7 +80,7 @@ class ApiForum {
   bool noMorePosts = false;
   int pageNo = 0;
   bool get canLoad => loading == false && noMorePosts == false;
-  bool get canList => postInEdit == null && posts.length > 0;
+  bool get canList => _postInEdit == null && posts.length > 0;
 
   /// 구글에서 제작한 Scrollable Positioned List https://pub.dev/packages/scrollable_positioned_list
   /// 장점은 글 생성/수정 후, 해당(또는 특정) 글 위치로 이동을 할 수 있다.
@@ -97,7 +97,7 @@ class ApiForum {
   // categories separated by comma.
   String get searchCategories => Api.instance.settings['search_categories'] ?? '';
 
-  bool get canCreate => userIdx == null && categoryId != null && postInEdit == null;
+  bool get canCreate => userIdx == null && categoryId != null && _postInEdit == null;
 
   bool get hasPosts => posts.isNotEmpty;
   bool get noPosts => posts.isEmpty;
@@ -115,7 +115,14 @@ class ApiForum {
   Function onChatIconPressed;
 
   ///
-  ApiPost postInEdit;
+  ApiPost _postInEdit;
+  ApiPost get postInEdit => _postInEdit;
+  set postInEdit(ApiPost post) {
+    _postInEdit = post;
+    render();
+    notifyListeners(ForumEventType.edit, post);
+  }
+
   ApiForum({
     this.setting,
     this.subcategory,
@@ -161,7 +168,9 @@ class ApiForum {
     }
   }
 
-  /// Edit post or comment
+  /// Mark the forum in edit state.
+  ///
+  /// This is a siple helper class of `postInEdit=post`.
   ///
   /// To create a post
   /// ```
@@ -179,8 +188,6 @@ class ApiForum {
   /// ```
   editPost(ApiPost post) {
     postInEdit = post;
-    render();
-    notifyListeners(ForumEventType.edit, post);
   }
 
   /// Inserts a new post on top or updates an existing post.
