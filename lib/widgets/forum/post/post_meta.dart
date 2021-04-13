@@ -31,6 +31,11 @@ class PostMeta extends StatelessWidget {
                 style: TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),
           ],
+          if (post.subcategory.isNotEmpty) ...[
+            Text('[ ${post.subcategory} ]',
+                style: TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
+            SizedBox(width: Space.sm),
+          ],
           Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.xsm)),
           SizedBox(width: Space.sm),
           if (post.comments.isNotEmpty) ...[
