@@ -60,7 +60,7 @@ class _PostViewState extends State<PostView> {
                   children: [
                     GestureDetector(
                       child: Text(
-                        '${widget.post.user.name}',
+                        '${widget.post.user.name.isNotEmpty ? widget.post.user.name : 'No name'}',
                         // style: stylePostTitle,
                         style: TextStyle(fontWeight: FontWeight.w500),
                         maxLines: 1,
