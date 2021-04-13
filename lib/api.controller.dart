@@ -844,6 +844,8 @@ class Api {
     return data['idx'];
   }
 
+  /// count post based on the condition
+  ///
   ///
   Future<String> postCount(String where) async {
     return await request({'route': 'post.count', 'where': where});
