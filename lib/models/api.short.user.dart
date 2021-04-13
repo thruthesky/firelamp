@@ -15,6 +15,16 @@ class ApiShortUser {
     return calAge(birthdate);
   }
 
+  String get nicknameOrName {
+    if (nickname != null && nickname != '') {
+      return nickname;
+    }
+    if (name != null && name != '') {
+      return name;
+    }
+    return '...';
+  }
+
   ApiShortUser({
     this.idx,
     this.name,
