@@ -56,6 +56,7 @@ class _SearchBarState extends State<SearchBar> {
     super.initState();
     _selectedCategory = widget.defaultSearchCategoryValue;
 
+    searchKey = widget.defaultSearchKeyValue;
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
     subscription = input
         .debounceTime(Duration(milliseconds: 500))
