@@ -16,7 +16,8 @@ class PostView extends StatefulWidget {
     this.post,
     this.forum,
     this.actions = const [],
-    this.onTitleTap,
+    this.avatarBuilder,
+    this.nameBuilder,
     this.open = false,
     this.onError,
   }) : super(key: key);
@@ -25,9 +26,11 @@ class PostView extends StatefulWidget {
   final ApiPost post;
 
   final List<Widget> actions;
-  final Function onTitleTap;
   final Function onError;
   final bool open;
+
+  final Function avatarBuilder;
+  final Function nameBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -43,73 +46,74 @@ class _PostViewState extends State<PostView> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-    GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: widget.onTitleTap,
-      child: Row(
-        children: [
-          UserAvatar(widget.post.user.photoUrl),
-          SizedBox(width: Space.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${widget.post.user.name}',
-                  // style: stylePostTitle,
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: Space.xs),
-                PostMeta(widget.post, widget.forum),
-              ],
-            ),
-          )
-        ],
-      ),
-    ),
-    SizedBox(height: Space.sm),
-    Text(
-      '${widget.post.title}',
-      key: ValueKey(FirelampKeys.element.postTitle),
-      style: stylePostTitle,
-    ),
-    SizedBox(height: Space.sm),
-    Text(
-      '${widget.post.content}',
-      key: ValueKey(FirelampKeys.element.postContent),
-      style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
-    ),
-    DisplayFiles(postOrComment: widget.post),
-    SizedBox(height: Space.xs),
-    Divider(height: Space.xs, thickness: 1.3),
-    Row(children: [
-      VoteButtons(
-        widget.post,
-        widget.forum,
-        onSuccess: () => setState(() => null),
-        onError: widget.onError,
-      ),
-      ...widget.actions,
-    ]),
-    CommentForm(
-      post: widget.post,
-      forum: widget.forum,
-      comment: ApiComment(),
-      onError: widget.onError,
-      onSuccess: () => setState(() {
-        print('onSuccess!');
-      }),
-    ),
-    CommentList(
-      post: widget.post,
-      forum: widget.forum,
-      onError: widget.onError,
-    ),
-        ],
-      );
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            widget.avatarBuilder == null
+                ? UserAvatar(widget.post.user.photoUrl)
+                : widget.avatarBuilder(widget.post),
+            SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  widget.nameBuilder == null ? name : widget.nameBuilder(widget.post),
+                  SizedBox(height: Space.xs),
+                  PostMeta(widget.post, widget.forum),
+                ],
+              ),
+            )
+          ],
+        ),
+        SizedBox(height: Space.sm),
+        Text(
+          '${widget.post.title}',
+          key: ValueKey(FirelampKeys.element.postTitle),
+          style: stylePostTitle,
+        ),
+        SizedBox(height: Space.sm),
+        Text(
+          '${widget.post.content}',
+          key: ValueKey(FirelampKeys.element.postContent),
+          style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
+        ),
+        DisplayFiles(postOrComment: widget.post),
+        SizedBox(height: Space.xs),
+        Divider(height: Space.xs, thickness: 1.3),
+        Row(children: [
+          VoteButtons(
+            widget.post,
+            widget.forum,
+            onSuccess: () => setState(() => null),
+            onError: widget.onError,
+          ),
+          ...widget.actions,
+        ]),
+        CommentForm(
+          post: widget.post,
+          forum: widget.forum,
+          comment: ApiComment(),
+          onError: widget.onError,
+          onSuccess: () => setState(() {
+            print('onSuccess!');
+          }),
+        ),
+        CommentList(
+          post: widget.post,
+          forum: widget.forum,
+          onError: widget.onError,
+        ),
+      ],
+    );
+  }
+
+  Widget get name {
+    return Text(
+      '${widget.post.user.name.isNotEmpty ? widget.post.user.name : 'No name'}',
+      style: TextStyle(fontWeight: FontWeight.w500),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }

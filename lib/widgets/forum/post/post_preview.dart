@@ -93,7 +93,7 @@ class PostPreview extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('${post.user.name}'),
+                                    Text('${post.user.name.isNotEmpty ? post.user.name : 'No name'}'),
                                     title,
                                     SizedBox(height: Space.xxs),
                                     Text(

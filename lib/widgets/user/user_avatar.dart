@@ -8,7 +8,6 @@ class UserAvatar extends StatelessWidget {
   final Function onTap;
   @override
   Widget build(BuildContext context) {
-    // print('url: $url');
     return GestureDetector(
       child: Container(
         width: size,
@@ -22,8 +21,7 @@ class UserAvatar extends StatelessWidget {
           shape: BoxShape.circle,
           color: Colors.blue,
           boxShadow: [
-            BoxShadow(
-                color: Colors.black26, blurRadius: 1.0, spreadRadius: 1.0),
+            BoxShadow(color: Colors.black26, blurRadius: 1.0, spreadRadius: 1.0),
           ],
         ),
       ),

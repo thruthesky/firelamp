@@ -31,6 +31,11 @@ class PostMeta extends StatelessWidget {
                 style: TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
             SizedBox(width: Space.sm),
           ],
+          if (post.subcategory.isNotEmpty) ...[
+            Text('[ ${post.subcategory} ]',
+                style: TextStyle(fontSize: Space.xsm, fontWeight: FontWeight.w500)),
+            SizedBox(width: Space.sm),
+          ],
           Text('${post.shortDateTime}', style: TextStyle(fontSize: Space.xsm)),
           SizedBox(width: Space.sm),
           if (post.comments.isNotEmpty) ...[
@@ -39,18 +44,18 @@ class PostMeta extends StatelessWidget {
             Text('${post.comments.length}', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.xsm),
           ],
-          if (forum.showLike && post.y.toInt > 0) ...[
-            Icon(Icons.thumb_up_rounded, size: Space.xsm, color: iconColor),
-            SizedBox(width: Space.xs),
-            Text('${post.y}', style: TextStyle(fontSize: Space.xsm)),
-            SizedBox(width: Space.xsm),
-          ],
-          if (forum.showDislike && post.n.toInt > 0) ...[
-            Icon(Icons.thumb_down_rounded, size: Space.xsm, color: iconColor),
-            SizedBox(width: Space.xs),
-            Text('${post.n}', style: TextStyle(fontSize: Space.xsm)),
-            SizedBox(width: Space.xsm),
-          ],
+          // if (forum.showLike && post.y.toInt > 0) ...[
+          //   Icon(Icons.thumb_up_rounded, size: Space.xsm, color: iconColor),
+          //   SizedBox(width: Space.xs),
+          //   Text('${post.y}', style: TextStyle(fontSize: Space.xsm)),
+          //   SizedBox(width: Space.xsm),
+          // ],
+          // if (forum.showDislike && post.n.toInt > 0) ...[
+          //   Icon(Icons.thumb_down_rounded, size: Space.xsm, color: iconColor),
+          //   SizedBox(width: Space.xs),
+          //   Text('${post.n}', style: TextStyle(fontSize: Space.xsm)),
+          //   SizedBox(width: Space.xsm),
+          // ],
           Text(
             'No. ${post.idx}',
             style: TextStyle(fontSize: Space.xsm),
