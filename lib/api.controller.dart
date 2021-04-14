@@ -1489,6 +1489,16 @@ class Api {
     return rets;
   }
 
+  /// 친구 추가
+  ///
+  ///
+  /// ```
+  /// try {
+  ///   ApiFriend re = await api.addFriend(otherIdx: user.idx);
+  /// } catch (e) {
+  ///   if (e != ERROR_ALREADY_ADDED_AS_FRIEND) app.error(e);
+  /// }
+  /// ```
   Future<ApiFriend> addFriend({@required String otherIdx}) {
     return request({'route': 'friend.add', 'otherIdx': otherIdx})
         .then((value) => ApiFriend.fromMap(value));

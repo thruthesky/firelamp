@@ -51,6 +51,16 @@ class ApiUser {
   String photoIdx;
   String photoUrl;
 
+  String get nicknameOrName {
+    if (nickname != null && nickname != '') {
+      return nickname;
+    }
+    if (name != null && name != '') {
+      return name;
+    }
+    return '...';
+  }
+
   ApiUser({
     this.admin = false,
     this.nickname,
