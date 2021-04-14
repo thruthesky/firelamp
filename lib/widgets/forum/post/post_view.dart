@@ -16,8 +16,8 @@ class PostView extends StatefulWidget {
     this.post,
     this.forum,
     this.actions = const [],
-    this.onTitleTap,
-    this.onUsernameOrAvatarTap,
+    this.avatarBuilder,
+    this.nameBuilder,
     this.open = false,
     this.onError,
   }) : super(key: key);
@@ -26,10 +26,11 @@ class PostView extends StatefulWidget {
   final ApiPost post;
 
   final List<Widget> actions;
-  final Function onTitleTap;
-  final Function onUsernameOrAvatarTap;
   final Function onError;
   final bool open;
+
+  final Function avatarBuilder;
+  final Function nameBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -47,34 +48,23 @@ class _PostViewState extends State<PostView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          // behavior: HitTestBehavior.opaque,
-          onTap: widget.onTitleTap,
-          child: Row(
-            children: [
-              UserAvatar(widget.post.user.photoUrl, onTap: widget.onUsernameOrAvatarTap),
-              SizedBox(width: Space.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      child: Text(
-                        '${widget.post.user.name.isNotEmpty ? widget.post.user.name : 'No name'}',
-                        // style: stylePostTitle,
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: widget.onUsernameOrAvatarTap,
-                    ),
-                    SizedBox(height: Space.xs),
-                    PostMeta(widget.post, widget.forum),
-                  ],
-                ),
-              )
-            ],
-          ),
+        Row(
+          children: [
+            widget.avatarBuilder == null
+                ? UserAvatar(widget.post.user.photoUrl)
+                : widget.avatarBuilder(widget.post),
+            SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  widget.nameBuilder == null ? name : widget.nameBuilder(widget.post),
+                  SizedBox(height: Space.xs),
+                  PostMeta(widget.post, widget.forum),
+                ],
+              ),
+            )
+          ],
         ),
         SizedBox(height: Space.sm),
         Text(
@@ -115,6 +105,15 @@ class _PostViewState extends State<PostView> {
           onError: widget.onError,
         ),
       ],
+    );
+  }
+
+  Widget get name {
+    return Text(
+      '${widget.post.user.name.isNotEmpty ? widget.post.user.name : 'No name'}',
+      style: TextStyle(fontWeight: FontWeight.w500),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
