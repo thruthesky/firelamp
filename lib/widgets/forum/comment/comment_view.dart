@@ -157,6 +157,7 @@ class _CommentViewState extends State<CommentView> {
                     onSuccess: widget.rerenderParent,
                     onError: widget.onError,
                     index: widget.index,
+                    onCancel: () => setState(() => widget.comment.mode = CommentMode.none),
                   ),
                 ],
               ],

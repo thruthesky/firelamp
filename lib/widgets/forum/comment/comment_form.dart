@@ -16,6 +16,7 @@ class CommentForm extends StatefulWidget {
     @required this.forum,
     this.onError,
     this.onSuccess,
+    this.onCancel,
     this.index,
   }) : super(key: key);
 
@@ -26,6 +27,7 @@ class CommentForm extends StatefulWidget {
   final ApiForum forum;
   final Function onError;
   final Function onSuccess;
+  final Function onCancel;
   final int index;
 
   @override
@@ -118,8 +120,16 @@ class _CommentFormState extends State<CommentForm> {
       child: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              if (widget.comment?.idx != null)
+                IconButton(
+                  alignment: Alignment.center,
+                  constraints: BoxConstraints(maxWidth: Space.md),
+                  icon: Icon(Icons.close),
+                  onPressed: widget.onCancel,
+                  padding: EdgeInsets.symmetric(horizontal: 0),
+                ),
               IconButton(
                 alignment: Alignment.center,
                 icon: Icon(Icons.camera_alt, color: Colors.black),
@@ -127,7 +137,8 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  key: ValueKey("${FirelampKeys.element.commentFormTextField}${widget.index != null ? widget.index : ''}"),
+                  key: ValueKey(
+                      "${FirelampKeys.element.commentFormTextField}${widget.index != null ? widget.index : ''}"),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,
