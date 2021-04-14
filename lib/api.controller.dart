@@ -901,10 +901,13 @@ class Api {
   /// Get posts from backend.
   ///
   /// You may use [fetchPosts] wich handles with pagination and more.
+  ///
+  /// [code] 를 지정하면, 해당 code 값을 가지는 글들을 가져온다.
   Future<List<ApiPost>> postSearch({
     String postOnTop,
     String categoryId,
     String subcategory,
+    String code,
     int limit = 20,
     int page = 1,
     String userIdx,
@@ -913,11 +916,12 @@ class Api {
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
-    data['postOnTop'] = postOnTop;
+    if (postOnTop != null) data['postOnTop'] = postOnTop;
     data['where'] = "parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
 
+    if (code != null) data['where'] = data['where'] + " and code='$code'";
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null && categoryId != "")
@@ -939,6 +943,7 @@ class Api {
     return _posts;
   }
 
+  @Deprecated('Use commentSearch')
   Future<List<ApiComment>> searchComments({
     String userIdx,
     int limit = 20,
@@ -948,6 +953,46 @@ class Api {
     final Map<String, dynamic> data = {
       'route': 'comment.search',
       'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
+      'limit': limit,
+      'page': page
+    };
+
+    final jsonList = await request(data);
+
+    List<ApiComment> _comments = [];
+    for (int i = 0; i < jsonList.length; i++) {
+      _comments.add(ApiComment.fromJson(jsonList[i]));
+    }
+    return _comments;
+  }
+
+  /// 코멘트 검색
+  ///
+  /// [categoryId] is not supported.
+  /// [files] 가 null 이면, 첨부 파일(사진)이 있던 없던 상관 없다.
+  /// [files] 가 true 이면, 첨부 파일이 있는 코멘트만 가져온다.
+  /// [files] 가 false 이면, 첨부 파일이 없는 코멘트만 가져온다.
+  Future<List<ApiComment>> commentSearch({
+    String userIdx,
+    String categoryIdx,
+    bool files,
+    int limit = 20,
+    int page = 1,
+    String order = 'DESC',
+  }) async {
+    String where = "parentIdx > 0 AND deletedAt=0";
+    if (userIdx != null) where += " AND userIdx=$userIdx";
+    if (categoryIdx != null) where += " AND categoryIdx=$categoryIdx";
+    if (files != null) {
+      if (files)
+        where += " AND files != ''";
+      else
+        where += " AND files == ''";
+    }
+
+    final Map<String, dynamic> data = {
+      'route': 'comment.search',
+      'where': where,
       'limit': limit,
       'page': page
     };
