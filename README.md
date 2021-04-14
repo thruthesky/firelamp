@@ -1069,3 +1069,8 @@ Show child widget only after firebase has initialized.
 ## UserReady
 
 Show `login` child widget when user logged in. Or show `logout` widget.
+
+# 친구 기능
+
+- 친구 추가를 했는데, (또는 이미 친구인데), 친구 목록에 나오지 않는 다면, 차단된 경우 이다.
+- 일방 차단인 경우, 쌍방 모두 대화를 할 수 없다.
