@@ -750,7 +750,7 @@ class Api {
   }
 
   ///
-  Future<ApiPost> postGet(int idx) async {
+  Future<ApiPost> postGet(String idx) async {
     final json = await request({'route': 'post.get', 'idx': idx});
     return ApiPost.fromJson(json);
   }
@@ -1436,10 +1436,11 @@ class Api {
     bool original = false,
   }) {
     String url = apiUrl.replaceAll('index.php', '');
-    url += 'etc/phpThumb/phpThumb.php';
-
-    url = url + '?src=$src&code=$code&w=$width&h=$height&f=jpeg&q=$quality';
+    url += 'etc/phpThumb/phpThumb.php?q=$quality&w=$width&h=$height&f=jpeg';
     if (original) url += '&original=Y';
+    if (src != null && src != '') url += "&src=$src";
+    if (code != null && code != '') url += "&code=$code";
+
     return url;
   }
 
@@ -1489,6 +1490,16 @@ class Api {
     return rets;
   }
 
+  /// 친구 추가
+  ///
+  ///
+  /// ```
+  /// try {
+  ///   ApiFriend re = await api.addFriend(otherIdx: user.idx);
+  /// } catch (e) {
+  ///   if (e != ERROR_ALREADY_ADDED_AS_FRIEND) app.error(e);
+  /// }
+  /// ```
   Future<ApiFriend> addFriend({@required String otherIdx}) {
     return request({'route': 'friend.add', 'otherIdx': otherIdx})
         .then((value) => ApiFriend.fromMap(value));
