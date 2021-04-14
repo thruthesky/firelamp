@@ -17,10 +17,15 @@ It is based on Firebase and LAMP stack.
   - api.controller.dart 를 api.dart 로 변경
   - src/api.dart 에는 오직, CenterX 연결하는 코드만 넣는다.
   - Api.instance.authChanges 는 nullable 이다. 즉, null 이면, 최초 1회 event 가 발생하는 것이고, 캐시 로그인 정보가 없어도 ApiUser 객체를 리턴한다.
+
   - ApiForum 은 여러 게시판이 동시에 열려야하므로, GetX Controller 는 맞지 않다. 어떤 State manager 도 안된다.
     하지만, forum.render 가 여러가지로 문제가 많다. 특히, 플러터의 경우, 플랫폼 구조적인 문제로 인해, 처음 부터 로직이 잘못되면, 시간이 흐를 수록 더욱 많은 시간과 노력을 낭비하게 된다.
-    위젯 랜더링과 관련해서는 Funtional Programming 으로는 안된다. RxDart 와 같은 방법으로 되어야 한다.
-    그래서, forum.changes.listen() 과 같이 RxDart 로 동작하게 한다.
+    그렇다고 RxDart 로 하기에는 subscribe 와 unsubscribe 가 너무 번거롭다.
+    그래서, 글/코멘트 내용의 변화가 있으면, forum.addListeners() 와 같이 화면 랜더링을 처리를 한다. 여러개의 listener 를 추가 할 수 있도록 한다.
+
+  - 그리고, 샘플 위젯을 코어로 포함시킨다.
+    글 읽기 위젯에서, `nameBuilder:`, `avartarBuilder:`, `dateBuilder:`, `titleBilder:`, `contentBuilder:` 등 최대한의 옵션을 줄 수 있도록 한다.
+
   - 그리고 scrollable_positioned_list 사용을 기본으로 하지 말고 옵션으로 사용하기 쉽도록 해 준다.
     다른 list 위젯을 사용 할 수도 있고, single child scroll view 로 사용 할 수도 있다.
   - ApiForum() 클래스는 게시판의 전체적인 UI/UX 를 관리하는 컨트롤러이다.
@@ -1064,3 +1069,8 @@ Show child widget only after firebase has initialized.
 ## UserReady
 
 Show `login` child widget when user logged in. Or show `logout` widget.
+
+# 친구 기능
+
+- 친구 추가를 했는데, (또는 이미 친구인데), 친구 목록에 나오지 않는 다면, 차단된 경우 이다.
+- 일방 차단인 경우, 쌍방 모두 대화를 할 수 없다.
