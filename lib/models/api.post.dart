@@ -74,6 +74,7 @@ class ApiPost {
     this.primaryPhoto,
     this.widgetPhoto,
     this.detailPhoto,
+    this.bannerPhoto,
     this.keywords,
     this.options,
     this.shortDateTime,
@@ -164,6 +165,9 @@ class ApiPost {
   String get widgetPhotoUrl => thumbnailUrl(widgetPhoto);
   String detailPhoto;
   String get detailPhotoUrl => thumbnailUrl(detailPhoto, original: true);
+
+  String bannerPhoto;
+  String get bannerPhotoUrl => thumbnailUrl(bannerPhoto, original: true);
 
   /// The [keywords] has multiple keywords separated by comma
   String keywords;
@@ -279,6 +283,9 @@ class ApiPost {
   ///  }
   /// ```
   factory ApiPost.fromJson(Map<String, dynamic> json) {
+    final List<ApiFile> files = json["files"] == null || json["files"] == ''
+        ? []
+        : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x)));
     return ApiPost(
       data: json,
       idx: "${json["idx"]}",
@@ -308,9 +315,7 @@ class ApiPost {
       appliedPoint: "${json['appliedPoint']}",
       code: json['code'],
 
-      files: json["files"] == null || json["files"] == ''
-          ? []
-          : List<ApiFile>.from(json["files"].map((x) => ApiFile.fromJson(x))),
+      files: files,
       comments: json["comments"] == null
           ? []
           : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
@@ -328,9 +333,11 @@ class ApiPost {
       deliveryFee: _parseInt(json["deliveryFee"]),
       storageMethod: json["storageMethod"],
       expiry: json["expiry"],
-      primaryPhoto: json["primaryPhoto"],
-      widgetPhoto: json["widgetPhoto"],
-      detailPhoto: json["detailPhoto"],
+      primaryPhoto:
+          files.firstWhere((f) => f.code == 'primaryPhoto', orElse: () => null)?.idx ?? '',
+      widgetPhoto: files.firstWhere((f) => f.code == 'widgetPhoto', orElse: () => null)?.idx ?? '',
+      detailPhoto: files.firstWhere((f) => f.code == 'detailPhoto', orElse: () => null)?.idx ?? '',
+      bannerPhoto: files.firstWhere((f) => f.code == 'bannerPhoto', orElse: () => null)?.idx ?? '',
       keywords: json['keywords'] ?? '',
       options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
 
@@ -377,6 +384,7 @@ class ApiPost {
         "primaryPhoto": primaryPhoto,
         "widgetPhoto": widgetPhoto,
         "detailPhoto": detailPhoto,
+        "bannerPhoto": bannerPhoto,
         "keywords": keywords,
         "options": options.toString,
         "shortDateTime": shortDateTime,

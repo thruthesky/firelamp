@@ -52,7 +52,7 @@ class ApiFile {
         "idx": idx,
         "type": type,
         "name": name,
-        "thumbnialUrl": thumbnailUrl,
+        "thumbnai,slUrl": thumbnailUrl,
         "taxonomy": taxonomy,
         "entity": entity,
         "code": code,

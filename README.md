@@ -32,6 +32,8 @@ It is based on Firebase and LAMP stack.
     코멘트 읽기에서 버튼을 표시 할 때, builderCommentButtons: (ApiPost, ApiComment) { ... } 와 같이 처리를 할 수 있도록 한다.
     아래와 같이 게시판을 구성하는 모든 위젯을 커스터마이징 할 수도 있다.
 
+  - `ApiPost` 에서 쇼핑몰 기능을 따로 빼 낸다. 시간이 없어서, `ApiPost` 에 쇼핑몰 속성을 집어 넣었는데, 완전히 빼야 한다.
+
 ```dart
 ApiForum(
   builderPostMeta: (post) { return Rows(...); },
