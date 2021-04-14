@@ -120,7 +120,7 @@ class _CommentFormState extends State<CommentForm> {
       child: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.comment?.idx != null)
                 IconButton(
@@ -128,7 +128,7 @@ class _CommentFormState extends State<CommentForm> {
                   constraints: BoxConstraints(maxWidth: Space.md),
                   icon: Icon(Icons.close),
                   onPressed: widget.onCancel,
-                  padding: EdgeInsets.symmetric(horizontal: 0),
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
                 ),
               IconButton(
                 alignment: Alignment.center,
