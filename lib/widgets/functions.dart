@@ -28,11 +28,11 @@ Future<ApiFile> imageUpload({
             children: <Widget>[
               ListTile(
                   leading: Icon(Icons.music_note),
-                  title: Text('take photo from camera'),
+                  title: Text('take photo from camera'.tr),
                   onTap: () => Get.back(result: ImageSource.camera)),
               ListTile(
                 leading: Icon(Icons.videocam),
-                title: Text('get photo from gallery'),
+                title: Text('get photo from gallery'.tr),
                 onTap: () => Get.back(result: ImageSource.gallery),
               ),
               ListTile(

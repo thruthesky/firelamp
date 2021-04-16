@@ -11,6 +11,7 @@ import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_
 class PostForm extends StatefulWidget {
   PostForm(
     this.forum, {
+    this.subcategories = const [],
     this.onSuccess,
     this.onCancel,
     this.onError,
@@ -19,6 +20,7 @@ class PostForm extends StatefulWidget {
   final Function onSuccess;
   final Function onCancel;
   final Function onError;
+  final List<String> subcategories;
 
   @override
   _PostFormState createState() => _PostFormState();
@@ -113,6 +115,35 @@ class _PostFormState extends State<PostForm> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Row(children: [
+              Text('subcategory'.tr),
+              SizedBox(width: Space.md),
+              Expanded(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: forum.subcategory,
+                  hint: Text('uncategorized'.tr),
+                  onChanged: (cat) {
+                    if (cat == forum.subcategory) return;
+                    forum.subcategory = cat;
+                    setState(() {});
+                  },
+                  items: [
+                    DropdownMenuItem(child: Text('uncategorized'.tr), value: null),
+                    for (final String cat in widget.subcategories)
+                      DropdownMenuItem(
+                        child: Text(
+                          '$cat',
+                          style: cat == forum.subcategory
+                              ? TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)
+                              : null,
+                        ),
+                        value: cat,
+                      ),
+                  ],
+                ),
+              ),
+            ]),
             Padding(
               padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
               child: Text('title'.tr),

@@ -50,14 +50,14 @@ class ApiShortUser {
     }
     return ApiShortUser(
       idx: "${json['idx']}",
-      name: json['name'],
-      nickname: json['nickname'],
-      gender: json['gender'],
+      name: json['name'] ?? '',
+      nickname: json['nickname'] ?? '',
+      gender: json['gender'] ?? '',
       birthdate: "${json['birthdate']}",
-      point: "${json['point']}",
-      photoIdx: photoIdx,
-      photoUrl: url,
-      firebaseUid: json['firebaseUid'],
+      point: "${json['point'] ?? 0}",
+      photoIdx: photoIdx ?? '',
+      photoUrl: url ?? '',
+      firebaseUid: json['firebaseUid'] ?? '',
     );
   }
 
