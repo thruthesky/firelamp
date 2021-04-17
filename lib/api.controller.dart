@@ -65,14 +65,11 @@ class Api {
   String get userIdx => user == null ? '0' : user.idx;
   String get sessionId => user?.sessionId;
   String get photoUrl => user?.photoUrl;
-  String get fullName => user?.name;
+  String get name => user?.name;
   String get nickname => user?.nickname;
+  String get nicknameOrName => nickname != null || nickname != '' ? nickname : name;
   bool get profileComplete =>
-      loggedIn &&
-      photoUrl != null &&
-      photoUrl.isNotEmpty &&
-      fullName != null &&
-      fullName.isNotEmpty;
+      loggedIn && photoUrl != null && photoUrl.isNotEmpty && name != null && name.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
   bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
@@ -1026,6 +1023,17 @@ class Api {
     } else {
       return ApiPost.fromJson(re);
     }
+  }
+
+  /// 글 또는 코멘트를 신고
+  ///
+  /// 신고 후, ApiPost 또는 ApiComment 를 리턴한다.
+  Future<dynamic> reportArticle(String idx) async {
+    final re = await request({'route': 'post.report', 'idx': idx});
+    if (int.parse(re['parentIdx']) > 0)
+      return ApiComment.fromJson(re);
+    else
+      return ApiPost.fromJson(re);
   }
 
   Future<ApiFile> uploadFile({

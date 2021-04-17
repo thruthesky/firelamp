@@ -118,6 +118,8 @@ class _CommentViewState extends State<CommentView> {
                         onPressed: () =>
                             widget.forum.onChatIconPressed(widget.post, widget.comment),
                       ),
+                    if (widget.forum.commentButtonBuilder != null)
+                      widget.forum.commentButtonBuilder(widget.post, widget.comment),
                     Spacer(),
                     if (widget.comment.isMine)
                       PopUpButton(items: [

@@ -112,7 +112,16 @@ class ApiForum {
   int loadMoreOn;
   Function loadMore;
 
+  /// Do not use this method. Use [commentButtonBuilder]
+  /// This will be deprecated soon.
   Function onChatIconPressed;
+
+  /// Build comment buttons
+  ///
+  /// Use this method to display buttons for the comment view.
+  Function commentButtonBuilder;
+
+  Function postButtonBuilder;
 
   ///
   ApiPost _postInEdit;
@@ -136,6 +145,8 @@ class ApiForum {
     String categoryId,
     ApiPost post,
     this.onChatIconPressed,
+    this.commentButtonBuilder,
+    this.postButtonBuilder,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {

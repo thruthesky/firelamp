@@ -1,7 +1,6 @@
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
-import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
@@ -15,22 +14,24 @@ class PostView extends StatefulWidget {
     Key key,
     this.post,
     this.forum,
-    this.actions = const [],
+    // this.actions = const [],
     this.avatarBuilder,
     this.nameBuilder,
     this.open = false,
     this.onError,
+    this.bottomBuilder,
   }) : super(key: key);
 
   final ApiForum forum;
   final ApiPost post;
 
-  final List<Widget> actions;
+  // final List<Widget> actions;
   final Function onError;
   final bool open;
 
   final Function avatarBuilder;
   final Function nameBuilder;
+  final Function bottomBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -80,16 +81,9 @@ class _PostViewState extends State<PostView> {
         ),
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
-        Divider(height: Space.xs, thickness: 1.3),
-        Row(children: [
-          VoteButtons(
-            widget.post,
-            widget.forum,
-            onSuccess: () => setState(() => null),
-            onError: widget.onError,
-          ),
-          ...widget.actions,
-        ]),
+        Divider(height: Space.xs),
+        if (widget.bottomBuilder != null) widget.bottomBuilder(),
+        if (widget.forum.postButtonBuilder != null) widget.forum.postButtonBuilder(widget.post),
         CommentForm(
           post: widget.post,
           forum: widget.forum,

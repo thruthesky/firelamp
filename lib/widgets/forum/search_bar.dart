@@ -6,6 +6,7 @@ import 'package:firelamp/widgets/popup_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:get/get.dart';
 
 typedef OnSearch = Function(String searchKey, String category);
 
@@ -132,7 +133,7 @@ class _SearchBarState extends State<SearchBar> {
             PopUpButton(
               items: [
                 PopupMenuItem(
-                  child: Text('All'),
+                  child: Text('all'.tr),
                   value: '',
                   textStyle: selected == ''
                       ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
