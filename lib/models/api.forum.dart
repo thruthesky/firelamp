@@ -123,6 +123,8 @@ class ApiForum {
 
   Function postButtonBuilder;
 
+  Function postBottomBuilder;
+
   ///
   ApiPost _postInEdit;
   ApiPost get postInEdit => _postInEdit;
@@ -147,6 +149,7 @@ class ApiForum {
     this.onChatIconPressed,
     this.commentButtonBuilder,
     this.postButtonBuilder,
+    this.postBottomBuilder,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {

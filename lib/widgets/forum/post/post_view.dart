@@ -19,7 +19,6 @@ class PostView extends StatefulWidget {
     this.nameBuilder,
     this.open = false,
     this.onError,
-    this.bottomBuilder,
   }) : super(key: key);
 
   final ApiForum forum;
@@ -29,9 +28,12 @@ class PostView extends StatefulWidget {
   final Function onError;
   final bool open;
 
+  /// Move avatarBuilder to [ApiForum]. This is a common widget for post and comment.
   final Function avatarBuilder;
+
+  /// Move nameBuilder to [ApiForum]. This is a common widget for post and comment.
   final Function nameBuilder;
-  final Function bottomBuilder;
+  // final Function bottomBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -82,7 +84,7 @@ class _PostViewState extends State<PostView> {
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
         Divider(height: Space.xs),
-        if (widget.bottomBuilder != null) widget.bottomBuilder(),
+        if (widget.forum.postBottomBuilder != null) widget.forum.postBottomBuilder(widget.post),
         if (widget.forum.postButtonBuilder != null) widget.forum.postButtonBuilder(widget.post),
         CommentForm(
           post: widget.post,
