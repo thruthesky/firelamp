@@ -11,18 +11,26 @@ dependencies:
   flutter:
     sdk: flutter
 
-  firebase_core: "^0.7.0"
-  firebase_auth: "^0.20.1"
-  cloud_firestore: "^0.16.0+1"
-  firebase_messaging: "^8.0.0-dev.15"
+  # firebase_core: "^0.7.0"
+  # firebase_auth: "^0.20.1"
+  # cloud_firestore: "^0.16.0+1"
+  # firebase_messaging: "^8.0.0-dev.15"
 
-  intl: ^0.16.0
+  firebase_core: ^1.0.3
+  firebase_auth: ^1.1.0
+  cloud_firestore: ^1.0.5
+  firebase_messaging: ^9.1.1
+
+  # intl: ^0.16.0
+  intl: ^0.17.0
 
   path: ^1.8.0
 
-  get: ^3.26.0
+  # get: ^3.26.0
+  get: ^4.1.4
 
-  shared_preferences: 0.5.10
+  # shared_preferences: 0.5.10
+  shared_preferences: ^2.0.5
 
   # widgets dependencies
   photo_view: ^0.11.1
@@ -30,19 +38,20 @@ dependencies:
   flutter_staggered_grid_view: ^0.3.4
 
   rxdart: ^0.25.0
-  dio: ^3.0.10
-  http_parser: ^3.1.4
+  # dio: ^3.0.10
+  dio: ^4.0.0
+  http_parser: ^4.0.0
 
   scrollable_positioned_list: ^0.1.8
 
   # patch version for prevening app crash on iOS.
-  image_picker: ^0.6.7+22
-  image_picker_for_web: ^0.1.0+2
+  # image_picker: ^0.6.7+22
+  image_picker: ^0.7.4
 
   age: ^0.0.1
 
   # Chat room. Scroll adjustment when keypad is open.
-  flutter_keyboard_visibility: ^4.0.3
+  # flutter_keyboard_visibility: ^4.0.3
 
 dev_dependencies:
   flutter_test:
