@@ -37,6 +37,7 @@ It is based on Firebase and LAMP stack.
   - 글 또는 코멘트에 공통적으로 쓰이는 메소드의 경우, `Article` 접두어 또는 접미어를 붙인다. 예. `reportArticle`. 그리고 이러한 함수는 리턴을 할 때, `ApiPost` 또는 `ApiComment` 둘 중 하나를 할 수 있다.
 
   - 웹 지원을 하지 않는다. 따라서 image compress 기능을 다시 firelamp 에 집어 넣는다.
+  - 설정을 translation 처럼, 임의로 추가를 할 수 있도록 한다.
 
 ```dart
 ApiForum(
