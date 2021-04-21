@@ -39,27 +39,24 @@ class _CommentListState extends State<CommentList> {
                   style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
                 ),
                 ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: widget.post.comments.length,
-                  itemBuilder: (_, i) => CommentView(
-                    comment: widget.post.comments[i],
-                    post: widget.post,
-                    forum: widget.forum,
-                    onError: widget.onError,
-                    rerenderParent: () => setState(() {}),
-                    index: i,
-                  ),
-                ),
-
-                // for (ApiComment comment in widget.post.comments)
-                //   CommentView(
-                //     comment: comment,
-                //     post: widget.post,
-                //     forum: widget.forum,
-                //     onError: widget.onError,
-                //     rerenderParent: () => setState(() {}),
-                //   ),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: widget.post.comments.length,
+                    itemBuilder: (_, i) {
+                      if (widget.forum.commentVisibility != null) {
+                        if (widget.forum.commentVisibility(widget.post.comments[i]) == false) {
+                          return SizedBox.shrink();
+                        }
+                      }
+                      return CommentView(
+                        comment: widget.post.comments[i],
+                        post: widget.post,
+                        forum: widget.forum,
+                        onError: widget.onError,
+                        rerenderParent: () => setState(() {}),
+                        index: i,
+                      );
+                    }),
               ],
             )
           : Padding(

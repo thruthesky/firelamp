@@ -6,7 +6,22 @@ It is based on Firebase and LAMP stack.
 
 ## TODos
 
-- API 전체를 재 작성.
+- `ApiPost` 와 `ApiComment` 는 매우 흡사하다. 하나의 model 로 통일한다. 다만, `isPost`, `isComment` 옵션을 둔다.
+
+- Rewrite all Firelamp.
+
+  - Separate Firelamp into small pieces like
+
+    - `firelamp_core` that handles only connections and communications between `centerx` and `firestore`.
+      `firelamp_core` has base user functionality like register, login, profile update and user login management. The eamil & password login to `centerx` and when the app logs into `centerx` it will automatically logs into `firebase auth`.
+    - `firelamp_forum` that has forum functionality.
+    - `firelamp_chat` that has chat functionality
+    - `firelamp_in_app_purchase` that has in app purchase functionality.
+    - `firelamp_friend` that has user relation functionality. like user block, ..
+    - `firelamp_social_login` that handle logins of Google, Facebook, Apple, Naver, Kakao,
+    - `firelamp_passlogin` that handles passlogin
+    - `firelamp_shopping_mall` that handles shopping mall functionality.
+    - `firelamp_messaging` that handles push notification
 
   - Flutter 2.0 null safety 를 적용한다.
   - 웹 지원은 필요 없다.
@@ -1081,3 +1096,12 @@ Show `login` child widget when user logged in. Or show `logout` widget.
 
 - 친구 추가를 했는데, (또는 이미 친구인데), 친구 목록에 나오지 않는 다면, 차단된 경우 이다.
 - 일방 차단인 경우, 쌍방 모두 대화를 할 수 없다.
+
+## 게시글에 신고 및 친구 차단, 그리고 차단된 사용자 글 보여주지 않기
+
+- 게시글 신고 및 차단된 사용자 글 보여주지 않기 기능은 iOS Review 에서 요구 사항이어서 반드시 기능 추가를 해야 한다.
+
+- 블럭한 사용자 목록을 앱 실행시 처음 한번 로드하고, 블럭한 사용자 목록 페이지에 들어갈 때마다 목록하고, 블럭 할 때마다 다시 로드한다.
+
+- 그리고 클라이언트에서 게시글을 보여 줄 때, 블럭한 친구의 경우, 보여주지 않는다.
+  참고, 백엔드에서 블럭된 사용자의 글을 빼고 클라이언트로 전달을 받는 것을 고려한다. 백엔드에서 처리를 한 다면, SQL Query 를 할 때, NOT IN ( ... ) 으로 해야지, 클라이언트가 원하는 글 갯수를 정확히 리턴 할 수 있다.

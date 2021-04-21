@@ -121,9 +121,20 @@ class ApiForum {
   /// Use this method to display buttons for the comment view.
   Function commentButtonBuilder;
 
+  /// post buttons builder
   Function postButtonBuilder;
 
+  /// post bottom builder
   Function postBottomBuilder;
+
+  /// avatar builder for the comment author
+  Function commentAvatarBuilder;
+
+  /// name builder for the comment author
+  Function commentNameBuilder;
+
+  /// to show or hide the comment.
+  Function commentVisibility;
 
   ///
   ApiPost _postInEdit;
@@ -150,10 +161,13 @@ class ApiForum {
     this.commentButtonBuilder,
     this.postButtonBuilder,
     this.postBottomBuilder,
+    this.commentAvatarBuilder,
+    this.commentNameBuilder,
+    this.commentVisibility,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {
-    print('ApiForum(categoryId: $categoryId)');
+    // print('ApiForum(categoryId: $categoryId)');
 
     /// 게시글 목록에서, 스크롤이 밑으로 내려가면, loadMoreOn 개수 만큼 남았을 때, 다음 페이지를 로드하는 콜백 함수를 호출한다.
     if (loadMoreOn != null) {

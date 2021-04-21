@@ -81,9 +81,11 @@ class _CommentViewState extends State<CommentView> {
               children: [
                 Row(
                   children: [
-                    UserAvatar(widget.comment.user.photoUrl, size: 40),
+                    widget.forum.commentAvatarBuilder == null
+                        ? UserAvatar(widget.comment.user.photoUrl, size: 40)
+                        : widget.forum.commentAvatarBuilder(widget.comment),
                     SizedBox(width: Space.sm),
-                    CommentMeta(widget.comment),
+                    CommentMeta(forum: widget.forum, comment: widget.comment),
                   ],
                 ),
                 if (widget.comment.mode == CommentMode.none ||
