@@ -18,6 +18,7 @@ It is based on Firebase and LAMP stack.
     - `firelamp_chat` that has chat functionality
     - `firelamp_in_app_purchase` that has in app purchase functionality.
     - `firelamp_friend` that has user relation functionality. like user block, ..
+      - 앱 시작시 차단된 친구 목록을 불러오고, 메모리에서 내부적으로 관리를 한다.
     - `firelamp_social_login` that handle logins of Google, Facebook, Apple, Naver, Kakao,
     - `firelamp_passlogin` that handles passlogin
     - `firelamp_shopping_mall` that handles shopping mall functionality.
