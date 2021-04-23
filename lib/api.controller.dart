@@ -1148,8 +1148,10 @@ class Api {
       'route': 'file.delete',
       'idx': idx,
     });
-    int i = postOrComment.files.indexWhere((file) => file.idx == idx);
-    postOrComment.files.removeAt(i);
+    if (postOrComment != null) {
+      int i = postOrComment.files.indexWhere((file) => file.idx == idx);
+      postOrComment.files.removeAt(i);
+    }
     return int.parse("${data['idx']}");
   }
 

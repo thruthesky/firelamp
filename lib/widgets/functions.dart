@@ -26,20 +26,9 @@ Future<ApiFile> imageUpload({
         child: SafeArea(
           child: Wrap(
             children: <Widget>[
-              ListTile(
-                  leading: Icon(Icons.music_note),
-                  title: Text('take photo from camera'.tr),
-                  onTap: () => Get.back(result: ImageSource.camera)),
-              ListTile(
-                leading: Icon(Icons.videocam),
-                title: Text('get photo from gallery'.tr),
-                onTap: () => Get.back(result: ImageSource.gallery),
-              ),
-              ListTile(
-                leading: Icon(Icons.cancel),
-                title: Text('cancel'.tr),
-                onTap: () => Get.back(result: null),
-              ),
+              ListTile(leading: Icon(Icons.camera_alt, size: 28), title: Text('take photo from camera'.tr), onTap: () => Get.back(result: ImageSource.camera)),
+              ListTile(leading: Icon(Icons.image, size: 28), title: Text('get photo from gallery'.tr), onTap: () => Get.back(result: ImageSource.gallery)),
+              ListTile(leading: Icon(Icons.cancel, size: 28), title: Text('cancel'.tr), onTap: () => Get.back(result: null)),
             ],
           ),
         ),
