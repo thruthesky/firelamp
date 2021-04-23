@@ -68,8 +68,7 @@ class Api {
   String get name => user?.name;
   String get nickname => user?.nickname;
   String get nicknameOrName => nickname != null || nickname != '' ? nickname : name;
-  bool get profileComplete =>
-      loggedIn && photoUrl != null && photoUrl.isNotEmpty && name != null && name.isNotEmpty;
+  bool get profileComplete => loggedIn && photoUrl != null && photoUrl.isNotEmpty && name != null && name.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
   bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
@@ -77,8 +76,7 @@ class Api {
 
   bool get isNewCommentOnMyPostOrComment {
     if (notLoggedIn) return false;
-    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
-        user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
+    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null || user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
   }
 
   bool isSubscribeTopic(topic) {
@@ -169,8 +167,7 @@ class Api {
     Function initUser,
   }) async {
     if (enableMessaging) {
-      assert(onForegroundMessage != null,
-          'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
+      assert(onForegroundMessage != null, 'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
       assert(onMessageOpenedFromTermiated != null);
       assert(onMessageOpenedFromBackground != null);
     }
@@ -226,8 +223,7 @@ class Api {
         await FirebaseAuth.instance.signOut();
       } else {
         String email = user.email;
-        String password =
-            user.email + user.idx + user.createdAt + ' Wc~7 difficult to guess string salt %^.^%;';
+        String password = user.email + user.idx + user.createdAt + ' Wc~7 difficult to guess string salt %^.^%;';
 
         // User email already exists(registered), try to login.
         try {
@@ -235,13 +231,11 @@ class Api {
           await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
-            print('No user found for that email. going to register.');
+            print('_initFirebaseAuth() => No user found for that email. going to register.');
 
             try {
-              await FirebaseAuth.instance
-                  .createUserWithEmailAndPassword(email: user.email, password: password);
-              print(
-                  'Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email, password: password);
+              print('Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
               await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
@@ -287,11 +281,7 @@ class Api {
     if (enableFirebase == false) {
       _loadTranslationFromCenterX();
     } else {
-      firestore
-          .collection('notifications')
-          .doc('translations')
-          .snapshots()
-          .listen((DocumentSnapshot snapshot) {
+      firestore.collection('notifications').doc('translations').snapshots().listen((DocumentSnapshot snapshot) {
         _loadTranslationFromCenterX();
       });
     }
@@ -305,11 +295,7 @@ class Api {
   ///  - Post `settingChanges` event with settings.
   _initSettings() {
     if (enableFirebase == false) return;
-    firestore
-        .collection('notifications')
-        .doc('settings')
-        .snapshots()
-        .listen((DocumentSnapshot snapshot) {
+    firestore.collection('notifications').doc('settings').snapshots().listen((DocumentSnapshot snapshot) {
       _loadSettingFromCenterX();
     });
   }
@@ -478,13 +464,13 @@ class Api {
 
   Future<ApiUser> loginOrRegister({
     @required String email,
-    @required String pass,
+    @required String password,
     Map<String, dynamic> data,
   }) async {
     if (data == null) data = {};
     data['route'] = 'user.loginOrRegister';
     data['email'] = email;
-    data['password'] = pass;
+    data['password'] = password;
     data['sessionId'] = '';
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
@@ -542,8 +528,7 @@ class Api {
   Future<ApiUser> refreshProfile({String sessionId}) async {
     if (sessionId == null) sessionId = this.sessionId;
     loading.profile = true;
-    final Map<String, dynamic> res =
-        await request({'route': 'user.profile', 'sessionId': sessionId});
+    final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     loading.profile = false;
     _saveProfileAndNotify(user);
@@ -764,10 +749,8 @@ class Api {
 
   /// Returns a post of today based on the categoryId and userIdx.
   /// 오늘 작성한 글을 가져온다.
-  Future<List<ApiPost>> postToday(
-      {@required String categoryId, String userIdx = '0', int limit = 10}) async {
-    final map = await request(
-        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
+  Future<List<ApiPost>> postToday({@required String categoryId, String userIdx = '0', int limit = 10}) async {
+    final map = await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -786,8 +769,7 @@ class Api {
   ///
   /// The [data] is a map of key/value pair to save.
   /// You may save a value composing with [field] and [value].
-  Future<ApiCategory> categoryUpdate(
-      {@required String id, String field, String value, Map<String, dynamic> data}) async {
+  Future<ApiCategory> categoryUpdate({@required String id, String field, String value, Map<String, dynamic> data}) async {
     if (data == null) data = {};
 
     data['route'] = 'category.update';
@@ -921,13 +903,11 @@ class Api {
     if (code != null) data['where'] = data['where'] + " and code='$code'";
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
-    if (categoryId != null && categoryId != "")
-      data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (categoryId != null && categoryId != "") data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
     if (searchKey != null && searchKey != '') {
-      data['where'] =
-          data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
+      data['where'] = data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
       // Deliver search key to backend to save.
       data['searchKey'] = searchKey;
     }
@@ -947,12 +927,7 @@ class Api {
     int page = 1,
     String order = 'DESC',
   }) async {
-    final Map<String, dynamic> data = {
-      'route': 'comment.search',
-      'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
-      'limit': limit,
-      'page': page
-    };
+    final Map<String, dynamic> data = {'route': 'comment.search', 'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0', 'limit': limit, 'page': page};
 
     final jsonList = await request(data);
 
@@ -987,12 +962,7 @@ class Api {
         where += " AND files == ''";
     }
 
-    final Map<String, dynamic> data = {
-      'route': 'comment.search',
-      'where': where,
-      'limit': limit,
-      'page': page
-    };
+    final Map<String, dynamic> data = {'route': 'comment.search', 'where': where, 'limit': limit, 'page': page};
 
     final jsonList = await request(data);
 
@@ -1276,8 +1246,7 @@ class Api {
     return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
-  sendMessageToTokens(
-      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTokens({String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1289,8 +1258,7 @@ class Api {
     return request(req);
   }
 
-  sendMessageToTopic(
-      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1303,12 +1271,7 @@ class Api {
   }
 
   Future<dynamic> sendPushNotificationToUsers(
-      {List<String> users,
-      String subscription,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {List<String> users, String subscription, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToUsers',
       'users': users,
@@ -1413,8 +1376,7 @@ class Api {
           if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
-          if (onNotificationPermissionNotDetermined != null)
-            onNotificationPermissionNotDetermined();
+          if (onNotificationPermissionNotDetermined != null) onNotificationPermissionNotDetermined();
           break;
         case AuthorizationStatus.provisional:
           break;
@@ -1508,17 +1470,8 @@ class Api {
   }
 
   Future<List<ApiPointHistory>> pointHistorySearch(
-      {String select = 'idx, fromUserIdx, toUserIdx, createdAt',
-      String where = '1',
-      int page = 1,
-      int limit = 10}) async {
-    final histories = await request({
-      'route': 'pointHistory.search',
-      'select': select,
-      'where': where,
-      'page': page,
-      'limit': limit
-    });
+      {String select = 'idx, fromUserIdx, toUserIdx, createdAt', String where = '1', int page = 1, int limit = 10}) async {
+    final histories = await request({'route': 'pointHistory.search', 'select': select, 'where': where, 'page': page, 'limit': limit});
     List<ApiPointHistory> rets = [];
     for (final history in histories) {
       rets.add(ApiPointHistory.fromJson(history));
@@ -1554,28 +1507,23 @@ class Api {
   /// }
   /// ```
   Future<ApiFriend> addFriend({@required String otherIdx}) {
-    return request({'route': 'friend.add', 'otherIdx': otherIdx})
-        .then((value) => ApiFriend.fromMap(value));
+    return request({'route': 'friend.add', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
   Future<ApiFriend> deleteFriend({@required String otherIdx}) {
-    return request({'route': 'friend.delete', 'otherIdx': otherIdx})
-        .then((value) => ApiFriend.fromMap(value));
+    return request({'route': 'friend.delete', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
   Future<ApiFriend> blockFriend({@required String otherIdx}) {
-    return request({'route': 'friend.block', 'otherIdx': otherIdx})
-        .then((value) => ApiFriend.fromMap(value));
+    return request({'route': 'friend.block', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
   Future<ApiFriend> unblockFriend({@required String otherIdx}) {
-    return request({'route': 'friend.unblock', 'otherIdx': otherIdx})
-        .then((value) => ApiFriend.fromMap(value));
+    return request({'route': 'friend.unblock', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
   Future<ApiFriend> friendRelationship({@required String otherIdx}) {
-    return request({'route': 'friend.relationship', 'otherIdx': otherIdx})
-        .then((value) => ApiFriend.fromMap(value));
+    return request({'route': 'friend.relationship', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
   Future<List<ApiShortUser>> listFriend() async {

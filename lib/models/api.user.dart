@@ -119,12 +119,14 @@ class ApiUser {
     sessionId = json['sessionId'];
     mode = json['mode'];
     photoIdx = "${json['photoIdx'] ?? 0}";
-    if (photoIdx.toInt > 0) {
-      // photoUrl = Api.instance.thumbnailUrl;
-      // photoUrl = photoUrl + '?src=$photoIdx&w=100&h=100&f=jpeg&q=95';
-      photoUrl = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
-    }
 
+    // 만약, 사용자가 프로필 사진을 업로드 했으면, 그것을 쓰고 아니면,
+    if (photoIdx.toInt > 0) {
+      photoUrl = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
+    } else if (json['photoUrl'] != null) {
+      // 아니면, meta 에 기록된 photoUrl 을 사용한다.
+      photoUrl = json['photoUrl'];
+    }
     point = "${json['point']}";
     createdAt = "${json['createdAt'] ?? 0}";
     updatedAt = "${json['updatedAt'] ?? 0}";

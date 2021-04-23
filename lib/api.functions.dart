@@ -99,7 +99,11 @@ bool isImageUrl(t) {
 
 /// The [birthdate] must be in 'YYMMDD' format. ie) 001122
 age(String birthdate) {
-  if (birthdate == null || birthdate == '' || birthdate.length != 6) return '0';
+  if (birthdate == null || birthdate == '') return '0';
+  if (birthdate.length == 8) {
+    birthdate = birthdate.substring(2);
+  }
+  if (birthdate.length != 6) return '0';
   final _yy = int.parse(birthdate.substring(0, 2));
   final _mm = int.parse(birthdate.substring(2, 4));
   final _dd = int.parse(birthdate.substring(4, 6));
