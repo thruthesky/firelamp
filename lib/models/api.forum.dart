@@ -235,8 +235,9 @@ class ApiForum {
       jumpTo = i;
     }
     render();
-    WidgetsBinding.instance.addPostFrameCallback((x) {
-      listController.jumpTo(index: jumpTo);
-    });
+    if (listController.isAttached)
+      WidgetsBinding.instance.addPostFrameCallback((x) {
+        listController.jumpTo(index: jumpTo);
+      });
   }
 }
