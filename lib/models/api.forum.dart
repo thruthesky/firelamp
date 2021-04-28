@@ -1,6 +1,6 @@
 part of '../firelamp.dart';
 
-enum ForumEventType { edit }
+enum ForumEventType { edit, cancel, delete }
 
 class ForumEvent {
   ForumEvent(this.type, this.data);
@@ -190,9 +190,9 @@ class ApiForum {
     _listeners.add(listener);
   }
 
-  void notifyListeners(ForumEventType type, dynamic data) {
+  void notifyListeners(ForumEventType forumEventType, dynamic data) {
     for (final listener in _listeners) {
-      listener(ForumEvent(type, data));
+      listener(ForumEvent(forumEventType, data));
     }
   }
 

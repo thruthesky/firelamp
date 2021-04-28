@@ -72,7 +72,7 @@ class PostPreview extends StatelessWidget {
                           ),
                           Positioned(
                             left: 10,
-                            top: kIsWeb ? -6 : -10,
+                            top: -10,
                             child: UserAvatar(post.user.photoUrl, size: 40),
                           ),
                         ],
@@ -84,8 +84,7 @@ class PostPreview extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              if (!post.hasFiles && forum.listView == 'thumbnail' ||
-                                  forum.listView == 'text') ...[
+                              if (!post.hasFiles && forum.listView == 'thumbnail' || forum.listView == 'text') ...[
                                 UserAvatar(post.user.photoUrl, size: 65),
                                 SizedBox(width: Space.xsm),
                               ],

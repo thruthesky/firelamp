@@ -1069,6 +1069,91 @@ class _PostListViewState extends State<PostListView> {
 }
 ```
 
+## Post list - three posts in one line
+
+- Below is the post list container(or manager)
+
+```dart
+class PostListListView extends StatefulWidget {
+  PostListListView(this.forum, {@required this.builder, @required this.builderForNoPostYet, Key key}) : super(key: key);
+  final ApiForum forum;
+  final Function builder;
+  final Function builderForNoPostYet;
+  @override
+  _PostListListViewState createState() => _PostListListViewState();
+}
+
+class _PostListListViewState extends State<PostListListView> {
+  final controller = ScrollController();
+  loadPosts() async {
+    try {
+      await api.fetchPosts(widget.forum);
+    } catch (e) {
+      widget.forum.loading = false;
+      widget.forum.render();
+      app.error(e);
+    }
+  }
+
+  bool get atBottom {
+    return controller.offset > (controller.position.maxScrollExtent - 240);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller.addListener(() {
+      if (atBottom) loadPosts();
+    });
+
+    widget.forum.render = () {
+      print('pageNo: ${widget.forum.pageNo}, length: ${widget.forum.posts.length}');
+      if (mounted) setState(() => null);
+    };
+
+    // 첫페이지 로드
+    loadPosts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.forum.loading && widget.forum.pageNo == 1) return Spinner();
+    if (widget.forum.hasPosts == false) return widget.builderForNoPostYet();
+    return ListView.builder(
+      controller: controller,
+      itemCount: widget.forum.posts.length,
+      itemBuilder: widget.builder,
+    );
+  }
+}
+```
+
+- Below is how to render 3 posts in one line.
+
+```dart
+Widget build(BuildContext context) {
+  return PostListListView(
+    forum,
+    builder: (c, i) {
+      int n = i * 3;
+      final String _key = '${Keys.element.communityPostItem}$i';
+      print(_key);
+      return Padding(
+        padding: const EdgeInsets.only(bottom: sm),
+        child: Row(
+          children: [
+            if (n < forum.posts.length) Expanded(child: CommunityPostItem(forum.posts[n], forum, key: ValueKey(_key))),
+            if (n + 1 < forum.posts.length) Expanded(child: CommunityPostItem(forum.posts[n + 1], forum, key: ValueKey(_key))),
+            if (n + 2 < forum.posts.length) Expanded(child: CommunityPostItem(forum.posts[n + 2], forum, key: ValueKey(_key))),
+          ],
+        ),
+      );
+    },
+  );
+}
+```
+
 # Extensions
 
 - See [app.translation.dart](https://github.com/thruthesky/dalgona/blob/main/lib/services/app.translations.dart) for how to update translation data.
