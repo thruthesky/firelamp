@@ -43,11 +43,11 @@ class ApiShortUser {
     // 사용자 정보가 없는 경우, Map 대신 빈 배열(List)로 들어온다.
     if (json is List) return ApiShortUser();
 
-    String photoIdx = "${json['photoIdx']}";
-    String url;
-    if (photoIdx != '' && photoIdx != '0') {
-      url = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
-    }
+    // String photoIdx = "${json['photoIdx']}";
+    // String url;
+    // if (photoIdx != '' && photoIdx != '0') {
+    //   url = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
+    // }
     return ApiShortUser(
       idx: "${json['idx']}",
       name: json['name'] ?? '',
@@ -55,8 +55,8 @@ class ApiShortUser {
       gender: json['gender'] ?? '',
       birthdate: "${json['birthdate']}",
       point: "${json['point'] ?? 0}",
-      photoIdx: photoIdx ?? '',
-      photoUrl: url ?? '',
+      photoIdx: "${json['photoIdx']}",
+      photoUrl: "${json['photoUrl']}",
       firebaseUid: json['firebaseUid'] ?? '',
     );
   }

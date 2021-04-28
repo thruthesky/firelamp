@@ -6,11 +6,12 @@ import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/cupertino.dart';
 
 class PostThumbnailPreview extends StatelessWidget {
-  PostThumbnailPreview(this.post, this.forum, {this.onTap});
+  PostThumbnailPreview(this.post, this.forum, {this.onTap, this.avatarBuilder});
 
   final ApiPost post;
   final ApiForum forum;
   final Function onTap;
+  final Function avatarBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class PostThumbnailPreview extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: CachedImage(post.files[0].url, width: 100, height: 80),
                     ),
-                    Positioned(left: 10, top: -15, child: UserAvatar(post.user.photoUrl, size: 40)),
+                    Positioned(left: 10, top: -15, child: avatarBuilder != null ? avatarBuilder(post, 40.0) : UserAvatar(post.user.photoUrl, size: 40)),
                   ],
                 ),
                 SizedBox(width: Space.xsm),
@@ -42,7 +43,7 @@ class PostThumbnailPreview extends StatelessWidget {
                     Row(
                       children: [
                         if (!post.hasFiles) ...[
-                          UserAvatar(post.user.photoUrl, size: 65),
+                          avatarBuilder != null ? avatarBuilder(post, 65.0) : UserAvatar(post.user.photoUrl, size: 65),
                           SizedBox(width: Space.xsm),
                         ],
                         Expanded(
@@ -64,8 +65,7 @@ class PostThumbnailPreview extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: Space.xxs),
-                    Padding(
-                        child: PostMeta(post, forum), padding: EdgeInsets.only(left: Space.xxs)),
+                    Padding(child: PostMeta(post, forum), padding: EdgeInsets.only(left: Space.xxs)),
                   ],
                 ),
               ),
