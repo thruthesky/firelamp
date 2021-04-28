@@ -6,7 +6,7 @@ import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/cupertino.dart';
 
 class PostThumbnailPreview extends StatelessWidget {
-  PostThumbnailPreview(this.post, this.forum, {this.onTap, this.avatarBuilder});
+  PostThumbnailPreview(this.post, this.forum, {this.onTap, this.avatarBuilder, Key key}) : super(key: key);
 
   final ApiPost post;
   final ApiForum forum;

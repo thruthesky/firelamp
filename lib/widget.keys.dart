@@ -26,4 +26,7 @@ class ButtonKeys {
   String commentFormSubmit = 'commentFormSubmitButton';
   String confirmYes = 'confirmYesButton';
   String confirmNo = 'confirmNoButton';
+  String commentMore = 'commentMore';
+  String commentMoreEdit = 'commentMoreEdit';
+  String commentMoreDelete = 'commentMoreDelete';
 }

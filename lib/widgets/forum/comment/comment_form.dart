@@ -18,6 +18,7 @@ class CommentForm extends StatefulWidget {
     this.onSuccess,
     this.onCancel,
     this.index,
+    this.commentFormKeyFix = '',
   }) : super(key: key);
 
   /// post of the comment
@@ -29,6 +30,7 @@ class CommentForm extends StatefulWidget {
   final Function onSuccess;
   final Function onCancel;
   final int index;
+  final String commentFormKeyFix;
 
   @override
   _CommentFormState createState() => _CommentFormState();
@@ -137,8 +139,7 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  key: ValueKey(
-                      "${FirelampKeys.element.commentFormTextField}${widget.index != null ? widget.index : ''}"),
+                  key: ValueKey('${FirelampKeys.element.commentFormTextField}${widget.commentFormKeyFix}'),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,

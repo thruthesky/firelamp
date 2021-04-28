@@ -9,10 +9,12 @@ class PopUpButton extends StatelessWidget {
   final Widget icon;
 
   PopUpButton({
+    Key key,
     @required this.items,
     @required this.onSelected,
     this.icon = const Icon(Icons.more_vert),
-  }) : assert(icon != null);
+  })  : assert(icon != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

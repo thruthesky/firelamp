@@ -1,3 +1,4 @@
+import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';
@@ -124,22 +125,28 @@ class _CommentViewState extends State<CommentView> {
                       widget.forum.commentButtonBuilder(widget.post, widget.comment),
                     Spacer(),
                     if (widget.comment.isMine)
-                      PopUpButton(items: [
-                        PopupMenuItem(
-                            child: Row(children: [
-                              Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
-                              SizedBox(width: Space.xs),
-                              Text('edit'.tr)
-                            ]),
-                            value: 'edit'),
-                        PopupMenuItem(
-                            child: Row(children: [
-                              Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
-                              SizedBox(width: Space.xs),
-                              Text('delete'.tr)
-                            ]),
-                            value: 'delete')
-                      ], onSelected: onPopupMenuItemSelected)
+                      PopUpButton(
+                        key: ValueKey(FirelampKeys.button.commentMore),
+                        items: [
+                          PopupMenuItem(
+                              key: ValueKey(FirelampKeys.button.commentMoreEdit),
+                              child: Row(children: [
+                                Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
+                                SizedBox(width: Space.xs),
+                                Text('edit'.tr)
+                              ]),
+                              value: 'edit'),
+                          PopupMenuItem(
+                              key: ValueKey(FirelampKeys.button.commentMoreDelete),
+                              child: Row(children: [
+                                Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
+                                SizedBox(width: Space.xs),
+                                Text('delete'.tr)
+                              ]),
+                              value: 'delete')
+                        ],
+                        onSelected: onPopupMenuItemSelected,
+                      )
                   ]),
                 ],
                 if (widget.comment.mode == CommentMode.reply)
@@ -162,6 +169,7 @@ class _CommentViewState extends State<CommentView> {
                     onError: widget.onError,
                     index: widget.index,
                     onCancel: () => setState(() => widget.comment.mode = CommentMode.none),
+                    commentFormKeyFix: 'edit',
                   ),
                 ],
               ],
