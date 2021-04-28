@@ -882,6 +882,12 @@ class Api {
   /// You may use [fetchPosts] wich handles with pagination and more.
   ///
   /// [code] 를 지정하면, 해당 code 값을 가지는 글들을 가져온다.
+  ///
+  /// @example
+  ///   await api.postSearch(photo: true, limit: 2); // 사진이 있는 최신 글 두 개
+  ///   await api.postSearch(photo: true, limit: 2, order: 'Y', days: 30); // 30일 동안 사진이 있는 글 중에서 추천이 많은 글 2 개
+  ///   await api.postSearch(photo: true, limit: 2, order: 'noOfComments', days: 30); // 30 동안, 사진이 있는 글 중에, 코멘트가 가장 많은 글 2 개
+  ///
   Future<List<ApiPost>> postSearch({
     String postOnTop,
     String categoryId,
@@ -892,6 +898,11 @@ class Api {
     String userIdx,
     String relationIdx,
     String searchKey = '',
+    bool photo = false,
+    String type,
+    String order = 'idx',
+    String by = 'DESC',
+    int days,
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
@@ -899,6 +910,9 @@ class Api {
     data['where'] = "parentIdx=0 and deletedAt=0";
     data['page'] = page;
     data['limit'] = limit;
+
+    data['order'] = order;
+    data['by'] = by;
 
     if (code != null) data['where'] = data['where'] + " and code='$code'";
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
@@ -911,6 +925,18 @@ class Api {
       // Deliver search key to backend to save.
       data['searchKey'] = searchKey;
     }
+
+    // Get posts that has photos
+    if (photo) {
+      data['where'] += " AND files <> '' ";
+    }
+
+    // post create time limit
+    if (days != null) {
+      int seconds = (DateTime.now().millisecondsSinceEpoch / 1000).round() - days * 24 * 60 * 60;
+      data['where'] += " AND createdAt > $seconds";
+    }
+
     final jsonList = await request(data);
 
     List<ApiPost> _posts = [];
