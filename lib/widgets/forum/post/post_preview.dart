@@ -1,5 +1,6 @@
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
+import 'package:firelamp/widgets/forum/post/post_gallery_preview.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
@@ -29,30 +30,7 @@ class PostPreview extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: forum.listView == 'gallery'
-          ? Column(
-              children: [
-                Row(
-                  children: [
-                    UserAvatar(post.user.photoUrl),
-                    SizedBox(width: Space.xs),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          title,
-                          SizedBox(height: Space.xxs),
-                          PostMeta(post, forum, isInlineName: true),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                if (post.hasFiles) ...[
-                  SizedBox(height: Space.xsm),
-                  DisplayFiles(postOrComment: post),
-                ],
-              ],
-            )
+          ? PostGalleryPreview(post, forum)
           : Column(
               children: [
                 Row(
