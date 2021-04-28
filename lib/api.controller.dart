@@ -1007,7 +1007,7 @@ class Api {
 
   ///
   Future<dynamic> vote(dynamic postOrComment, String choice) async {
-    String route;
+    // String route;
     // if ("${postOrComment.parentIdx}".toInt > 0) {
     //   route = 'comment.vote';
     // } else {
