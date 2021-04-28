@@ -59,10 +59,7 @@ class _SearchBarState extends State<SearchBar> {
 
     searchKey = widget.defaultSearchKeyValue;
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
-    subscription = input
-        .debounceTime(Duration(milliseconds: 500))
-        .distinct((a, b) => a == b)
-        .listen((_searchKey) {
+    subscription = input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((_searchKey) {
       searchKey = _searchKey;
       if (widget.onSearch != null) widget.onSearch(searchKey, selected);
     });
@@ -98,9 +95,7 @@ class _SearchBarState extends State<SearchBar> {
                 controller: _editingController,
                 textInputAction: TextInputAction.go,
                 onSubmitted: (value) => input.add(value),
-                onChanged: widget.searchOnInputChange
-                    ? (value) => input.add(value)
-                    : (value) => searchKey = value,
+                onChanged: widget.searchOnInputChange ? (value) => input.add(value) : (value) => searchKey = value,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -135,17 +130,13 @@ class _SearchBarState extends State<SearchBar> {
                 PopupMenuItem(
                   child: Text('all'.tr),
                   value: '',
-                  textStyle: selected == ''
-                      ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
-                      : null,
+                  textStyle: selected == '' ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
                 ),
                 for (final category in searchCategories.split(','))
                   PopupMenuItem(
                     child: Text('$category'),
                     value: category,
-                    textStyle: selected == category
-                        ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700)
-                        : null,
+                    textStyle: selected == category ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
                   )
               ],
               onSelected: (selectedCat) {
