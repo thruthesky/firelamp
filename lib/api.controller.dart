@@ -1008,12 +1008,12 @@ class Api {
   ///
   Future<dynamic> vote(dynamic postOrComment, String choice) async {
     String route;
-    if ("${postOrComment.parentIdx}".toInt > 0) {
-      route = 'comment.vote';
-    } else {
-      route = 'post.vote';
-    }
-    final re = await request({'route': route, 'idx': postOrComment.idx, 'choice': choice});
+    // if ("${postOrComment.parentIdx}".toInt > 0) {
+    //   route = 'comment.vote';
+    // } else {
+    //   route = 'post.vote';
+    // }
+    final re = await request({'route': 'post.vote', 'idx': postOrComment.idx, 'choice': choice});
     if ("${postOrComment.parentIdx}".toInt > 0) {
       return ApiComment.fromJson(re);
     } else {
