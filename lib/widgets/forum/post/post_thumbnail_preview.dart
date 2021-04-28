@@ -63,7 +63,7 @@ class PostThumbnailPreview extends StatelessWidget {
                         )
                       ],
                     ),
-                    SizedBox(height: Space.xs),
+                    SizedBox(height: Space.xxs),
                     Padding(
                         child: PostMeta(post, forum), padding: EdgeInsets.only(left: Space.xxs)),
                   ],
