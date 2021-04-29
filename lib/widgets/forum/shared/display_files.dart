@@ -109,6 +109,7 @@ class DisplayFiles extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: Space.xsm),
           if (filesLength == 1) _imageBuilder(postOrComment.files.first),
           if (filesLength == 3) ...[
             Container(
