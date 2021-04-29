@@ -165,6 +165,8 @@ class ApiForum {
     ApiPost post,
     this.onChatIconPressed,
     this.commentButtonBuilder,
+    this.postTitleBuilder,
+    this.postContentBuilder,
     this.postButtonBuilder,
     this.postBottomBuilder,
     this.commentAvatarBuilder,

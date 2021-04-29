@@ -68,11 +68,11 @@ class _PostViewState extends State<PostView> {
         ),
         SizedBox(height: Space.sm),
         widget.forum.postTitleBuilder != null
-            ? widget.forum.postTitleBuilder(widget.forum, widget.post)
+            ? widget.forum.postTitleBuilder(widget.forum, widget.post, 'view')
             : Text('${widget.post.title}', key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
         SizedBox(height: Space.sm),
         widget.forum.postContentBuilder != null
-            ? widget.forum.postContentBuilder(widget.forum, widget.post)
+            ? widget.forum.postContentBuilder(widget.forum, widget.post, 'view')
             : Text('${widget.post.content}', key: ValueKey(FirelampKeys.element.postContent), style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),

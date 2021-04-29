@@ -51,14 +51,18 @@ class PostThumbnailPreview extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(post.user.nicknameOrName),
-                              Text(
-                                '${post.title}',
-                                style: stylePostTitle,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              forum.postTitleBuilder != null
+                                  ? forum.postTitleBuilder(forum, post, 'list')
+                                  : Text(
+                                      '${post.title}',
+                                      style: stylePostTitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                               SizedBox(height: Space.xxs),
-                              Text('${post.content}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                              forum.postContentBuilder != null
+                                  ? forum.postContentBuilder(forum, post, 'list')
+                                  : Text('${post.content}', maxLines: 1, overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         )
