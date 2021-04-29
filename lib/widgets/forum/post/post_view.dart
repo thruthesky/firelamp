@@ -17,8 +17,6 @@ class PostView extends StatefulWidget {
     // this.actions = const [],
     this.avatarBuilder,
     this.nameBuilder,
-    this.titleBuilder,
-    this.contentBuilder,
     this.open = false,
     this.onError,
   }) : super(key: key);
@@ -35,8 +33,6 @@ class PostView extends StatefulWidget {
 
   /// Move nameBuilder to [ApiForum]. This is a common widget for post and comment.
   final Function nameBuilder;
-  final Function titleBuilder;
-  final Function contentBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -73,12 +69,13 @@ class _PostViewState extends State<PostView> {
           ],
         ),
         SizedBox(height: Space.sm),
-        Text('${widget.post.title}',
-            key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
+        widget.forum.postTitleBuilder != null
+            ? widget.forum.postTitleBuilder(widget.forum, widget.post)
+            : Text('${widget.post.title}', key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
         SizedBox(height: Space.sm),
-        Text('${widget.post.content}',
-            key: ValueKey(FirelampKeys.element.postContent),
-            style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
+        widget.forum.postContentBuilder != null
+            ? widget.forum.postContentBuilder(widget.forum, widget.post)
+            : Text('${widget.post.content}', key: ValueKey(FirelampKeys.element.postContent), style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
         Divider(height: Space.xs),

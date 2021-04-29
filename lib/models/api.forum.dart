@@ -121,6 +121,12 @@ class ApiForum {
   /// Use this method to display buttons for the comment view.
   Function commentButtonBuilder;
 
+  /// post title builder
+  Function postTitleBuilder;
+
+  /// post content builder
+  Function postContentBuilder;
+
   /// post buttons builder
   Function postButtonBuilder;
 
