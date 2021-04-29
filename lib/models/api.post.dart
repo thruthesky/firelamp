@@ -290,7 +290,7 @@ class ApiPost {
       data: json,
       idx: "${json["idx"]}",
       categoryId: json['categoryId'],
-      title: json["title"] != '' ? json['title'] : 'No Title',
+      title: json["title"] ?? '',
       content: json["content"] ?? '',
 
       user: ApiShortUser.fromJson(json['user']),
