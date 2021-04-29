@@ -1,5 +1,6 @@
-import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';
+import 'package:firelamp/widgets/forum/post/post_title.dart';
+import 'package:firelamp/widgets/forum/post/post_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
@@ -68,15 +69,9 @@ class _PostViewState extends State<PostView> {
           ],
         ),
         SizedBox(height: Space.sm),
-        widget.forum.postTitleBuilder != null
-            ? widget.forum.postTitleBuilder(widget.forum, widget.post, 'view')
-            : Text('${widget.post.title}', key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
-        SizedBox(height: Space.sm),
-        widget.forum.postContentBuilder != null
-            ? widget.forum.postContentBuilder(widget.forum, widget.post, 'view')
-            : Text('${widget.post.content}', key: ValueKey(FirelampKeys.element.postContent), style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
+        PostTitle(widget.post, widget.forum),
+        PostContent(widget.post, widget.forum),
         DisplayFiles(postOrComment: widget.post),
-        SizedBox(height: Space.xs),
         Divider(height: Space.xs),
         if (widget.forum.postBottomBuilder != null) widget.forum.postBottomBuilder(widget.post),
         if (widget.forum.postButtonBuilder != null) widget.forum.postButtonBuilder(widget.post),

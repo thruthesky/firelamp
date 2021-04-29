@@ -104,21 +104,23 @@ class DisplayFiles extends StatelessWidget {
     if (filesLength == 0) return SizedBox.shrink();
     // if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: Space.xsm),
-        if (filesLength == 1) _imageBuilder(postOrComment.files.first),
-        if (filesLength == 3) ...[
-          Container(
-            height: 200,
-            width: double.maxFinite,
-            child: _imageBuilder(postOrComment.files.first),
-          ),
-          SizedBox(height: 4.0),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (filesLength == 1) _imageBuilder(postOrComment.files.first),
+          if (filesLength == 3) ...[
+            Container(
+              height: 200,
+              width: double.maxFinite,
+              child: _imageBuilder(postOrComment.files.first),
+            ),
+            SizedBox(height: 4.0),
+          ],
+          if (filesLength > 1) _gridBuilder(hideFirstImage: filesLength == 3),
         ],
-        if (filesLength > 1) _gridBuilder(hideFirstImage: filesLength == 3),
-      ],
+      ),
     );
   }
 }
