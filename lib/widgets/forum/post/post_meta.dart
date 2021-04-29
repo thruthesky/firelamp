@@ -21,6 +21,10 @@ class PostMeta extends StatelessWidget {
     return post.files.isNotEmpty;
   }
 
+  int get commentCount {
+    return post.comments.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,21 +45,9 @@ class PostMeta extends StatelessWidget {
           if (post.comments.isNotEmpty) ...[
             Icon(Icons.chat_bubble_outlined, size: Space.xsm, color: iconColor),
             SizedBox(width: Space.xs),
-            Text('${post.comments.length}', style: TextStyle(fontSize: Space.xsm)),
+            Text('$commentCount', style: TextStyle(fontSize: Space.xsm)),
             SizedBox(width: Space.xsm),
           ],
-          // if (forum.showLike && post.y.toInt > 0) ...[
-          //   Icon(Icons.thumb_up_rounded, size: Space.xsm, color: iconColor),
-          //   SizedBox(width: Space.xs),
-          //   Text('${post.y}', style: TextStyle(fontSize: Space.xsm)),
-          //   SizedBox(width: Space.xsm),
-          // ],
-          // if (forum.showDislike && post.n.toInt > 0) ...[
-          //   Icon(Icons.thumb_down_rounded, size: Space.xsm, color: iconColor),
-          //   SizedBox(width: Space.xs),
-          //   Text('${post.n}', style: TextStyle(fontSize: Space.xsm)),
-          //   SizedBox(width: Space.xsm),
-          // ],
           Text(
             'No. ${post.idx}',
             style: TextStyle(fontSize: Space.xsm),

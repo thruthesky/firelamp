@@ -52,7 +52,9 @@ class _PostViewState extends State<PostView> {
       children: [
         Row(
           children: [
-            widget.avatarBuilder == null ? UserAvatar(widget.post.user.photoUrl) : widget.avatarBuilder(widget.post),
+            widget.avatarBuilder == null
+                ? UserAvatar(widget.post.user.photoUrl)
+                : widget.avatarBuilder(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
@@ -84,14 +86,13 @@ class _PostViewState extends State<PostView> {
           forum: widget.forum,
           comment: ApiComment(),
           onError: widget.onError,
-          onSuccess: () => setState(() {
-            print('onSuccess!');
-          }),
+          onSuccess: () => setState(() => null),
         ),
         CommentList(
           post: widget.post,
           forum: widget.forum,
           onError: widget.onError,
+          rerenderParent: () => setState(() => null),
         ),
       ],
     );
