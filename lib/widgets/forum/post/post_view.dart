@@ -56,7 +56,9 @@ class _PostViewState extends State<PostView> {
       children: [
         Row(
           children: [
-            widget.avatarBuilder == null ? UserAvatar(widget.post.user.photoUrl) : widget.avatarBuilder(widget.post),
+            widget.avatarBuilder == null
+                ? UserAvatar(widget.post.user.photoUrl)
+                : widget.avatarBuilder(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
@@ -71,9 +73,12 @@ class _PostViewState extends State<PostView> {
           ],
         ),
         SizedBox(height: Space.sm),
-        Text('${widget.post.title}', key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
+        Text('${widget.post.title}',
+            key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
         SizedBox(height: Space.sm),
-        Text('${widget.post.content}', key: ValueKey(FirelampKeys.element.postContent), style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
+        Text('${widget.post.content}',
+            key: ValueKey(FirelampKeys.element.postContent),
+            style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
         Divider(height: Space.xs),
@@ -84,14 +89,13 @@ class _PostViewState extends State<PostView> {
           forum: widget.forum,
           comment: ApiComment(),
           onError: widget.onError,
-          onSuccess: () => setState(() {
-            print('onSuccess!');
-          }),
+          onSuccess: () => setState(() => null),
         ),
         CommentList(
           post: widget.post,
           forum: widget.forum,
           onError: widget.onError,
+          rerenderParent: () => setState(() => null),
         ),
       ],
     );

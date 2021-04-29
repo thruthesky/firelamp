@@ -38,7 +38,7 @@ class CommentView extends StatefulWidget {
 class _CommentViewState extends State<CommentView> {
   /// when user is done selecting from the popup menu.
   onPopupMenuItemSelected(selected) async {
-    /// Edit
+    /// Edit  
     if (selected == 'edit') {
       setState(() {
         widget.comment.mode = CommentMode.edit;
@@ -55,6 +55,7 @@ class _CommentViewState extends State<CommentView> {
 
       try {
         await Api.instance.commentDelete(widget.comment, widget.post);
+        widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
         if (widget.rerenderParent != null) widget.rerenderParent();
         widget.forum.render();
       } catch (e) {

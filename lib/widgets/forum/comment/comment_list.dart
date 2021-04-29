@@ -10,10 +10,12 @@ class CommentList extends StatefulWidget {
     this.post,
     this.forum,
     this.onError,
+    this.rerenderParent,
   });
   final ApiPost post;
   final ApiForum forum;
   final Function onError;
+  final Function rerenderParent;
 
   @override
   _CommentListState createState() => _CommentListState();
@@ -53,7 +55,10 @@ class _CommentListState extends State<CommentList> {
                         post: widget.post,
                         forum: widget.forum,
                         onError: widget.onError,
-                        rerenderParent: () => setState(() {}),
+                        rerenderParent: () {
+                          setState(() {});
+                          if (widget.rerenderParent != null) widget.rerenderParent();
+                        },
                         index: i,
                       );
                     }),
