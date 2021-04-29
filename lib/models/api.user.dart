@@ -51,6 +51,9 @@ class ApiUser {
   String photoIdx;
   String photoUrl;
 
+  bool get male => gender == 'M';
+  bool get female => gender == 'F';
+
   String get nicknameOrName {
     if (nickname != null && nickname != '') {
       return nickname;

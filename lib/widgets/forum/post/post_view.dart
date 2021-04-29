@@ -17,6 +17,8 @@ class PostView extends StatefulWidget {
     // this.actions = const [],
     this.avatarBuilder,
     this.nameBuilder,
+    this.titleBuilder,
+    this.contentBuilder,
     this.open = false,
     this.onError,
   }) : super(key: key);
@@ -33,7 +35,8 @@ class PostView extends StatefulWidget {
 
   /// Move nameBuilder to [ApiForum]. This is a common widget for post and comment.
   final Function nameBuilder;
-  // final Function bottomBuilder;
+  final Function titleBuilder;
+  final Function contentBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -53,9 +56,7 @@ class _PostViewState extends State<PostView> {
       children: [
         Row(
           children: [
-            widget.avatarBuilder == null
-                ? UserAvatar(widget.post.user.photoUrl)
-                : widget.avatarBuilder(widget.post),
+            widget.avatarBuilder == null ? UserAvatar(widget.post.user.photoUrl) : widget.avatarBuilder(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
@@ -70,17 +71,9 @@ class _PostViewState extends State<PostView> {
           ],
         ),
         SizedBox(height: Space.sm),
-        Text(
-          '${widget.post.title}',
-          key: ValueKey(FirelampKeys.element.postTitle),
-          style: stylePostTitle,
-        ),
+        Text('${widget.post.title}', key: ValueKey(FirelampKeys.element.postTitle), style: stylePostTitle),
         SizedBox(height: Space.sm),
-        Text(
-          '${widget.post.content}',
-          key: ValueKey(FirelampKeys.element.postContent),
-          style: TextStyle(fontSize: Space.sm, wordSpacing: 2),
-        ),
+        Text('${widget.post.content}', key: ValueKey(FirelampKeys.element.postContent), style: TextStyle(fontSize: Space.sm, wordSpacing: 2)),
         DisplayFiles(postOrComment: widget.post),
         SizedBox(height: Space.xs),
         Divider(height: Space.xs),
