@@ -70,14 +70,14 @@ class PostThumbnailPreview extends StatelessWidget {
                               //         overflow: TextOverflow.ellipsis,
                               //       ),
                               // SizedBox(height: Space.xxs),
-                              PostTitle(post, forum,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  padding: EdgeInsets.only(bottom: Space.xxs)),
                               // forum.postContentBuilder != null
                               //     ? forum.postContentBuilder(forum, post, 'list')
                               //     : Text('${post.content}',
                               //         maxLines: 1, overflow: TextOverflow.ellipsis),
+                              PostTitle(post, forum,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  padding: EdgeInsets.only(bottom: Space.xxs)),
                               PostContent(
                                 post,
                                 forum,
