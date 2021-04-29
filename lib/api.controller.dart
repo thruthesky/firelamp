@@ -882,15 +882,18 @@ class Api {
   /// You may use [fetchPosts] wich handles with pagination and more.
   ///
   /// [code] 를 지정하면, 해당 code 값을 가지는 글들을 가져온다.
+  /// [categoryId] 를 지정하면, 하나의 카테고리에서만 글을 가져온다.
+  /// [categoryIds] 에 카테고리들을 문자 배열로 지정하면, 그 카테고리들에서 글을 가져온다.
   ///
   /// @example
-  ///   await api.postSearch(photo: true, limit: 2); // 사진이 있는 최신 글 두 개
-  ///   await api.postSearch(photo: true, limit: 2, order: 'Y', days: 30); // 30일 동안 사진이 있는 글 중에서 추천이 많은 글 2 개
-  ///   await api.postSearch(photo: true, limit: 2, order: 'noOfComments', days: 30); // 30 동안, 사진이 있는 글 중에, 코멘트가 가장 많은 글 2 개
+  ///   await api.postSearch(categoryIds: ['info', 'life', 'hobby', 'health'], photo: true, limit: 2); // 사진이 있는 최신 글 두 개
+  ///   await api.postSearch(categoryIds: ['info', 'life', 'hobby', 'health'], photo: true, limit: 2, order: 'Y', days: 30); // 30일 동안 사진이 있는 글 중에서 추천이 많은 글 2 개
+  ///   await api.postSearch(categoryIds: ['info', 'life', 'hobby', 'health'], photo: true, limit: 2, order: 'noOfComments', days: 30); // 30 동안, 사진이 있는 글 중에, 코멘트가 가장 많은 글 2 개
   ///
   Future<List<ApiPost>> postSearch({
     String postOnTop,
     String categoryId,
+    List<String> categoryIds,
     String subcategory,
     String code,
     int limit = 20,
@@ -904,6 +907,7 @@ class Api {
     String by = 'DESC',
     int days,
   }) async {
+    // @todo throw error when both of categoryId and categoryIds have values.
     final Map<String, dynamic> data = {};
     data['route'] = 'post.search';
     if (postOnTop != null) data['postOnTop'] = postOnTop;
@@ -918,6 +922,9 @@ class Api {
     if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
     if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null && categoryId != "") data['where'] = data['where'] + " and categoryId=<$categoryId>";
+    if (categoryIds != null) {
+      data["where"] += " AND (categoryId=<" + categoryIds.join("> OR categoryId=<") + ">) ";
+    }
     if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
     if (searchKey != null && searchKey != '') {
@@ -936,6 +943,8 @@ class Api {
       int seconds = (DateTime.now().millisecondsSinceEpoch / 1000).round() - days * 24 * 60 * 60;
       data['where'] += " AND createdAt > $seconds";
     }
+
+    print("where: ${data['where']}");
 
     final jsonList = await request(data);
 
