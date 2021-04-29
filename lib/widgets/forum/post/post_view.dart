@@ -14,7 +14,6 @@ class PostView extends StatefulWidget {
     Key key,
     this.post,
     this.forum,
-    // this.actions = const [],
     this.avatarBuilder,
     this.nameBuilder,
     this.open = false,

@@ -36,10 +36,7 @@ class _CommentListState extends State<CommentList> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: Space.xsm),
-                Text(
-                  listText,
-                  style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500]),
-                ),
+                Text(listText, style: TextStyle(fontSize: Space.xsm, color: Colors.grey[500])),
                 ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
