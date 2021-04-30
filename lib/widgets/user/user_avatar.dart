@@ -2,10 +2,16 @@ import 'package:firelamp/widgets/image.cache.dart';
 import 'package:flutter/material.dart';
 
 class UserAvatar extends StatelessWidget {
-  UserAvatar(this.url, {this.size = 48, this.onTap});
+  UserAvatar(
+    this.url, {
+    this.size = 48,
+    this.onTap,
+    this.color,
+  });
   final String url;
   final double size;
   final Function onTap;
+  final Color color;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -19,7 +25,7 @@ class UserAvatar extends StatelessWidget {
               ),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.blue,
+          color: color,
           boxShadow: [
             BoxShadow(color: Colors.black26, blurRadius: 1.0, spreadRadius: 1.0),
           ],

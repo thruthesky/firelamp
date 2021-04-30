@@ -120,4 +120,4 @@ age(String birthdate) {
   return _age.years.toString();
 }
 
-calAge(String birthdate) => age(birthdate);
+String calAge(String birthdate) => age(birthdate);
