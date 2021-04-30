@@ -1593,4 +1593,13 @@ class Api {
   Future<String> userHeart() async {
     return await request({'route': 'user.heart'});
   }
+
+  Future<List<ApiShortUser>> userSearch({String name}) async {
+    final res = await request({'route': 'user.search', 'name': name});
+    List<ApiShortUser> users = [];
+    for (final user in res) {
+      users.add(ApiShortUser.fromJson(user));
+    }
+    return users;
+  }
 }
