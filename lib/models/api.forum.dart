@@ -133,6 +133,9 @@ class ApiForum {
   /// post bottom builder
   Function postBottomBuilder;
 
+  /// post author builder
+  Function postAvatarBuilder;
+
   /// avatar builder for the comment author
   Function commentAvatarBuilder;
 
@@ -169,6 +172,7 @@ class ApiForum {
     this.postContentBuilder,
     this.postButtonBuilder,
     this.postBottomBuilder,
+    this.postAvatarBuilder,
     this.commentAvatarBuilder,
     this.commentNameBuilder,
     this.commentVisibility,

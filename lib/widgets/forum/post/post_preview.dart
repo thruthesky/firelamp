@@ -50,7 +50,9 @@ class PostPreview extends StatelessWidget {
                           Positioned(
                             left: 10,
                             top: -10,
-                            child: UserAvatar(post.user.photoUrl, size: 40),
+                            child: forum.postAvatarBuilder == null
+                                ? UserAvatar(post.user.photoUrl, size: 40)
+                                : forum.postAvatarBuilder(post),
                           ),
                         ],
                       ),
@@ -62,7 +64,9 @@ class PostPreview extends StatelessWidget {
                           Row(
                             children: [
                               if (!post.hasFiles && forum.listView == 'thumbnail' || forum.listView == 'text') ...[
-                                UserAvatar(post.user.photoUrl, size: 65),
+                                forum.postAvatarBuilder == null
+                                    ? UserAvatar(post.user.photoUrl, size: 65)
+                                    : forum.postAvatarBuilder(post),
                                 SizedBox(width: Space.xsm),
                               ],
                               Expanded(
