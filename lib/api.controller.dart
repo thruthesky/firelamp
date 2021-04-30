@@ -167,7 +167,8 @@ class Api {
     Function initUser,
   }) async {
     if (enableMessaging) {
-      assert(onForegroundMessage != null, 'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
+      assert(
+          onForegroundMessage != null, 'If [enableMessaging] is set to true, [onForegroundMessage] must be provided.');
       assert(onMessageOpenedFromTermiated != null);
       assert(onMessageOpenedFromBackground != null);
     }
@@ -235,7 +236,8 @@ class Api {
 
             try {
               await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email, password: password);
-              print('Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
+              print(
+                  'Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
               await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
@@ -769,7 +771,8 @@ class Api {
   ///
   /// The [data] is a map of key/value pair to save.
   /// You may save a value composing with [field] and [value].
-  Future<ApiCategory> categoryUpdate({@required String id, String field, String value, Map<String, dynamic> data}) async {
+  Future<ApiCategory> categoryUpdate(
+      {@required String id, String field, String value, Map<String, dynamic> data}) async {
     if (data == null) data = {};
 
     data['route'] = 'category.update';
@@ -962,7 +965,12 @@ class Api {
     int page = 1,
     String order = 'DESC',
   }) async {
-    final Map<String, dynamic> data = {'route': 'comment.search', 'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0', 'limit': limit, 'page': page};
+    final Map<String, dynamic> data = {
+      'route': 'comment.search',
+      'where': 'userIdx=$userIdx AND parentIdx > 0 and deletedAt=0',
+      'limit': limit,
+      'page': page
+    };
 
     final jsonList = await request(data);
 
@@ -1308,7 +1316,12 @@ class Api {
   }
 
   Future<dynamic> sendPushNotificationToUsers(
-      {List<String> users, String subscription, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+      {List<String> users,
+      String subscription,
+      String title,
+      String body,
+      Map<String, dynamic> data,
+      String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToUsers',
       'users': users,
@@ -1507,8 +1520,12 @@ class Api {
   }
 
   Future<List<ApiPointHistory>> pointHistorySearch(
-      {String select = 'idx, fromUserIdx, toUserIdx, createdAt', String where = '1', int page = 1, int limit = 10}) async {
-    final histories = await request({'route': 'pointHistory.search', 'select': select, 'where': where, 'page': page, 'limit': limit});
+      {String select = 'idx, fromUserIdx, toUserIdx, createdAt',
+      String where = '1',
+      int page = 1,
+      int limit = 10}) async {
+    final histories =
+        await request({'route': 'pointHistory.search', 'select': select, 'where': where, 'page': page, 'limit': limit});
     List<ApiPointHistory> rets = [];
     for (final history in histories) {
       rets.add(ApiPointHistory.fromJson(history));
