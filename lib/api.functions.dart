@@ -117,7 +117,8 @@ age(String birthdate) {
   // Set the age of the user
   _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
 
-  return _age.years.toString();
+  // 한국 나이로 +1 을 해 준다.
+  return (_age.years + 1).toString();
 }
 
 String calAge(String birthdate) => age(birthdate);
