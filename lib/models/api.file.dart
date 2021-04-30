@@ -32,7 +32,7 @@ class ApiFile {
     // String url = Api.instance.thumbnailUrl;
     // url = url + '?src=${json['idx']}&w=360&h=360&f=jpeg&q=95';
 
-    String url = Api.instance.thumbnailUrl(src: json['idx'], width: 360, quality: 95);
+    String url = Api.instance.thumbnailUrl(src: json['idx'], width: 480, quality: 95);
 
     // print('url: thumbnail: $url');
     return ApiFile(

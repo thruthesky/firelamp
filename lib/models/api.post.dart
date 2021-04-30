@@ -71,6 +71,10 @@ class ApiPost {
     this.deliveryFee,
     this.storageMethod,
     this.expiry,
+    this.foodKind,
+    this.origin,
+    this.allergy,
+    this.nutritiveComponents,
     this.primaryPhoto,
     this.widgetPhoto,
     this.detailPhoto,
@@ -122,8 +126,7 @@ class ApiPost {
   List<ApiComment> comments;
 
   /// Upload file/image
-  String thumbnailUrl(src,
-      {int width = 320, int height = 320, int quality = 75, bool original = false}) {
+  String thumbnailUrl(src, {int width = 320, int height = 320, int quality = 75, bool original = false}) {
     return Api.instance.thumbnailUrl(src: src, width: width, height: height, original: original);
   }
 
@@ -159,6 +162,12 @@ class ApiPost {
   int deliveryFee;
   String storageMethod;
   String expiry;
+
+  String foodKind;
+  String origin;
+  String allergy;
+  String nutritiveComponents;
+
   String primaryPhoto;
   String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, original: true);
   String widgetPhoto;
@@ -316,9 +325,8 @@ class ApiPost {
       code: json['code'],
 
       files: files,
-      comments: json["comments"] == null
-          ? []
-          : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
+      comments:
+          json["comments"] == null ? [] : List<ApiComment>.from(json["comments"].map((x) => ApiComment.fromJson(x))),
 
       // DateTime.parse(json["post_date"] ?? DateTime.now().toString())
 
@@ -333,8 +341,12 @@ class ApiPost {
       deliveryFee: _parseInt(json["deliveryFee"]),
       storageMethod: json["storageMethod"],
       expiry: json["expiry"],
-      primaryPhoto:
-          files.firstWhere((f) => f.code == 'primaryPhoto', orElse: () => null)?.idx ?? '',
+      foodKind: json['food_kind'],
+      origin: json['origin'],
+      allergy: json['allergy'],
+      nutritiveComponents: json['nutritive_components'],
+
+      primaryPhoto: files.firstWhere((f) => f.code == 'primaryPhoto', orElse: () => null)?.idx ?? '',
       widgetPhoto: files.firstWhere((f) => f.code == 'widgetPhoto', orElse: () => null)?.idx ?? '',
       detailPhoto: files.firstWhere((f) => f.code == 'detailPhoto', orElse: () => null)?.idx ?? '',
       bannerPhoto: files.firstWhere((f) => f.code == 'bannerPhoto', orElse: () => null)?.idx ?? '',
@@ -369,8 +381,7 @@ class ApiPost {
         "appliedPoint": appliedPoint,
         "code": code,
         "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        if (comments != null)
-          "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        if (comments != null) "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
@@ -381,6 +392,10 @@ class ApiPost {
         "deliveryFee": deliveryFee,
         "storageMethod": storageMethod,
         "expiry": expiry,
+        'foodKind': foodKind,
+        'origin': origin,
+        'allergy': allergy,
+        'nuritiveComponents': nutritiveComponents,
         "primaryPhoto": primaryPhoto,
         "widgetPhoto": widgetPhoto,
         "detailPhoto": detailPhoto,
@@ -471,8 +486,7 @@ class ApiPost {
                   text: " ${moneyFormat(_price)} ",
                   style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red)),
               WidgetSpan(
-                  child: Transform.translate(
-                      offset: const Offset(0.0, 4.0), child: Icon(Icons.arrow_right_alt))),
+                  child: Transform.translate(offset: const Offset(0.0, 4.0), child: Icon(Icons.arrow_right_alt))),
               TextSpan(text: "$_discountedPrice원"),
             ],
           ));
