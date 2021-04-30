@@ -38,7 +38,7 @@ class CommentView extends StatefulWidget {
 class _CommentViewState extends State<CommentView> {
   /// when user is done selecting from the popup menu.
   onPopupMenuItemSelected(selected) async {
-    /// Edit  
+    /// Edit
     if (selected == 'edit') {
       setState(() {
         widget.comment.mode = CommentMode.edit;
@@ -57,7 +57,7 @@ class _CommentViewState extends State<CommentView> {
         await Api.instance.commentDelete(widget.comment, widget.post);
         widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
         if (widget.rerenderParent != null) widget.rerenderParent();
-        widget.forum.render();
+        if (widget.forum.render != null) widget.forum.render();
       } catch (e) {
         if (widget.onError != null) {
           widget.onError(e);
@@ -66,8 +66,7 @@ class _CommentViewState extends State<CommentView> {
     }
   }
 
-  bool get canCancel =>
-      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
+  bool get canCancel => widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +74,7 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin:
-                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
+            margin: EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,23 +88,18 @@ class _CommentViewState extends State<CommentView> {
                     CommentMeta(forum: widget.forum, comment: widget.comment),
                   ],
                 ),
-                if (widget.comment.mode == CommentMode.none ||
-                    widget.comment.mode == CommentMode.reply) ...[
+                if (widget.comment.mode == CommentMode.none || widget.comment.mode == CommentMode.reply) ...[
                   CommentContent(widget.comment),
                   DisplayFiles(postOrComment: widget.comment),
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
-                      icon: Icon(
-                          widget.comment.mode == CommentMode.reply
-                              ? Icons.close
-                              : Icons.reply_rounded,
-                          size: 20),
+                      icon:
+                          Icon(widget.comment.mode == CommentMode.reply ? Icons.close : Icons.reply_rounded, size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode = widget.comment.mode == CommentMode.reply
-                              ? CommentMode.none
-                              : CommentMode.reply;
+                          widget.comment.mode =
+                              widget.comment.mode == CommentMode.reply ? CommentMode.none : CommentMode.reply;
                         });
                       },
                     ),
@@ -119,8 +112,7 @@ class _CommentViewState extends State<CommentView> {
                     if (widget.forum.onChatIconPressed != null)
                       IconButton(
                         icon: Icon(Icons.message_outlined, color: Color(0xff7d7d7d), size: 20),
-                        onPressed: () =>
-                            widget.forum.onChatIconPressed(widget.post, widget.comment),
+                        onPressed: () => widget.forum.onChatIconPressed(widget.post, widget.comment),
                       ),
                     if (widget.forum.commentButtonBuilder != null)
                       widget.forum.commentButtonBuilder(widget.post, widget.comment),

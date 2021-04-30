@@ -95,7 +95,7 @@ class _CommentFormState extends State<CommentForm> {
       if (widget.parent != null) widget.parent.mode = CommentMode.none;
       if (widget.comment != null) comment.mode = CommentMode.none;
       setState(() => null);
-      widget.forum.render();
+      if (widget.forum.render != null) widget.forum.render();
       if (widget.onSuccess != null) widget.onSuccess();
     } catch (e) {
       setState(() => loading = false);
