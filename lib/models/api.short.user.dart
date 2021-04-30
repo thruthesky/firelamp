@@ -15,6 +15,12 @@ class ApiShortUser {
     return calAge(birthdate);
   }
 
+  String get ageGroup {
+    String firstChar = this.age.split('').first;
+    if (firstChar == '0') return firstChar;
+    return firstChar + '0';
+  }
+
   String get nicknameOrName {
     if (nickname != null && nickname != '') {
       return nickname;
