@@ -145,6 +145,9 @@ class ApiForum {
   /// to show or hide the comment.
   Function commentVisibility;
 
+  /// Test if the user can edit.
+  Function commentCanEdit;
+
   ///
   ApiPost _postInEdit;
   ApiPost get postInEdit => _postInEdit;
@@ -176,6 +179,7 @@ class ApiForum {
     this.commentAvatarBuilder,
     this.commentNameBuilder,
     this.commentVisibility,
+    this.commentCanEdit,
   })  : _limit = limit,
         this._categoryId = categoryId ?? setting?.id,
         this.posts = post != null ? [post] : [] {

@@ -74,6 +74,13 @@ class _CommentFormState extends State<CommentForm> {
   // form submit
   onFormSubmit() async {
     if (Api.instance.notLoggedIn) return onError("login_first".tr);
+
+    if (widget.forum.commentCanEdit != null) {
+      if (widget.forum.commentCanEdit() == false) {
+        return;
+      }
+    }
+
     if (loading) return;
     setState(() => loading = true);
     FocusScope.of(context).requestFocus(FocusNode());
