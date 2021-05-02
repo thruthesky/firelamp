@@ -8,6 +8,8 @@ class VoteButtons extends StatefulWidget {
   VoteButtons(
     this.postOrComment,
     this.forum, {
+    this.likeIcon,
+    this.dislikeIcon,
     this.onSuccess,
     this.onError,
   });
@@ -15,6 +17,8 @@ class VoteButtons extends StatefulWidget {
   final dynamic postOrComment;
   final Function onSuccess;
   final Function onError;
+  final Widget likeIcon;
+  final Widget dislikeIcon;
 
   @override
   _VoteButtonsState createState() => _VoteButtonsState();
@@ -44,56 +48,61 @@ class _VoteButtonsState extends State<VoteButtons> {
     return widget.forum.showLike || widget.forum.showDislike
         ? Container(
             child: Row(
-            children: [
-              if (widget.forum.showLike)
-                Padding(
-                  padding: EdgeInsets.only(left: Space.xsm, right: Space.md),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.thumb_up_alt_outlined,
-                          color: Color(0xff8cff82),
-                          size: 20,
-                        ),
-                        if ("${widget.postOrComment.y}".toInt > 0) ...[
-                          SizedBox(width: Space.xs),
-                          Text(
-                            '${widget.postOrComment.y}',
-                            style: TextStyle(fontSize: Space.sm, color: Colors.black54),
-                          )
+              children: [
+                if (widget.forum.showLike)
+                  Padding(
+                    padding: EdgeInsets.only(left: Space.xsm, right: Space.md),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          widget.likeIcon != null
+                              ? widget.likeIcon
+                              : Icon(
+                                  Icons.thumb_up_alt_outlined,
+                                  color: Color(0xff8cff82),
+                                  size: 20,
+                                ),
+                          if ("${widget.postOrComment.y}".toInt > 0) ...[
+                            SizedBox(width: Space.xs),
+                            Text(
+                              '${widget.postOrComment.y}',
+                              style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                            )
+                          ],
                         ],
-                      ],
+                      ),
+                      onTap: () => onVote('Y'),
                     ),
-                    onTap: () => onVote('Y'),
                   ),
-                ),
-              if (widget.forum.showDislike)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: widget.forum.showLike ? 0 : Space.xsm,
-                    right: Space.sm,
-                  ),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      children: [
-                        Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
-                        if ("${widget.postOrComment.n}".toInt > 0) ...[
-                          SizedBox(width: Space.xs),
-                          Text(
-                            '${widget.postOrComment.n}',
-                            style: TextStyle(fontSize: Space.sm, color: Colors.black54),
-                          )
+                if (widget.forum.showDislike)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: widget.forum.showLike ? 0 : Space.xsm,
+                      right: Space.sm,
+                    ),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          widget.dislikeIcon != null
+                              ? widget.dislikeIcon
+                              : Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
+                          if ("${widget.postOrComment.n}".toInt > 0) ...[
+                            SizedBox(width: Space.xs),
+                            Text(
+                              '${widget.postOrComment.n}',
+                              style: TextStyle(fontSize: Space.sm, color: Colors.black54),
+                            )
+                          ],
                         ],
-                      ],
+                      ),
+                      onTap: () => onVote('N'),
                     ),
-                    onTap: () => onVote('N'),
                   ),
-                ),
-            ],
-          ))
+              ],
+            ),
+          )
         : SizedBox.shrink();
   }
 }

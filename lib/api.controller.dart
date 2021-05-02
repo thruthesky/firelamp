@@ -1602,4 +1602,9 @@ class Api {
     }
     return users;
   }
+
+  Future<int> pointMove({String postIdx, String point}) async {
+    final res = await request({'route': 'point.move', 'postIdx': postIdx, 'point': point});
+    return res['logIdx'];
+  }
 }
