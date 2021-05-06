@@ -2,7 +2,6 @@ import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';
-import 'package:firelamp/widgets/forum/shared/vote_buttons.dart';
 import 'package:firelamp/widgets/rounded_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -103,17 +102,6 @@ class _CommentViewState extends State<CommentView> {
                         });
                       },
                     ),
-                    VoteButtons(
-                      widget.comment,
-                      widget.forum,
-                      onSuccess: () => setState(() => null),
-                      onError: widget.onError,
-                    ),
-                    if (widget.forum.onChatIconPressed != null)
-                      IconButton(
-                        icon: Icon(Icons.message_outlined, color: Color(0xff7d7d7d), size: 20),
-                        onPressed: () => widget.forum.onChatIconPressed(widget.post, widget.comment),
-                      ),
                     if (widget.forum.commentButtonBuilder != null)
                       widget.forum.commentButtonBuilder(widget.post, widget.comment),
                     Spacer(),

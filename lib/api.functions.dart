@@ -1,7 +1,15 @@
 part of 'firelamp.dart';
 
+bool isNumeric(String s) {
+  if (s == null) {
+    return false;
+  }
+  return double.tryParse(s) != null;
+}
+
 extension StringExtension on String {
   int get toInt {
+    if (isNumeric(this) == false) return 0;
     return int.parse(this);
   }
 
