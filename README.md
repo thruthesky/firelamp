@@ -10,6 +10,22 @@ It is based on Firebase and LAMP stack.
 
 - Rewrite all Firelamp.
 
+
+  - null safety & mini library
+
+  - better widget usage.
+    - builder options for theming (or re-usable widget ).
+
+  - detail models
+    - separate shopping mall model from post model.
+    - define a model for `wc_posts` table. api.forum.model.dart
+    - api.post.model.dart extends apiforum.model.dart
+    - api.mall.model.dart extends api.post.model.dart
+    - api.comment.model.dart extends api.forum.model.dart
+
+
+
+
   - Separate Firelamp into small pieces like
 
     - `firelamp_core` that handles only connections and communications between `centerx` and `firestore`.
