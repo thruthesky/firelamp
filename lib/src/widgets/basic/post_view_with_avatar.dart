@@ -1,9 +1,4 @@
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/basic/post_title.dart';
-import 'package:firelamp/widgets/forum/comment/comment_form.dart';
-import 'package:firelamp/widgets/forum/comment/comment_list.dart';
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:flutter/material.dart';
 
 class PostViewWithAvatar extends StatefulWidget {

@@ -1,5 +1,3 @@
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
 

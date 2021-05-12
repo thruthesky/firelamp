@@ -1,4 +1,4 @@
-import 'package:firelamp/widget.keys.dart';
+import 'package:firelamp/src/widget.keys.dart';
 import 'package:flutter/material.dart';
 
 class LoginForm extends StatelessWidget {

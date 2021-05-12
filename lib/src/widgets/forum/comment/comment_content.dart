@@ -1,5 +1,3 @@
-import 'package:firelamp/widget.keys.dart';
-import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

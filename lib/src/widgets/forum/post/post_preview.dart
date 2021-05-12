@@ -1,4 +1,4 @@
-import 'package:firelamp/widget.keys.dart';
+import 'package:firelamp/src/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/forum/post/post_gallery_preview.dart';
 import 'package:firelamp/widgets/forum/post/post_meta.dart';

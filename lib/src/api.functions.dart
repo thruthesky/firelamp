@@ -1,4 +1,14 @@
-part of 'firelamp.dart';
+import 'dart:async';
+import 'dart:math';
+
+import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'package:age/age.dart';
+import 'package:firelamp/firelamp.dart';
 
 bool isNumeric(String s) {
   if (s == null) {

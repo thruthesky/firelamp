@@ -1,16 +1,16 @@
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/widget.keys.dart';
+import 'package:firelamp/src/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class PostContent extends StatelessWidget {
-  PostContent(
+class PostTitle extends StatelessWidget {
+  PostTitle(
     this.post,
     this.forum, {
     this.maxLines,
     this.overflow,
+    this.style = stylePostTitle,
     this.buildFor = 'list',
-    this.style = const TextStyle(fontSize: Space.sm, wordSpacing: 2),
     this.padding = const EdgeInsets.only(bottom: Space.sm),
   });
 
@@ -27,15 +27,15 @@ class PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (buildFor == 'view' && (post.content == null || post.content.isEmpty)) return SizedBox.shrink();
+    if (buildFor == 'view' && (post.title == null || post.title.isEmpty)) return SizedBox.shrink();
 
-    return forum.postContentBuilder != null
-        ? forum.postContentBuilder(forum, post, buildFor)
+    return forum.postTitleBuilder != null
+        ? forum.postTitleBuilder(forum, post, buildFor)
         : Padding(
             padding: padding,
             child: Text(
-              '${post.content}',
-              key: ValueKey(FirelampKeys.element.postContent),
+              '${post.title}',
+              key: ValueKey(FirelampKeys.element.postTitle),
               style: style,
               maxLines: maxLines,
               overflow: overflow,

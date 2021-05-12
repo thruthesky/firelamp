@@ -1,4 +1,4 @@
-import 'package:firelamp/widget.keys.dart';
+import 'package:firelamp/src/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
 import 'package:firelamp/widgets/popup_button.dart';

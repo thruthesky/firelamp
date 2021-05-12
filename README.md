@@ -10,35 +10,19 @@ It is based on Firebase and LAMP stack.
 
 - Rewrite all Firelamp.
 
-
   - null safety & mini library
 
   - better widget usage.
+
     - builder options for theming (or re-usable widget ).
 
   - detail models
+
     - separate shopping mall model from post model.
     - define a model for `wc_posts` table. api.forum.model.dart
     - api.post.model.dart extends apiforum.model.dart
     - api.mall.model.dart extends api.post.model.dart
     - api.comment.model.dart extends api.forum.model.dart
-
-
-
-
-  - Separate Firelamp into small pieces like
-
-    - `firelamp_core` that handles only connections and communications between `centerx` and `firestore`.
-      `firelamp_core` has base user functionality like register, login, profile update and user login management. The eamil & password login to `centerx` and when the app logs into `centerx` it will automatically logs into `firebase auth`.
-    - `firelamp_forum` that has forum functionality.
-    - `firelamp_chat` that has chat functionality
-    - `firelamp_in_app_purchase` that has in app purchase functionality.
-    - `firelamp_friend` that has user relation functionality. like user block, ..
-      - 앱 시작시 차단된 친구 목록을 불러오고, 메모리에서 내부적으로 관리를 한다.
-    - `firelamp_social_login` that handle logins of Google, Facebook, Apple, Naver, Kakao,
-    - `firelamp_passlogin` that handles passlogin
-    - `firelamp_shopping_mall` that handles shopping mall functionality.
-    - `firelamp_messaging` that handles push notification
 
   - Flutter 2.0 null safety 를 적용한다.
   - 웹 지원은 필요 없다.

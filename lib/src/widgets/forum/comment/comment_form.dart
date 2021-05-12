@@ -1,8 +1,3 @@
-import 'package:firelamp/widget.keys.dart';
-import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_buttons.dart';
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/functions.dart';
-import 'package:firelamp/widgets/spinner.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
