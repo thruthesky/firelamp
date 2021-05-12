@@ -1,6 +1,4 @@
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/src/widget.keys.dart';
-import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter/material.dart';
 
 class PostTitle extends StatelessWidget {

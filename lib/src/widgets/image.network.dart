@@ -1,6 +1,7 @@
-import 'package:firelamp/widgets/spinner.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firelamp/firelamp.dart';
 
 class ImageNetwork extends StatefulWidget {
   ImageNetwork(

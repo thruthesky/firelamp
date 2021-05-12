@@ -1,12 +1,7 @@
 import 'package:firelamp/src/widget.keys.dart';
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/forum/post/post_gallery_preview.dart';
-import 'package:firelamp/widgets/forum/post/post_meta.dart';
-import 'package:firelamp/widgets/user/user_avatar.dart';
-import 'package:firelamp/widgets/image.cache.dart';
-import 'package:firelamp/firelamp.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firelamp/firelamp.dart';
 
 class PostPreview extends StatelessWidget {
   PostPreview(this.post, this.forum, {this.onTap, this.index});

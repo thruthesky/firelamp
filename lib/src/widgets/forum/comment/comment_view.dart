@@ -1,16 +1,6 @@
-import 'package:firelamp/src/widget.keys.dart';
-import 'package:firelamp/widgets/forum/comment/comment_content.dart';
-import 'package:firelamp/widgets/forum/shared/display_files.dart';
-import 'package:firelamp/widgets/popup_button.dart';
-import 'package:firelamp/widgets/rounded_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/forum/comment/comment_meta.dart';
-import 'package:firelamp/widgets/forum/comment/comment_form.dart';
-
-import 'package:firelamp/widgets/user/user_avatar.dart';
 
 class CommentView extends StatefulWidget {
   const CommentView({
@@ -65,7 +55,8 @@ class _CommentViewState extends State<CommentView> {
     }
   }
 
-  bool get canCancel => widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
+  bool get canCancel =>
+      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +64,8 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin: EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
+            margin:
+                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,18 +79,23 @@ class _CommentViewState extends State<CommentView> {
                     CommentMeta(forum: widget.forum, comment: widget.comment),
                   ],
                 ),
-                if (widget.comment.mode == CommentMode.none || widget.comment.mode == CommentMode.reply) ...[
+                if (widget.comment.mode == CommentMode.none ||
+                    widget.comment.mode == CommentMode.reply) ...[
                   CommentContent(widget.comment),
                   DisplayFiles(postOrComment: widget.comment),
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
-                      icon:
-                          Icon(widget.comment.mode == CommentMode.reply ? Icons.close : Icons.reply_rounded, size: 20),
+                      icon: Icon(
+                          widget.comment.mode == CommentMode.reply
+                              ? Icons.close
+                              : Icons.reply_rounded,
+                          size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode =
-                              widget.comment.mode == CommentMode.reply ? CommentMode.none : CommentMode.reply;
+                          widget.comment.mode = widget.comment.mode == CommentMode.reply
+                              ? CommentMode.none
+                              : CommentMode.reply;
                         });
                       },
                     ),

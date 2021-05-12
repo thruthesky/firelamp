@@ -1,8 +1,4 @@
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/forum/post/post_meta.dart';
-import 'package:firelamp/widgets/forum/shared/display_files.dart';
-import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/cupertino.dart';
 
 class PostGalleryPreview extends StatelessWidget {

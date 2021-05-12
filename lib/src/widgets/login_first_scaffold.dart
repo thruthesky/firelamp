@@ -1,5 +1,6 @@
-import 'package:firelamp/widgets/login_first.dart';
+
 import 'package:flutter/material.dart';
+import 'package:firelamp/firelamp.dart';
 
 class LoginFirstScaffold extends StatefulWidget {
   LoginFirstScaffold({this.title = 'Login', this.endDrawer});

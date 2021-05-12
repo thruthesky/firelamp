@@ -1,14 +1,5 @@
-import 'package:firelamp/widgets/forum/post/post_meta.dart';
-import 'package:firelamp/widgets/forum/post/post_title.dart';
-import 'package:firelamp/widgets/forum/post/post_content.dart';
-import 'package:firelamp/widgets/forum/shared/display_files.dart';
-import 'package:firelamp/widgets/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
-
-import 'package:firelamp/widgets/defines.dart';
-import 'package:firelamp/widgets/forum/comment/comment_form.dart';
-import 'package:firelamp/widgets/forum/comment/comment_list.dart';
 
 class PostView extends StatefulWidget {
   const PostView({
