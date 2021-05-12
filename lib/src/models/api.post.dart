@@ -1,4 +1,5 @@
-part of '../firelamp.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:flutter/material.dart';
 
 /// The [ApiItemOption] is for shopping mall function.
 ///

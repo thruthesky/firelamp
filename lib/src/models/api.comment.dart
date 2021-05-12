@@ -1,4 +1,4 @@
-part of '../firelamp.dart';
+import 'package:firelamp/firelamp.dart';
 
 enum CommentMode {
   none,

@@ -2,7 +2,6 @@
 //
 //     final apiCategory = apiCategoryFromJson(jsonString);
 //
-part of '../firelamp.dart';
 
 class ApiCategory {
   ApiCategory({

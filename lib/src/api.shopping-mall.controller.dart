@@ -1,4 +1,5 @@
-part of './firelamp.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:get/get.dart';
 
 class CartForm {
   String name;

@@ -1,9 +1,26 @@
-part of 'firelamp.dart';
+import 'dart:convert';
+import 'dart:io';
+
+import 'dart:typed_data';
+import 'package:firelamp/firelamp.dart';
+
+import 'package:dio/dio.dart' as Prefix;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:rxdart/rxdart.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Loading indicators.
-class Loading {
-  bool profile = false;
-}
+// class Loading {
+//   bool profile = false;
+// }
 
 /// Api GetX Controller
 ///
@@ -13,7 +30,7 @@ class Loading {
 class Api {
   ApiUser user;
   FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
-  Loading loading = Loading();
+  bool profileLoading = false;
 
   /// [authChanges] is posted on user login or logout. (Not on profile reading or updating)
   ///
@@ -529,10 +546,10 @@ class Api {
   ///   - return user
   Future<ApiUser> refreshProfile({String sessionId}) async {
     if (sessionId == null) sessionId = this.sessionId;
-    loading.profile = true;
+    profileLoading = true;
     final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
-    loading.profile = false;
+    profileLoading = false;
     _saveProfileAndNotify(user);
 
     return user;

@@ -1,4 +1,4 @@
-part of '../firelamp.dart';
+import 'package:firelamp/firelamp.dart';
 
 class ApiPointHistory {
   ApiPointHistory({

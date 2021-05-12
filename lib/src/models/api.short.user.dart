@@ -1,5 +1,3 @@
-part of '../firelamp.dart';
-
 class ApiShortUser {
   final String idx;
   final String name;
@@ -12,7 +10,7 @@ class ApiShortUser {
   final String firebaseUid;
 
   String get age {
-    return calAge(birthdate);
+    throw '@TODO No more return calAge(birthdate); ! Age class is not null safety. Make your own one.';
   }
 
   String get ageGroup {

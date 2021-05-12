@@ -1,4 +1,4 @@
-part of '../firelamp.dart';
+import 'package:firelamp/firelamp.dart';
 
 class ApiUser {
   Map<String, dynamic> data;
@@ -14,7 +14,7 @@ class ApiUser {
   String point;
 
   String get age {
-    return calAge(birthdate);
+    throw '@TODO No more return calAge(birthdate); ! Age class is not null safety. Make your own one.';
   }
 
   String get ageGroup {

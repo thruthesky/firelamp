@@ -1,4 +1,6 @@
-part of '../firelamp.dart';
+import 'package:firelamp/firelamp.dart';
+import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 enum ForumEventType { edit, cancel, delete }
 
@@ -25,13 +27,13 @@ class ApiForum {
 
   String get listView {
     if (setting == null) return 'text';
-    if (setting.mobilePostListWidget.isBlank) return 'text';
+    if (setting.mobilePostListWidget == '') return 'text';
     return setting.mobilePostListWidget;
   }
 
   String get postView {
     if (setting == null) return 'default';
-    if (setting.mobilePostViewWidget.isBlank) return 'default';
+    if (setting.mobilePostViewWidget == '') return 'default';
     return setting.mobilePostViewWidget;
   }
 

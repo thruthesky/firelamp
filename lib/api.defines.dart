@@ -15,16 +15,6 @@ const String ERROR_NO_RELATIONSHIP = 'error_no_relationship';
 /// Defines
 const String FIREBASE_UID = 'firebaseUid';
 
-/// todo put chat protocol into { protocol: ... }, not in { text: ... }
-class ChatProtocol {
-  static String enter = 'ChatProtocol.enter';
-  static String add = 'ChatProtocol.add';
-  static String leave = 'ChatProtocol.leave';
-  static String kickout = 'ChatProtocol.kickout';
-  static String block = 'ChatProtocol.block';
-  static String roomCreated = 'ChatProtocol.roomCreated';
-}
-
 const String NEW_COMMENT_ON_MY_POST_OR_COMMENT = 'newCommentUserOption';
 
 class NotificationOptions {

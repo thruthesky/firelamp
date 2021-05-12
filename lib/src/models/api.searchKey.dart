@@ -1,5 +1,3 @@
-part of '../firelamp.dart';
-
 class ApiSearchKeyStat {
   ApiSearchKeyStat({
     this.keyword,
@@ -10,9 +8,6 @@ class ApiSearchKeyStat {
   String count;
 
   factory ApiSearchKeyStat.fromJson(MapEntry mapEntry) {
-    return ApiSearchKeyStat(
-      keyword: mapEntry.key,
-      count: mapEntry.value
-    );
+    return ApiSearchKeyStat(keyword: mapEntry.key, count: mapEntry.value);
   }
 }
