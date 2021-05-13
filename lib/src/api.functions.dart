@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:age/age.dart';
 import 'package:firelamp/firelamp.dart';
 
-bool isNumeric(String s) {
+bool isNumeric(String? s) {
   if (s == null) {
     return false;
   }

@@ -23,59 +23,59 @@ class ForumEvent {
 /// 다음 글 목록을 하는 콜백 함수 [loadMore] 를 호출 한다.
 class ApiForum {
   /// Forum category settings
-  ApiCategory setting;
+  ApiCategory? setting;
 
-  String get listView {
+  String? get listView {
     if (setting == null) return 'text';
-    if (setting.mobilePostListWidget == '') return 'text';
-    return setting.mobilePostListWidget;
+    if (setting!.mobilePostListWidget == '') return 'text';
+    return setting!.mobilePostListWidget;
   }
 
-  String get postView {
+  String? get postView {
     if (setting == null) return 'default';
-    if (setting.mobilePostViewWidget == '') return 'default';
-    return setting.mobilePostViewWidget;
+    if (setting!.mobilePostViewWidget == '') return 'default';
+    return setting!.mobilePostViewWidget;
   }
 
   /// App can set the limit to get posts per page.
-  int _limit;
-  int get limit {
+  int? _limit;
+  int? get limit {
     // If limit is set by app.
     if (_limit != null) return _limit;
     // If setting is not set, then 10.
     if (setting == null) return 10;
-    if (setting.noOfPostsPerPage.toInt < 1) return 10;
-    return setting.noOfPostsPerPage.toInt;
+    if (setting!.noOfPostsPerPage!.toInt < 1) return 10;
+    return setting!.noOfPostsPerPage!.toInt;
   }
 
   /// The [_categoryId] is used on fetching posts.
-  String _categoryId;
+  String? _categoryId;
 
   /// If [_categoryId] is not set, then use it from [setting.id]
-  String get categoryId => _categoryId ?? setting?.id;
-  set categoryId(String categoryId) => this._categoryId = categoryId;
-  String subcategory;
+  String? get categoryId => _categoryId ?? setting?.id;
+  set categoryId(String? categoryId) => this._categoryId = categoryId;
+  String? subcategory;
 
   /// The [userIdx] is used on fetching to get the user's posts only.
-  String userIdx;
+  String? userIdx;
 
   /// The [relationIdx] is used to fetch posts related with an entity of [relationIdx].
-  String relationIdx;
+  String? relationIdx;
 
   /// The [searchKey] is used on fetching to search posts
-  String searchKey;
+  String? searchKey;
 
   /// The post of [postOnTop] will be shown on top of the post list with other posts.
   /// Use this when user want to see(view) a post. It may serve as a view page.
   /// The following posts is coming same category if [category] is not set.
   /// It is ignored when [searchKey] is set.
-  String postOnTop;
+  String? postOnTop;
 
   /// The post to be shown on top of the list.
   /// This may also serve as a post view page. Since it has a complete post information,
   /// it will be immediately available before getting data from backend.
   /// When [fetchPost] is being called, [render] will be immidately called with this post.
-  ApiPost post;
+  ApiPost? post;
 
   List<ApiPost> posts = [];
   bool loading = false;
@@ -91,7 +91,7 @@ class ApiForum {
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   /// [render] 는 게시판 목록을 다시 그려야 할 때, 사용되는데, 문제가 많다. GetX Controller 나 RxDart 로 변경을 해야 한다.
-  Function render;
+  Function? render;
 
   bool get showLike => showVoteButton('forum_like');
   bool get showDislike => showVoteButton('forum_dislike');
@@ -112,50 +112,50 @@ class ApiForum {
   }
 
   int loadMoreOn;
-  Function loadMore;
+  Function? loadMore;
 
   /// Do not use this method. Use [commentButtonBuilder]
   /// This will be deprecated soon.
-  Function onChatIconPressed;
+  Function? onChatIconPressed;
 
   /// Build comment buttons
   ///
   /// Use this method to display buttons for the comment view.
-  Function commentButtonBuilder;
+  Function? commentButtonBuilder;
 
   /// post title builder
-  Function postTitleBuilder;
+  Function? postTitleBuilder;
 
   /// post content builder
-  Function postContentBuilder;
+  Function? postContentBuilder;
 
   /// post buttons builder
-  Function postButtonBuilder;
+  Function? postButtonBuilder;
 
   /// post bottom builder
-  Function postBottomBuilder;
+  Function? postBottomBuilder;
 
   /// post author builder
-  Function postAvatarBuilder;
+  Function? postAvatarBuilder;
 
   /// avatar builder for the comment author
-  Function commentAvatarBuilder;
+  Function? commentAvatarBuilder;
 
   /// name builder for the comment author
-  Function commentNameBuilder;
+  Function? commentNameBuilder;
 
   /// to show or hide the comment.
-  Function commentVisibility;
+  Function? commentVisibility;
 
   /// Test if the user can edit.
-  Function commentCanEdit;
+  Function? commentCanEdit;
 
   ///
-  ApiPost _postInEdit;
-  ApiPost get postInEdit => _postInEdit;
-  set postInEdit(ApiPost post) {
+  ApiPost? _postInEdit;
+  ApiPost? get postInEdit => _postInEdit;
+  set postInEdit(ApiPost? post) {
     _postInEdit = post;
-    render();
+    render!();
     notifyListeners(ForumEventType.edit, post);
   }
 
@@ -165,12 +165,12 @@ class ApiForum {
     this.userIdx,
     this.relationIdx,
     this.searchKey,
-    int limit,
+    int? limit,
     this.render,
-    this.loadMoreOn,
+    this.loadMoreOn = 0,
     this.loadMore,
-    String categoryId,
-    ApiPost post,
+    String? categoryId,
+    ApiPost? post,
     this.onChatIconPressed,
     this.commentButtonBuilder,
     this.postTitleBuilder,
@@ -194,7 +194,7 @@ class ApiForum {
         if (canLoad == false) return;
         print('canLoad: $canLoad, lastVisibleIndex: $lastVisibleIndex');
         if (lastVisibleIndex > posts.length - loadMoreOn) {
-          loadMore();
+          loadMore!();
         }
       });
     }
@@ -252,9 +252,9 @@ class ApiForum {
       posts[i] = post;
       jumpTo = i;
     }
-    render();
+    render!();
     if (listController.isAttached)
-      WidgetsBinding.instance.addPostFrameCallback((x) {
+      WidgetsBinding.instance!.addPostFrameCallback((x) {
         listController.jumpTo(index: jumpTo);
       });
   }

@@ -18,21 +18,21 @@ class ApiPointHistory {
     this.createdAt,
     this.updatedAt,
   });
-  String idx;
-  String fromUserIdx;
-  ApiShortUser fromUser;
-  String toUserIdx;
-  ApiShortUser toUser;
-  String reason;
-  String taxonomy;
-  String entity;
-  String categoryIdx;
-  String fromUserPointApply;
-  String fromUserPointAfter;
-  String toUserPointApply;
-  String toUserPointAfter;
-  String createdAt;
-  String updatedAt;
+  String? idx;
+  String? fromUserIdx;
+  ApiShortUser? fromUser;
+  String? toUserIdx;
+  ApiShortUser? toUser;
+  String? reason;
+  String? taxonomy;
+  String? entity;
+  String? categoryIdx;
+  String? fromUserPointApply;
+  String? fromUserPointAfter;
+  String? toUserPointApply;
+  String? toUserPointAfter;
+  String? createdAt;
+  String? updatedAt;
 
   factory ApiPointHistory.fromJson(dynamic json) {
     return ApiPointHistory(

@@ -12,14 +12,14 @@ class ApiFile {
     this.code,
   });
 
-  String url;
-  String idx;
-  String type;
-  String name;
-  String thumbnailUrl;
-  String taxonomy;
-  String entity;
-  String code;
+  String? url;
+  String? idx;
+  String? type;
+  String? name;
+  String? thumbnailUrl;
+  String? taxonomy;
+  String? entity;
+  String? code;
 
   /// File upload percentage
   /// 업로드 퍼센티지 변수. 파일을 업로드 할 때, 여기에 업로드 퍼센티지를 기록 할 수 있다. 클라이언트에서만 사용됨.
