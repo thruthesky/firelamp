@@ -37,38 +37,38 @@ class ApiCategory {
     this.postViewWidget,
   });
 
-  String idx;
-  String id;
-  String title;
-  String description;
-  List<String> subcategories;
+  String? idx;
+  String? id;
+  String? title;
+  String? description;
+  List<String>? subcategories;
 
   /// 콤마로 분리된 문자열을 가지고 있는 원래, 카테고리 문자열.
-  String orgSubcategories;
-  String pointPostCreate;
-  String pointPostDelete;
-  String pointCommentCreate;
-  String pointCommentDelete;
-  String banOnLimit;
-  String pointHourLimit;
-  String pointHourLimitCount;
-  String pointDailyLimitCount;
-  String listOnView;
-  String noOfPostsPerPage;
-  String mobilePostListWidget;
-  String mobilePostViewWidget;
-  String forumEditWidget;
-  String forumViewWidget;
-  String forumListHeaderWidget;
-  String forumListWidget;
-  String paginationWidget;
-  String noOfPagesOnNav;
-  String createdAt;
-  String updatedAt;
-  String postEditWidget;
-  String postListHeaderWidget;
-  String postListWidget;
-  String postViewWidget;
+  String? orgSubcategories;
+  String? pointPostCreate;
+  String? pointPostDelete;
+  String? pointCommentCreate;
+  String? pointCommentDelete;
+  String? banOnLimit;
+  String? pointHourLimit;
+  String? pointHourLimitCount;
+  String? pointDailyLimitCount;
+  String? listOnView;
+  String? noOfPostsPerPage;
+  String? mobilePostListWidget;
+  String? mobilePostViewWidget;
+  String? forumEditWidget;
+  String? forumViewWidget;
+  String? forumListHeaderWidget;
+  String? forumListWidget;
+  String? paginationWidget;
+  String? noOfPagesOnNav;
+  String? createdAt;
+  String? updatedAt;
+  String? postEditWidget;
+  String? postListHeaderWidget;
+  String? postListWidget;
+  String? postViewWidget;
 
   factory ApiCategory.fromJson(dynamic json) {
     if (json is List) return ApiCategory();
@@ -112,7 +112,7 @@ class ApiCategory {
         "id": id,
         "title": title,
         "description": description,
-        "subcategories": List<String>.from(subcategories.map((x) => x)),
+        "subcategories": List<String>.from(subcategories!.map((x) => x)),
         "POINT_POST_CREATE": pointPostCreate,
         "POINT_POST_DELETE": pointPostDelete,
         "POINT_COMMENT_CREATE": pointCommentCreate,

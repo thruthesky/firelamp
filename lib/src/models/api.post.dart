@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
 
@@ -12,13 +13,13 @@ const String DEFAULT_OPTION = 'Default Option';
 class ApiItemOption {
   ApiItemOption({
     this.count = 0,
-    @required this.price,
+    required this.price,
     this.discountRate,
-    @required this.text,
+    required this.text,
   });
   int count;
   int price;
-  int discountRate;
+  int? discountRate;
   Widget text;
   @override
   String toString() {
@@ -93,52 +94,52 @@ class ApiPost {
   /// [data] is the original data for the post. When you need to access an extra meta property,
   /// you can access [data] directly.
   dynamic data;
-  String title;
-  String categoryId;
+  String? title;
+  String? categoryId;
 
-  String idx;
-  String rootIdx;
-  String parentIdx;
-  String userIdx;
-  String categoryIdx;
-  String subcategory;
-  String path;
-  String content;
-  List<ApiFile> files;
-  String createdAt;
-  String updatedAt;
-  String deletedAt;
+  String? idx;
+  String? rootIdx;
+  String? parentIdx;
+  String? userIdx;
+  String? categoryIdx;
+  String? subcategory;
+  String? path;
+  String? content;
+  List<ApiFile>? files;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
 
-  String y;
-  String n;
-  String relationIdx;
-  String private;
-  String privateTitle;
-  String privateContent;
+  String? y;
+  String? n;
+  String? relationIdx;
+  String? private;
+  String? privateTitle;
+  String? privateContent;
 
-  String appliedPoint;
-  String code;
+  String? appliedPoint;
+  String? code;
 
-  String shortDateTime;
+  String? shortDateTime;
 
   ///
-  ApiShortUser user;
+  ApiShortUser? user;
 
-  List<ApiComment> comments;
+  List<ApiComment>? comments;
 
   /// Upload file/image
   String thumbnailUrl(src, {int width = 320, int height = 320, int quality = 75, bool original = false}) {
-    return Api.instance.thumbnailUrl(src: src, width: width, height: height, original: original);
+    return Api.instance!.thumbnailUrl(src: src, width: width, height: height, original: original);
   }
 
   /// Returns true if the post(or comment) has any file.
   bool get hasFiles {
-    return files.isNotEmpty;
+    return files!.isNotEmpty;
   }
 
-  ApiFile fileByCode(String code) {
+  ApiFile? fileByCode(String code) {
     if (hasFiles == false) return null;
-    for (final ApiFile file in files) {
+    for (final ApiFile file in files!) {
       if (file.code == code) return file;
     }
     return null;
@@ -151,47 +152,47 @@ class ApiPost {
 
   /// Shopping mall properties
   ///
-  String shortTitle;
-  int price;
-  bool optionItemPrice;
-  int discountRate;
+  String? shortTitle;
+  int? price;
+  bool? optionItemPrice;
+  int? discountRate;
 
   /// 쇼핑 상품 일시 정지 상태인가?
-  bool pause;
-  int point;
-  String volume;
-  int deliveryFee;
-  String storageMethod;
-  String expiry;
+  bool? pause;
+  int? point;
+  String? volume;
+  int? deliveryFee;
+  String? storageMethod;
+  String? expiry;
 
-  String foodKind;
-  String origin;
-  String allergy;
-  String nutritiveComponents;
+  String? foodKind;
+  String? origin;
+  String? allergy;
+  String? nutritiveComponents;
 
-  String primaryPhoto;
+  String? primaryPhoto;
   String get primaryPhotoUrl => thumbnailUrl(primaryPhoto, original: true);
-  String widgetPhoto;
+  String? widgetPhoto;
   String get widgetPhotoUrl => thumbnailUrl(widgetPhoto);
-  String detailPhoto;
+  String? detailPhoto;
   String get detailPhotoUrl => thumbnailUrl(detailPhoto, original: true);
 
-  String bannerPhoto;
+  String? bannerPhoto;
   String get bannerPhotoUrl => thumbnailUrl(bannerPhoto, original: true);
 
   /// The [keywords] has multiple keywords separated by comma
-  String keywords;
+  String? keywords;
 
   /// [options] 는 백엔드로 부터 오는 값은 코마로 나누어진 옵션 문자열인데, Client 에서 파싱을 해서, 맵으로 보관한다.
-  Map<String, ApiItemOption> options;
+  Map<String, ApiItemOption>? options;
   int count(String option) {
-    return options[option].count;
+    return options![option]!.count;
   }
 
   /// 여러 옵션 중에서 사용자가 선택한 옵션만 리턴한다. 기본 옵션은 제외.
   List<String> get selectedOptions {
     List<String> rets = [];
-    for (String option in options.keys) {
+    for (String option in options!.keys) {
       if (option != DEFAULT_OPTION && count(option) > 0) {
         rets.add(option);
       }
@@ -217,9 +218,9 @@ class ApiPost {
   ///
   /// The [mode] has one of the following status: null, 'edit'
   /// - when it is 'edit', the post is in edit mode.
-  String mode;
+  String? mode;
 
-  bool get isMine => userIdx == Api.instance.userIdx;
+  bool get isMine => userIdx == Api.instance!.userIdx;
   bool get isNotMine => !isMine;
 
   bool get isEdit => idx != null && idx != '0';
@@ -227,13 +228,13 @@ class ApiPost {
 
   bool get isDeleted => deletedAt.toInt != 0;
 
-  String get authorName {
-    return user.nickname.isNotEmpty ? user.nickname : user.name;
+  String? get authorName {
+    return user!.nickname!.isNotEmpty ? user!.nickname : user!.name;
   }
 
   /// Get short name for display
-  String get shortAuthorName {
-    return authorName.length < 10 ? authorName : authorName.substring(0, 9);
+  String? get shortAuthorName {
+    return authorName!.length < 10 ? authorName : authorName!.substring(0, 9);
   }
 
   ///
@@ -241,25 +242,25 @@ class ApiPost {
     // print(comment.commentParent);
 
     // find existing comment and update.
-    int i = comments.indexWhere((c) => c.idx == comment.idx);
+    int i = comments!.indexWhere((c) => c.idx == comment.idx);
     if (i != -1) {
-      comment.depth = comments[i].depth;
-      comments[i] = comment;
+      comment.depth = comments![i].depth;
+      comments![i] = comment;
       return;
     }
 
     // if it's new comment right under post, then add at bottom.
     if (comment.parentIdx == idx) {
-      comments.add(comment);
+      comments!.add(comment);
       // print('parent id: 0, add at bottom');
       return;
     }
 
     // find parent and add below the parent.
-    int p = comments.indexWhere((c) => c.idx == comment.parentIdx);
+    int p = comments!.indexWhere((c) => c.idx == comment.parentIdx);
     if (p != -1) {
-      comment.depth = (comments[p].depth.toInt + 1).toString();
-      comments.insert(p + 1, comment);
+      comment.depth = (comments![p].depth.toInt + 1).toString();
+      comments!.insert(p + 1, comment);
       return;
     }
 
@@ -347,10 +348,10 @@ class ApiPost {
       allergy: json['allergy'],
       nutritiveComponents: json['nutritive_components'],
 
-      primaryPhoto: files.firstWhere((f) => f.code == 'primaryPhoto', orElse: () => null)?.idx ?? '',
-      widgetPhoto: files.firstWhere((f) => f.code == 'widgetPhoto', orElse: () => null)?.idx ?? '',
-      detailPhoto: files.firstWhere((f) => f.code == 'detailPhoto', orElse: () => null)?.idx ?? '',
-      bannerPhoto: files.firstWhere((f) => f.code == 'bannerPhoto', orElse: () => null)?.idx ?? '',
+      primaryPhoto: files.firstWhereOrNull((f) => f.code == 'primaryPhoto')?.idx ?? '',
+      widgetPhoto: files.firstWhereOrNull((f) => f.code == 'widgetPhoto')?.idx ?? '',
+      detailPhoto: files.firstWhereOrNull((f) => f.code == 'detailPhoto')?.idx ?? '',
+      bannerPhoto: files.firstWhereOrNull((f) => f.code == 'bannerPhoto')?.idx ?? '',
       keywords: json['keywords'] ?? '',
       options: _prepareOptions(json['options'], json["optionItemPrice"] == 'Y' ? true : false),
 
@@ -381,8 +382,8 @@ class ApiPost {
         "n": n,
         "appliedPoint": appliedPoint,
         "code": code,
-        "files": List<dynamic>.from(files.map((x) => x.toJson().toString())),
-        if (comments != null) "comments": List<dynamic>.from(comments.map((x) => x.toJson().toString())),
+        "files": List<dynamic>.from(files!.map((x) => x.toJson().toString())),
+        if (comments != null) "comments": List<dynamic>.from(comments!.map((x) => x.toJson().toString())),
         "shortTitle": shortTitle,
         "price": price,
         "optionItemPrice": optionItemPrice.toString(),
@@ -411,33 +412,33 @@ class ApiPost {
     return toJson().toString();
   }
 
-  static int _parseInt(String n) {
+  static int? _parseInt(String? n) {
     if (n is String) {
-      if (n == null || n == '') return 0;
+      if (n == '') return 0;
       return int.parse(n);
     }
     return 0;
   }
 
   /// 상품 가격을 할인하여 가격으로 리턴. '옵션에 추가금액지정' 방식에서만 사용 할 필요가 있다.
-  int get discountedPrice {
-    int discounted = price;
-    if (discountRate > 0) {
-      discounted = discount(price, discountRate);
+  int? get discountedPrice {
+    int? discounted = price;
+    if (discountRate! > 0) {
+      discounted = discount(price!, discountRate!);
     }
     return discounted;
   }
 
   /// '옵션에 상품가격지정' 방식에서, 옵션의 할인된 가격을 리턴한다.
   int optionDiscountedPrice(String option) {
-    return options[option].count * discount(options[option].price, options[option].discountRate);
+    return options![option]!.count * discount(options![option]!.price, options![option]!.discountRate!);
   }
 
   /// 상품의 옵션 정리(손질)
   ///
   /// [optionString] 은 DB(게시글)에 있는 옵션 문자열이다. 한 문자열에 여러개의 옵션이 들어가 있는데 이를 파싱하는 것이다.
   ///
-  static Map<String, ApiItemOption> _prepareOptions(String optionString, bool optionItemPrice) {
+  static Map<String, ApiItemOption> _prepareOptions(String? optionString, bool optionItemPrice) {
     Map<String, ApiItemOption> _options = {};
 
     /// 옵션이 없는 경우, 기본(DEFAULT_OPTION) 옵션을 하나 두어서, 사용자가
@@ -518,23 +519,23 @@ class ApiPost {
   /// 현재 상품 페이지에서 주문 할 때 또는 장바구니에서 각 상품의 소계를 출력 할 때 사용 가능하다.
   int get priceWithOptions {
     int _price = 0;
-    if (optionItemPrice) {
+    if (optionItemPrice!) {
       // '옵션에 상품가격지정' 방식. 옵션마다 가격이 다르고, 옵션마다 각각의 할인율이 있다. 그래서 옵션별로 할인 계산을 따로 해야 한다.
-      for (final option in options.keys) {
+      for (final option in options!.keys) {
         _price += optionDiscountedPrice(option);
       }
     } else {
       // 기본 상품 가격에 옵션 가격을 추가하는 경우, 기본 옵션이 있어야 한다. 테스트 하는 경우에도 추가를 해 줘야 함.
-      assert(options[DEFAULT_OPTION] != null, "Default Option not exists.");
-      if (options[DEFAULT_OPTION] == null) return 0; // 에러. 기본 옵션이 존재해야 한다.
+      assert(options![DEFAULT_OPTION] != null, "Default Option not exists.");
+      if (options![DEFAULT_OPTION] == null) return 0; // 에러. 기본 옵션이 존재해야 한다.
 
-      for (final option in options.keys) {
+      for (final option in options!.keys) {
         // 옵션이 선택된 경우, 구매 개수 만큼 곱해서, 옵션 가격 추가
-        if (options[option].count == 1) {
-          _price += options[option].price * options[DEFAULT_OPTION].count;
+        if (options![option]!.count == 1) {
+          _price += options![option]!.price * options![DEFAULT_OPTION]!.count;
         }
       }
-      _price += discountedPrice * options[DEFAULT_OPTION].count;
+      _price += discountedPrice! * options![DEFAULT_OPTION]!.count;
     }
     return _price;
   }
@@ -544,18 +545,18 @@ class ApiPost {
   /// 상품 1개에 1천원의 포인트가 적립된다면, 그 상품을 5개 주문하면 5천 포인트가 리턴된다.
   /// 옵션에 상품가격지정 방식에서는 각각의 옵션 선택이 1개의 상품이 된다.
   int pointWithOptions(
-    int itemPoint,
+    int? itemPoint,
   ) {
     print('itemPoint: $itemPoint');
     int _point = 0;
 
-    if (optionItemPrice) {
+    if (optionItemPrice!) {
       // '옵션에 상품가격지정' 방식. 옵션마다 가격이 다르고, 옵션마다 각각의 할인율이 있다. 그래서 옵션별로 할인 계산을 따로 해야 한다.
-      for (final option in options.keys) {
-        _point += itemPoint * options[option].count;
+      for (final option in options!.keys) {
+        _point += itemPoint! * options![option]!.count;
       }
     } else {
-      _point = itemPoint * options[DEFAULT_OPTION].count;
+      _point = itemPoint! * options![DEFAULT_OPTION]!.count;
     }
 
     return _point;
@@ -564,7 +565,7 @@ class ApiPost {
   /// 현재 상품의 옵션에, 상품 옵션 1개를 추가한다.
   /// 참고로, 상품 옵션 정보는 현재 상품의 옵션의 [count] 속성에 저장된다.
   addOption(String option) {
-    options[option].count = 1;
+    options![option]!.count = 1;
   }
 
   /// '옵션에 상품 가격 지정'이 아닌 경우, 즉, '옵션에 추가 금액 지정'인 경우, 옵션 없이 바로 구매 할 수 있도록 기본(DEFAULT_OPTION) 옵션 추가
@@ -581,22 +582,22 @@ class ApiPost {
 
   /// 기존에 선택된 옵션들을 모두 리젯한다. 모든 옵션 카운트를 0으로 하면 됨.
   resetOptions() {
-    selectedOptions.forEach((optionName) => options[optionName].count = 0);
+    selectedOptions.forEach((optionName) => options![optionName]!.count = 0);
   }
 
   /// 옵션의 개 수 증가. '옵션에 상품가격지정방식'만 가능.
   increaseItemOption(String option) {
-    assert(optionItemPrice || option == DEFAULT_OPTION, "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");
-    options[option].count++;
+    assert(optionItemPrice! || option == DEFAULT_OPTION, "옵션에 상품가격지정방식이 아니면, 옵션을 여러개 추가 할 수 없습니다.");
+    options![option]!.count++;
   }
 
   /// option 의 count 를 감소시킨다. 즉, 주문 개 수 중에서 1을 감소한다.
   decreaseItemOption(String option) {
-    if (options[option].count > 1) options[option].count--;
+    if (options![option]!.count > 1) options![option]!.count--;
   }
 
   /// option 의 count 를 0 으로 하면, 장바구니에서 보이지 않도록 한다.
   delete(String option) {
-    options[option].count = 0;
+    options![option]!.count = 0;
   }
 }

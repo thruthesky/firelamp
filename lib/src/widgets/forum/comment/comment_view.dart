@@ -4,21 +4,21 @@ import 'package:firelamp/firelamp.dart';
 
 class CommentView extends StatefulWidget {
   const CommentView({
-    Key key,
+    Key? key,
     this.comment,
     this.post,
     this.onError,
-    @required this.forum,
+    required this.forum,
     this.rerenderParent,
     this.index,
   }) : super(key: key);
 
-  final ApiComment comment;
-  final ApiPost post;
-  final ApiForum forum;
-  final Function onError;
-  final Function rerenderParent;
-  final int index;
+  final ApiComment? comment;
+  final ApiPost? post;
+  final ApiForum? forum;
+  final Function? onError;
+  final Function? rerenderParent;
+  final int? index;
 
   @override
   _CommentViewState createState() => _CommentViewState();
@@ -30,79 +30,79 @@ class _CommentViewState extends State<CommentView> {
     /// Edit
     if (selected == 'edit') {
       setState(() {
-        widget.comment.mode = CommentMode.edit;
+        widget.comment!.mode = CommentMode.edit;
       });
     }
 
     /// Delete
     if (selected == 'delete') {
-      bool conf = await confirm(
+      bool? conf = await confirm(
         'confirm'.tr,
         'comment_confirm_delete_message'.tr,
       );
       if (conf == false) return;
 
       try {
-        await Api.instance.commentDelete(widget.comment, widget.post);
-        widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
-        if (widget.rerenderParent != null) widget.rerenderParent();
-        if (widget.forum.render != null) widget.forum.render();
+        await Api.instance!.commentDelete(widget.comment!, widget.post!);
+        widget.post!.comments!.removeWhere((c) => c.idx == widget.comment!.idx);
+        if (widget.rerenderParent != null) widget.rerenderParent!();
+        if (widget.forum!.render != null) widget.forum!.render!();
       } catch (e) {
         if (widget.onError != null) {
-          widget.onError(e);
+          widget.onError!(e);
         }
       }
     }
   }
 
   bool get canCancel =>
-      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
+      widget.comment!.mode == CommentMode.reply || widget.comment!.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
-    return widget.comment.isDeleted
+    return widget.comment!.isDeleted
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
             margin:
-                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
+                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment!.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    widget.forum.commentAvatarBuilder == null
-                        ? UserAvatar(widget.comment.user.photoUrl, size: 40)
-                        : widget.forum.commentAvatarBuilder(widget.comment),
+                    widget.forum!.commentAvatarBuilder == null
+                        ? UserAvatar(widget.comment!.user!.photoUrl, size: 40)
+                        : widget.forum!.commentAvatarBuilder!(widget.comment),
                     SizedBox(width: Space.sm),
                     CommentMeta(forum: widget.forum, comment: widget.comment),
                   ],
                 ),
-                if (widget.comment.mode == CommentMode.none ||
-                    widget.comment.mode == CommentMode.reply) ...[
+                if (widget.comment!.mode == CommentMode.none ||
+                    widget.comment!.mode == CommentMode.reply) ...[
                   CommentContent(widget.comment),
                   DisplayFiles(postOrComment: widget.comment),
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
                       icon: Icon(
-                          widget.comment.mode == CommentMode.reply
+                          widget.comment!.mode == CommentMode.reply
                               ? Icons.close
                               : Icons.reply_rounded,
                           size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode = widget.comment.mode == CommentMode.reply
+                          widget.comment!.mode = widget.comment!.mode == CommentMode.reply
                               ? CommentMode.none
                               : CommentMode.reply;
                         });
                       },
                     ),
-                    if (widget.forum.commentButtonBuilder != null)
-                      widget.forum.commentButtonBuilder(widget.post, widget.comment),
+                    if (widget.forum!.commentButtonBuilder != null)
+                      widget.forum!.commentButtonBuilder!(widget.post, widget.comment),
                     Spacer(),
-                    if (widget.comment.isMine)
+                    if (widget.comment!.isMine)
                       PopUpButton(
                         key: ValueKey(FirelampKeys.button.commentMore),
                         items: [
@@ -127,7 +127,7 @@ class _CommentViewState extends State<CommentView> {
                       )
                   ]),
                 ],
-                if (widget.comment.mode == CommentMode.reply)
+                if (widget.comment!.mode == CommentMode.reply)
                   CommentForm(
                     parent: widget.comment,
                     comment: ApiComment(),
@@ -137,7 +137,7 @@ class _CommentViewState extends State<CommentView> {
                     onError: widget.onError,
                     index: widget.index,
                   ),
-                if (widget.comment.mode == CommentMode.edit) ...[
+                if (widget.comment!.mode == CommentMode.edit) ...[
                   SizedBox(height: Space.sm),
                   CommentForm(
                     comment: widget.comment,
@@ -146,7 +146,7 @@ class _CommentViewState extends State<CommentView> {
                     onSuccess: widget.rerenderParent,
                     onError: widget.onError,
                     index: widget.index,
-                    onCancel: () => setState(() => widget.comment.mode = CommentMode.none),
+                    onCancel: () => setState(() => widget.comment!.mode = CommentMode.none),
                     commentFormKeyFix: 'edit',
                   ),
                 ],

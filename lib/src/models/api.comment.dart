@@ -33,28 +33,28 @@ class ApiComment {
     if (content == null) content = '';
   }
 
-  Map<String, dynamic> data;
-  String depth;
-  String idx;
-  String rootIdx;
-  String parentIdx;
-  String userIdx;
-  ApiShortUser user;
-  String categoryIdx;
-  String subcategory;
-  String path;
+  Map<String, dynamic>? data;
+  String? depth;
+  String? idx;
+  String? rootIdx;
+  String? parentIdx;
+  String? userIdx;
+  ApiShortUser? user;
+  String? categoryIdx;
+  String? subcategory;
+  String? path;
 
   /// The [title] is the title of the comment. It may be used if needed.
-  String title;
-  String content;
-  List<ApiFile> files;
-  String createdAt;
-  String updatedAt;
-  String deletedAt;
-  String y;
-  String n;
+  String? title;
+  String? content;
+  List<ApiFile>? files;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
+  String? y;
+  String? n;
 
-  String shortDateTime;
+  String? shortDateTime;
 
   /// [mode] becomes
   /// - `CommentMode.edit` when the comment is in edit mode.
@@ -62,7 +62,7 @@ class ApiComment {
   /// - `CommentMode.none` string for nothing.
   CommentMode mode;
 
-  bool get isMine => userIdx == Api.instance.userIdx;
+  bool get isMine => userIdx == Api.instance!.userIdx;
   bool get isNotMine => !isMine;
 
   bool get isDeleted => deletedAt.toInt != 0;
@@ -70,13 +70,13 @@ class ApiComment {
   bool get isEdit => idx != null && idx.toInt > 0;
   bool get isCreate => !isEdit;
 
-  String get authorName {
-    return user.nickname.isNotEmpty ? user.nickname : user.name;
+  String? get authorName {
+    return user!.nickname!.isNotEmpty ? user!.nickname : user!.name;
   }
 
   /// Get short name for display
-  String get shortName {
-    return authorName.length < 10 ? authorName : authorName.substring(0, 9);
+  String? get shortName {
+    return authorName!.length < 10 ? authorName : authorName!.substring(0, 9);
   }
 
   factory ApiComment.fromJson(Map<String, dynamic> json) {

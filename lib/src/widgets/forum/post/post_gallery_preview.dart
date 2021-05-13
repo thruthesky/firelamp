@@ -13,7 +13,7 @@ class PostGalleryPreview extends StatelessWidget {
       children: [
         Row(
           children: [
-            UserAvatar(post.user.photoUrl),
+            UserAvatar(post.user!.photoUrl),
             SizedBox(width: Space.xs),
             Expanded(
               child: Column(

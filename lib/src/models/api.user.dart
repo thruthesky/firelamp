@@ -1,17 +1,17 @@
 import 'package:firelamp/firelamp.dart';
 
 class ApiUser {
-  Map<String, dynamic> data;
-  bool admin;
-  String nickname;
-  String firstName;
-  String lastName;
-  String locale;
-  String autoLoginYn;
-  String autoStatusCheck;
-  String plid;
-  String agegroup;
-  String point;
+  late Map<String, dynamic> data;
+  bool? admin;
+  String? nickname;
+  String? firstName;
+  String? lastName;
+  String? locale;
+  String? autoLoginYn;
+  String? autoStatusCheck;
+  String? plid;
+  String? agegroup;
+  String? point;
 
   String get age {
     throw '@TODO No more return calAge(birthdate); ! Age class is not null safety. Make your own one.';
@@ -23,27 +23,27 @@ class ApiUser {
     return firstChar + '0';
   }
 
-  String gender;
-  String foreign;
-  String telcoCd;
-  String ci;
-  String phoneNo;
-  String name;
-  String birthday;
-  String birthdate;
+  String? gender;
+  String? foreign;
+  String? telcoCd;
+  String? ci;
+  String? phoneNo;
+  String? name;
+  String? birthday;
+  String? birthdate;
 
-  String idx;
-  String email;
-  String firebaseUid;
-  String userRegistered;
-  String sessionId;
+  String? idx;
+  String? email;
+  String? firebaseUid;
+  String? userRegistered;
+  String? sessionId;
 
-  String createdAt;
-  String updatedAt;
+  String? createdAt;
+  String? updatedAt;
 
   /// [mode] is used only when `loginOrRegister` method is being invoked.
   /// It is one of `login` or `register`.
-  String mode;
+  String? mode;
   // String primaryPhotoUrl;
   // String get fullName => name;
   // String dateMethod;
@@ -54,13 +54,13 @@ class ApiUser {
   // String drinking;
   // String smoking;
 
-  String photoIdx;
-  String photoUrl;
+  String? photoIdx;
+  String? photoUrl;
 
   bool get male => gender == 'M';
   bool get female => gender == 'F';
 
-  String get nicknameOrName {
+  String? get nicknameOrName {
     if (nickname != null && nickname != '') {
       return nickname;
     }
@@ -101,7 +101,7 @@ class ApiUser {
     this.updatedAt,
   });
 
-  ApiUser.fromJson(Map<String, dynamic> json) {
+  ApiUser.fromJson(Map<String, dynamic>? json) {
     if (json == null) return;
     data = json;
     admin = json['admin'] == 'Y' ? true : false;
@@ -131,7 +131,7 @@ class ApiUser {
 
     // 만약, 사용자가 프로필 사진을 업로드 했으면, 그것을 쓰고 아니면,
     if (photoIdx.toInt > 0) {
-      photoUrl = Api.instance.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
+      photoUrl = Api.instance!.thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95);
     } else if (json['photoUrl'] != null) {
       // 아니면, meta 에 기록된 photoUrl 을 사용한다.
       photoUrl = json['photoUrl'];

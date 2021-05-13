@@ -28,7 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// [Api] is the Api class for commuting backend.
 /// It extends `GetxController` to update when user information changes.
 class Api {
-  ApiUser user;
+  ApiUser? user;
   FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
   bool profileLoading = false;
 
@@ -36,7 +36,7 @@ class Api {
   ///
   /// When user is logged in, the parameter will have value of `ApiUser`, or null.
   ///
-  BehaviorSubject<ApiUser> authChanges = BehaviorSubject.seeded(null);
+  BehaviorSubject<ApiUser?> authChanges = BehaviorSubject.seeded(null);
 
   /// The [profileChanges] is posted when user profile changed and login & logout.
   ///
@@ -44,7 +44,7 @@ class Api {
   /// `login()` and `register()` method takes user profile to change.
   /// More precisely, [profileChanges] event is posed on `_saveProfileAndNotify` which is
   /// being called on profile chagnes and login, logout.
-  BehaviorSubject<ApiUser> profileChanges = BehaviorSubject.seeded(null);
+  BehaviorSubject<ApiUser?> profileChanges = BehaviorSubject.seeded(null);
 
   /// [errror] is posted on any error.
   // ignore: close_sinks
@@ -53,13 +53,13 @@ class Api {
   Prefix.Dio dio = Prefix.Dio();
 
   /// [apiUrl] is the api url.
-  String apiUrl;
+  late String apiUrl;
 
   /// Translations
   ///
   /// Translation is enabled by default.
   /// When translation changes(from backend), [translationChanges] event is posted with translation data.
-  PublishSubject<Map<String, dynamic>> translationChanges = PublishSubject();
+  PublishSubject<Map<String, dynamic>?> translationChanges = PublishSubject();
 
   /// App Settings
   ///
@@ -75,39 +75,40 @@ class Api {
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
   /// Image compressor after taking Image.
-  Function imageCompressor;
+  Function? imageCompressor;
 
   @Deprecated('Use userIdx')
-  int get idx => user == null ? 0 : user.idx;
-  String get userIdx => user == null ? '0' : user.idx;
-  String get sessionId => user?.sessionId;
-  String get photoUrl => user?.photoUrl;
-  String get name => user?.name;
-  String get nickname => user?.nickname;
-  String get nicknameOrName => nickname != null || nickname != '' ? nickname : name;
-  bool get profileComplete => loggedIn && photoUrl != null && photoUrl.isNotEmpty && name != null && name.isNotEmpty;
+  int? get idx => user == null ? 0 : user!.idx as int?;
+  String? get userIdx => user == null ? '0' : user!.idx;
+  String? get sessionId => user?.sessionId;
+  String? get photoUrl => user?.photoUrl;
+  String? get name => user?.name;
+  String? get nickname => user?.nickname;
+  String? get nicknameOrName => nickname != null || nickname != '' ? nickname : name;
+  bool get profileComplete => loggedIn && photoUrl != null && photoUrl!.isNotEmpty && name != null && name!.isNotEmpty;
 
-  bool get loggedIn => user != null && user.sessionId != null;
-  bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
+  bool get loggedIn => user != null && user!.sessionId != null;
+  bool get isAdmin => user != null && user!.sessionId != null && user!.admin == true;
   bool get notLoggedIn => !loggedIn;
 
   bool get isNewCommentOnMyPostOrComment {
     if (notLoggedIn) return false;
-    return user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null || user.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
+    return user!.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == null ||
+        user!.data[NEW_COMMENT_ON_MY_POST_OR_COMMENT] == 'on';
   }
 
   bool isSubscribeTopic(topic) {
     if (notLoggedIn) return false;
-    return user.data[topic] != null && user.data[topic] == 'on';
+    return user!.data[topic] != null && user!.data[topic] == 'on';
   }
 
   bool isSubscribeChat(topic) {
     if (notLoggedIn) return false;
-    return user.data[topic] == null || user.data[topic] == 'on';
+    return user!.data[topic] == null || user!.data[topic] == 'on';
   }
 
   /// To use firebase or not.
-  bool enableFirebase;
+  bool? enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
   BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
@@ -115,31 +116,31 @@ class Api {
   /// Firebase Messaging
   ///
   /// If [enableMessaging] is set to true, it will do push notification. By default true.
-  bool enableMessaging;
+  bool? enableMessaging;
 
   /// [token] is the push notification token.
-  String token;
+  String? token;
 
   /// Event handlers on perssion state changes. for iOS only.
   /// These event will be called when permission is denied or not determined.
-  Function onNotificationPermissionDenied;
-  Function onNotificationPermissionNotDetermined;
+  Function? onNotificationPermissionDenied;
+  Function? onNotificationPermissionNotDetermined;
 
   /// [onForegroundMessage] will be posted when there is a foreground message.
-  Function onForegroundMessage;
-  Function onMessageOpenedFromTermiated;
-  Function onMessageOpenedFromBackground;
+  Function? onForegroundMessage;
+  Function? onMessageOpenedFromTermiated;
+  Function? onMessageOpenedFromBackground;
 
   /// 쇼핑몰 카트
   ///
   /// 쇼핑몰은 [Cart] GetX 컨트롤러에 의해서 관리된다. `init` 함수 안에서 초기화된다. 따라서 `init` 의 동작이 끝난 다음,
   /// Get.put() 에 집어 넣어야 한다.
   ///
-  Cart cart;
+  late Cart cart;
 
   /// Api Singleton
-  static Api _instance;
-  static Api get instance {
+  static Api? _instance;
+  static Api? get instance {
     if (_instance == null) {
       _instance ??= Api();
     }
@@ -172,16 +173,16 @@ class Api {
   /// Api.version().then((res) => print('Api.version(): $res'));
   /// ```
   Future<void> init({
-    @required String apiUrl,
+    required String apiUrl,
     bool enableFirebase = false,
     bool enableMessaging = false,
-    Function onNotificationPermissionDenied,
-    Function onNotificationPermissionNotDetermined,
-    Function onForegroundMessage,
-    Function onMessageOpenedFromTermiated,
-    Function onMessageOpenedFromBackground,
-    Function imageCompressor,
-    Function initUser,
+    Function? onNotificationPermissionDenied,
+    Function? onNotificationPermissionNotDetermined,
+    Function? onForegroundMessage,
+    Function? onMessageOpenedFromTermiated,
+    Function? onMessageOpenedFromBackground,
+    Function? imageCompressor,
+    Function? initUser,
   }) async {
     if (enableMessaging) {
       assert(
@@ -226,7 +227,7 @@ class Api {
   /// Password is composed with `idx` and `createdAt` that are never changed. You may set the salt.
   _initFirebaseAuth() async {
     if (enableFirebase == false) return;
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
         // print('User is currently signed out!');
       } else {
@@ -240,22 +241,22 @@ class Api {
       if (user == null) {
         await FirebaseAuth.instance.signOut();
       } else {
-        String email = user.email;
-        String password = user.email + user.idx + user.createdAt + ' Wc~7 difficult to guess string salt %^.^%;';
+        String email = user.email!;
+        String password = user.email! + user.idx! + user.createdAt! + ' Wc~7 difficult to guess string salt %^.^%;';
 
         // User email already exists(registered), try to login.
         try {
           await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-          await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
+          await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser!.uid);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
             print('_initFirebaseAuth() => No user found for that email. going to register.');
 
             try {
-              await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email, password: password);
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(email: user.email!, password: password);
               print(
-                  'Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
-              await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
+                  'Firebase user created with: uid=${FirebaseAuth.instance.currentUser!.uid}. going to save it into backend');
+              await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser!.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
                 print('The password provided is too weak.');
@@ -276,7 +277,7 @@ class Api {
   ///
   /// This should be called whenever user log into firebase.
   Future<void> userUpdateFirebaseUid(String uid) async {
-    await userUpdate({FIREBASE_UID: FirebaseAuth.instance.currentUser.uid});
+    await userUpdate({FIREBASE_UID: FirebaseAuth.instance.currentUser!.uid});
   }
 
   /// Firebase Initialization
@@ -325,7 +326,7 @@ class Api {
     if (data['sessionId'] != null) return data;
     if (notLoggedIn) return data;
 
-    data['sessionId'] = user.sessionId;
+    data['sessionId'] = user!.sessionId;
 
     return data;
   }
@@ -348,7 +349,7 @@ class Api {
     }
   }
 
-  Future<dynamic> request(Map<String, dynamic> data) async {
+  Future<T> request<T>(Map<String, dynamic> data) async {
     // print('request: $data');
     // _printDebugUrl(data);
     data = _addSessionId(data);
@@ -374,7 +375,7 @@ class Api {
     dynamic response = res.data['response'];
     if (response is String && response.indexOf('error_') == 0) throw response;
 
-    return response;
+    return response as T;
 
     // else if (res.data['code'] != 0) {
     //   /// If there is error like "ERROR_", then it throws exception.
@@ -424,17 +425,17 @@ class Api {
   }
 
   /// Returns null if the user has not logged in.
-  Future<ApiUser> _loadUserProfile() async {
+  Future<ApiUser?> _loadUserProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String user = prefs.getString('user');
+    String? user = prefs.getString('user');
     if (user == null) return null;
-    Map<String, dynamic> json = jsonDecode(user);
+    Map<String, dynamic>? json = jsonDecode(user);
     return ApiUser.fromJson(json);
   }
 
-  Future<ApiUser> login({
-    @required String email,
-    @required String password,
+  Future<ApiUser?> login({
+    required String email,
+    required String password,
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'user.login';
@@ -444,7 +445,7 @@ class Api {
     data['token'] = token;
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
-    await _saveProfileAndNotify(user);
+    await _saveProfileAndNotify(user!);
     authChanges.add(user);
 
     return user;
@@ -460,10 +461,10 @@ class Api {
   }
 
   /// [data] will be saved as user property. You can save whatever but may need to update the ApiUser model accordingly.
-  Future<ApiUser> register({
-    @required String email,
-    @required String password,
-    Map<String, dynamic> data,
+  Future<ApiUser?> register({
+    required String email,
+    required String password,
+    Map<String, dynamic>? data,
   }) async {
     if (data == null) data = {};
     data['route'] = 'user.register';
@@ -476,15 +477,15 @@ class Api {
     user = ApiUser.fromJson(res);
     // print('user: $user');
 
-    await _saveProfileAndNotify(user);
+    await _saveProfileAndNotify(user!);
     authChanges.add(user);
     return user;
   }
 
-  Future<ApiUser> loginOrRegister({
-    @required String email,
-    @required String password,
-    Map<String, dynamic> data,
+  Future<ApiUser?> loginOrRegister({
+    required String email,
+    required String password,
+    Map<String, dynamic>? data,
   }) async {
     if (data == null) data = {};
     data['route'] = 'user.loginOrRegister';
@@ -495,17 +496,17 @@ class Api {
     final Map<String, dynamic> res = await request(data);
     // print(res);
     user = ApiUser.fromJson(res);
-    await _saveProfileAndNotify(user);
+    await _saveProfileAndNotify(user!);
     authChanges.add(user);
 
     return user;
   }
 
-  Future<ApiUser> userUpdate(Map<String, dynamic> data) async {
+  Future<ApiUser?> userUpdate(Map<String, dynamic> data) async {
     data['route'] = 'user.update';
     final Map<String, dynamic> res = await request(data);
     user = ApiUser.fromJson(res);
-    _saveProfileAndNotify(user);
+    _saveProfileAndNotify(user!);
     return user;
   }
 
@@ -513,24 +514,24 @@ class Api {
   /// If [option] doesnt exist it switch to `on`.
   /// If [option] is `on` it switch to `off`.
   /// If [option] is `off` it switch to `on`.
-  Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
+  Future<ApiUser?> userOptionSwitch({String? option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
       'route': route,
       'option': option,
     };
     final res = await request(req);
     user = ApiUser.fromJson(res);
-    await _saveProfileAndNotify(user);
+    await _saveProfileAndNotify(user!);
     return user;
   }
 
   /// it will always switch the [option]:`on`
-  Future<ApiUser> userOptionSwitchOn(String option) async {
+  Future<ApiUser?> userOptionSwitchOn(String option) async {
     return userOptionSwitch(option: option, route: 'user.switchOn');
   }
 
   /// it will always switch the [option]:`off`
-  Future<ApiUser> userOptionSwitchOff(String option) async {
+  Future<ApiUser?> userOptionSwitchOff(String option) async {
     return userOptionSwitch(option: option, route: 'user.switchOff');
   }
 
@@ -544,13 +545,13 @@ class Api {
   ///   - load user profile data
   ///   - update app
   ///   - return user
-  Future<ApiUser> refreshProfile({String sessionId}) async {
+  Future<ApiUser?> refreshProfile({String? sessionId}) async {
     if (sessionId == null) sessionId = this.sessionId;
     profileLoading = true;
     final Map<String, dynamic> res = await request({'route': 'user.profile', 'sessionId': sessionId});
     user = ApiUser.fromJson(res);
     profileLoading = false;
-    _saveProfileAndNotify(user);
+    _saveProfileAndNotify(user!);
 
     return user;
   }
@@ -559,7 +560,7 @@ class Api {
   ///
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get same information from server.
-  Future<ApiUser> otherUserProfile({String idx, String email, String firebaseUid}) async {
+  Future<ApiUser> otherUserProfile({String? idx, String? email, String? firebaseUid}) async {
     final Map<String, dynamic> res = await request({
       'route': 'user.otherUserProfile',
       if (idx != null) 'idx': idx,
@@ -575,7 +576,7 @@ class Api {
   /// Refresh user profile
   ///
   /// It is a helper function of [userProfile].
-  Future<ApiUser> refreshUserProfile() {
+  Future<ApiUser?> refreshUserProfile() {
     return refreshProfile(sessionId: sessionId);
   }
 
@@ -586,13 +587,13 @@ class Api {
   /// If [post] is given, the id, category, title, content and files will be used from it instead.
   /// [post] 에 값이 있으면, 그 값을 사용한다.
   Future<ApiPost> editPost({
-    int id,
-    String category,
-    String title,
-    String content,
-    List<ApiFile> files,
-    Map<String, dynamic> data,
-    ApiPost post,
+    int? id,
+    String? category,
+    String? title,
+    String? content,
+    List<ApiFile>? files,
+    Map<String, dynamic>? data,
+    ApiPost? post,
   }) async {
     if (data == null) data = {};
     data['route'] = 'forum.editPost';
@@ -614,8 +615,8 @@ class Api {
       if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
-      if (post.files.length > 0) {
-        Set ids = post.files.map((file) => file.idx).toSet();
+      if (post.files!.length > 0) {
+        Set ids = post.files!.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     }
@@ -626,16 +627,16 @@ class Api {
 
   ///
   Future<ApiPost> postEdit({
-    String idx,
-    String relationIdx,
-    String categoryId,
-    String subcategory,
-    String title,
-    String content,
-    List<ApiFile> files,
-    String code,
-    Map<String, dynamic> data,
-    ApiPost post,
+    String? idx,
+    String? relationIdx,
+    String? categoryId,
+    String? subcategory,
+    String? title,
+    String? content,
+    List<ApiFile>? files,
+    String? code,
+    Map<String, dynamic>? data,
+    ApiPost? post,
   }) async {
     if (data == null) data = {};
 
@@ -665,8 +666,8 @@ class Api {
       if (post.title != null && post.title != '') data['title'] = post.title;
       if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.subcategory != null) data['subcategory'] = post.subcategory;
-      if (post.files.length > 0) {
-        Set ids = post.files.map((file) => file.idx).toSet();
+      if (post.files!.length > 0) {
+        Set ids = post.files!.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
       if (post.code != null && post.code != '') data['code'] = post.code;
@@ -679,10 +680,10 @@ class Api {
   @Deprecated('user commentEdit()')
   Future<ApiComment> editComment({
     content = '',
-    List<ApiFile> files,
-    @required ApiPost post,
-    ApiComment parent,
-    ApiComment comment,
+    List<ApiFile>? files,
+    required ApiPost post,
+    ApiComment? parent,
+    ApiComment? comment,
   }) async {
     final data = {
       'route': 'forum.editComment',
@@ -702,13 +703,13 @@ class Api {
 
   ///
   Future<ApiComment> commentEdit({
-    String idx,
-    String rootIdx,
-    String parentIdx,
-    String content,
-    List<ApiFile> files,
-    Map<String, dynamic> data,
-    ApiComment comment,
+    String? idx,
+    String? rootIdx,
+    String? parentIdx,
+    String? content,
+    List<ApiFile>? files,
+    Map<String, dynamic>? data,
+    ApiComment? comment,
   }) async {
     if (data == null) data = {};
 
@@ -723,8 +724,8 @@ class Api {
     data['files'] = '';
 
     if (comment != null) {
-      if (comment.files.length > 0) {
-        Set ids = comment.files.map((file) => file.idx).toSet();
+      if (comment.files!.length > 0) {
+        Set ids = comment.files!.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
       }
     } else {
@@ -768,8 +769,9 @@ class Api {
 
   /// Returns a post of today based on the categoryId and userIdx.
   /// 오늘 작성한 글을 가져온다.
-  Future<List<ApiPost>> postToday({@required String categoryId, String userIdx = '0', int limit = 10}) async {
-    final map = await request({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
+  Future<List<ApiPost>> postToday({required String categoryId, String userIdx = '0', int limit = 10}) async {
+    final map =
+        await request<List>({'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -779,7 +781,7 @@ class Api {
   }
 
   ///
-  Future<ApiCategory> categoryCreate({String id, String title = ''}) async {
+  Future<ApiCategory> categoryCreate({String? id, String title = ''}) async {
     final re = await request({'route': 'category.create', 'id': id, 'title': title});
     return ApiCategory.fromJson(re);
   }
@@ -789,7 +791,7 @@ class Api {
   /// The [data] is a map of key/value pair to save.
   /// You may save a value composing with [field] and [value].
   Future<ApiCategory> categoryUpdate(
-      {@required String id, String field, String value, Map<String, dynamic> data}) async {
+      {required String id, String? field, String? value, Map<String, dynamic>? data}) async {
     if (data == null) data = {};
 
     data['route'] = 'category.update';
@@ -831,13 +833,13 @@ class Api {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<String> postDelete(ApiPost post, [ApiForum forum]) async {
+  Future<String?> postDelete(ApiPost post, [ApiForum? forum]) async {
     final dynamic data = await request({
       'route': 'post.delete',
       'idx': post.idx,
     });
     if (forum != null) {
-      int i = forum.posts.indexWhere((p) => p.idx == post.idx);
+      int i = forum.posts.indexWhere((p) => p!.idx == post.idx);
       forum.posts.removeAt(i);
     }
     return data['idx'];
@@ -846,7 +848,7 @@ class Api {
   /// count post based on the condition
   ///
   ///
-  Future<String> postCount(String where) async {
+  Future<String?> postCount(String where) async {
     return await request({'route': 'post.count', 'where': where});
   }
 
@@ -856,13 +858,13 @@ class Api {
   /// [post] is the post of the comment.
   ///
   /// It returns deleted file id.
-  Future<String> commentDelete(ApiComment comment, ApiPost post) async {
+  Future<String?> commentDelete(ApiComment comment, ApiPost post) async {
     final dynamic data = await request({
       'route': 'comment.delete',
       'idx': comment.idx,
     });
-    int i = post.comments.indexWhere((c) => c.idx == comment.idx);
-    post.comments.removeAt(i);
+    int i = post.comments!.indexWhere((c) => c.idx == comment.idx);
+    post.comments!.removeAt(i);
     return data['idx'];
   }
 
@@ -873,12 +875,12 @@ class Api {
   /// You can use this to display some posts from the forum category. You may use this for displaying
   /// latest posts.
   Future<List<ApiPost>> searchPost({
-    int postIdOnTop,
-    String category,
+    int? postIdOnTop,
+    String? category,
     int limit = 20,
     int paged = 1,
-    String author,
-    String searchKey,
+    String? author,
+    String? searchKey,
   }) async {
     final Map<String, dynamic> data = {};
     data['route'] = 'forum.search';
@@ -911,21 +913,21 @@ class Api {
   ///   await api.postSearch(categoryIds: ['info', 'life', 'hobby', 'health'], photo: true, limit: 2, order: 'noOfComments', days: 30); // 30 동안, 사진이 있는 글 중에, 코멘트가 가장 많은 글 2 개
   ///
   Future<List<ApiPost>> postSearch({
-    String postOnTop,
-    String categoryId,
-    List<String> categoryIds,
-    String subcategory,
-    String code,
-    int limit = 20,
+    String? postOnTop,
+    String? categoryId,
+    List<String>? categoryIds,
+    String? subcategory,
+    String? code,
+    int? limit = 20,
     int page = 1,
-    String userIdx,
-    String relationIdx,
-    String searchKey = '',
+    String? userIdx,
+    String? relationIdx,
+    String? searchKey = '',
     bool photo = false,
-    String type,
+    String? type,
     String order = 'idx',
     String by = 'DESC',
-    int days,
+    int? days,
   }) async {
     // @todo throw error when both of categoryId and categoryIds have values.
     final Map<String, dynamic> data = {};
@@ -977,7 +979,7 @@ class Api {
 
   @Deprecated('Use commentSearch')
   Future<List<ApiComment>> searchComments({
-    String userIdx,
+    String? userIdx,
     int limit = 20,
     int page = 1,
     String order = 'DESC',
@@ -1005,9 +1007,9 @@ class Api {
   /// [files] 가 true 이면, 첨부 파일이 있는 코멘트만 가져온다.
   /// [files] 가 false 이면, 첨부 파일이 없는 코멘트만 가져온다.
   Future<List<ApiComment>> commentSearch({
-    String userIdx,
-    String categoryIdx,
-    bool files,
+    String? userIdx,
+    String? categoryIdx,
+    bool? files,
     int limit = 20,
     int page = 1,
     String order = 'DESC',
@@ -1034,7 +1036,7 @@ class Api {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String userIdx}) {
+  Future<List<ApiPost>> getPosts({String? category, int limit = 20, int paged = 1, String? userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
     return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }
@@ -1067,15 +1069,15 @@ class Api {
   }
 
   Future<ApiFile> uploadFile({
-    File file,
-    Uint8List bytes,
-    Function onProgress,
+    File? file,
+    Uint8List? bytes,
+    Function? onProgress,
     bool deletePreviousUpload = false,
     String taxonomy = '',
     int entity = 0,
     String code = '',
   }) async {
-    Prefix.FormData formData;
+    Prefix.FormData? formData;
     if (file != null) {
       /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
       formData = Prefix.FormData.fromMap({
@@ -1144,13 +1146,13 @@ class Api {
   /// [deletePreviousUpload] 가 true 이면, 기존에 업로드된 동일한 taxonomy 와 entity 파일을 삭제한다.
   ///
   Future<ApiFile> takeUploadFile({
-    @required ImageSource source,
+    required ImageSource source,
     int quality = 90,
     bool deletePreviousUpload = false,
     String taxonomy = '',
     int entity = 0,
     String code = '',
-    @required Function onProgress,
+    required Function? onProgress,
   }) async {
     /// Pick image
     final picker = ImagePicker();
@@ -1173,10 +1175,10 @@ class Api {
       );
     } else {
       // If it's mobile.
-      File file;
+      File? file;
       // If there is image compressor (mostly only mobile.)
       if (imageCompressor != null) {
-        file = await imageCompressor(pickedFile.path, quality);
+        file = await imageCompressor!(pickedFile.path, quality);
       } else {
         // if there is no compresstor.
         file = File(pickedFile.path);
@@ -1203,13 +1205,13 @@ class Api {
   /// file will be removed from the `files` array after deletion.
   ///
   /// It returns deleted file id.
-  Future<int> deleteFile(String idx, {dynamic postOrComment}) async {
+  Future<int> deleteFile(String? idx, {dynamic postOrComment}) async {
     final dynamic data = await request({
       'route': 'file.delete',
       'idx': idx,
     });
     if (postOrComment != null) {
-      int i = postOrComment.files.indexWhere((file) => file.idx == idx);
+      int? i = postOrComment.files.indexWhere((file) => file.idx == idx);
       postOrComment.files.removeAt(i);
     }
     return int.parse("${data['idx']}");
@@ -1232,7 +1234,7 @@ class Api {
     if (forum.post != null && forum.posts.length == 0) {
       //
       forum.posts.add(forum.post);
-      forum.render();
+      forum.render!();
     }
 
     if (forum.canLoad == false) {
@@ -1243,7 +1245,7 @@ class Api {
       return;
     }
     forum.loading = true;
-    forum.render();
+    forum.render!();
 
     List<ApiPost> _posts;
     _posts = await postSearch(
@@ -1259,20 +1261,20 @@ class Api {
     );
 
     // No more posts if it loads less than `forum.list` or even it loads 0 posts.
-    if (_posts.length < forum.limit) {
+    if (_posts.length < forum.limit!) {
       forum.noMorePosts = true;
       forum.loading = false;
     }
 
     _posts.forEach((ApiPost p) {
       // Don't show same post twice if forum.post is set.
-      if (forum.post != null && forum.post.idx == p.idx) return;
+      if (forum.post != null && forum.post!.idx == p.idx) return;
 
       forum.posts.add(p);
     });
 
     forum.loading = false;
-    forum.render();
+    forum.render!();
   }
 
   /// Return true if there is no problem on user's profile or throws an error.
@@ -1304,11 +1306,11 @@ class Api {
   /// Save token to backend.
   ///
   /// `session_id` will be added if the user had logged in.
-  Future updateToken(String token, {String topic = ''}) {
+  Future updateToken(String? token, {String topic = ''}) {
     return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
-  sendMessageToTokens({String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTokens({String? tokens, String? title, String? body, Map<String, dynamic>? data, String? imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1320,7 +1322,7 @@ class Api {
     return request(req);
   }
 
-  sendMessageToTopic({String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
+  sendMessageToTopic({String? topic, String? title, String? body, Map<String, dynamic>? data, String? imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1333,12 +1335,12 @@ class Api {
   }
 
   Future<dynamic> sendPushNotificationToUsers(
-      {List<String> users,
-      String subscription,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {List<String>? users,
+      String? subscription,
+      String? title,
+      String? body,
+      Map<String, dynamic>? data,
+      String? imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToUsers',
       'users': users,
@@ -1369,7 +1371,7 @@ class Api {
     return request(req);
   }
 
-  Future<ApiUser> subscribeOrUnsubscribeTopic(String topic) {
+  Future<ApiUser?> subscribeOrUnsubscribeTopic(String? topic) {
     return subscribeOrUnsubscribe(
       route: 'notification.topicSubscription',
       topic: topic,
@@ -1377,14 +1379,14 @@ class Api {
   }
 
   /// @todo change method name.
-  Future<ApiUser> subscribeOrUnsubscribe({String route, String topic}) async {
+  Future<ApiUser?> subscribeOrUnsubscribe({String? route, String? topic}) async {
     Map<String, dynamic> req = {
       'route': route,
       'topic': topic,
     };
     final res = await request(req);
     user = ApiUser.fromJson(res);
-    await _saveProfileAndNotify(user);
+    await _saveProfileAndNotify(user!);
     return user;
   }
 
@@ -1440,10 +1442,10 @@ class Api {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied!();
           break;
         case AuthorizationStatus.notDetermined:
-          if (onNotificationPermissionNotDetermined != null) onNotificationPermissionNotDetermined();
+          if (onNotificationPermissionNotDetermined != null) onNotificationPermissionNotDetermined!();
           break;
         case AuthorizationStatus.provisional:
           break;
@@ -1451,17 +1453,17 @@ class Api {
     }
 
     // Handler, when app is on Foreground.
-    FirebaseMessaging.onMessage.listen(onForegroundMessage);
+    FirebaseMessaging.onMessage.listen(onForegroundMessage as void Function(RemoteMessage)?);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      onMessageOpenedFromTermiated(initialMessage);
+      onMessageOpenedFromTermiated!(initialMessage);
     }
 
     // Check if the app is opened from the background state.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      onMessageOpenedFromBackground(message);
+      onMessageOpenedFromBackground!(message);
     });
 
     // Get the token each time the application loads and save it to database.
@@ -1481,7 +1483,7 @@ class Api {
 
   /// Save the token to backend.
   ///
-  Future _saveTokenToDatabase(String token) {
+  Future _saveTokenToDatabase(String? token) {
     this.token = token;
     return updateToken(token);
   }
@@ -1510,8 +1512,8 @@ class Api {
   /// The [code] is the code of the file.code, It can display a photo by the first image of the code.
   /// 주의할 점은 [code] 를 사용하는 경우, 이미지 캐시를 하면, 새로 업로드를 해도, 캐시된 이미지가 변경되지 않을 수 있다. 이와 같은 경우, [src] 에 파일 번호를 사용하는 것이 좋다.
   String thumbnailUrl({
-    String src,
-    String code,
+    String? src,
+    String? code,
     int width = 320,
     int height = 320,
     int quality = 75,
@@ -1577,23 +1579,23 @@ class Api {
   ///   if (e != ERROR_ALREADY_ADDED_AS_FRIEND) app.error(e);
   /// }
   /// ```
-  Future<ApiFriend> addFriend({@required String otherIdx}) {
+  Future<ApiFriend> addFriend({required String otherIdx}) {
     return request({'route': 'friend.add', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
-  Future<ApiFriend> deleteFriend({@required String otherIdx}) {
+  Future<ApiFriend> deleteFriend({required String otherIdx}) {
     return request({'route': 'friend.delete', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
-  Future<ApiFriend> blockFriend({@required String otherIdx}) {
+  Future<ApiFriend> blockFriend({required String otherIdx}) {
     return request({'route': 'friend.block', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
-  Future<ApiFriend> unblockFriend({@required String otherIdx}) {
+  Future<ApiFriend> unblockFriend({required String otherIdx}) {
     return request({'route': 'friend.unblock', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
-  Future<ApiFriend> friendRelationship({@required String otherIdx}) {
+  Future<ApiFriend> friendRelationship({required String otherIdx}) {
     return request({'route': 'friend.relationship', 'otherIdx': otherIdx}).then((value) => ApiFriend.fromMap(value));
   }
 
@@ -1607,11 +1609,11 @@ class Api {
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
   }
 
-  Future<String> userHeart() async {
+  Future<String?> userHeart() async {
     return await request({'route': 'user.heart'});
   }
 
-  Future<List<ApiShortUser>> userSearch({String name}) async {
+  Future<List<ApiShortUser>> userSearch({String? name}) async {
     final res = await request({'route': 'user.search', 'name': name});
     List<ApiShortUser> users = [];
     for (final user in res) {
@@ -1620,7 +1622,7 @@ class Api {
     return users;
   }
 
-  Future<int> pointMove({String postIdx, String point}) async {
+  Future<int?> pointMove({String? postIdx, String? point}) async {
     final res = await request({'route': 'point.move', 'postIdx': postIdx, 'point': point});
     return res['logIdx'];
   }

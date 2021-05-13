@@ -13,10 +13,10 @@ class PostContent extends StatelessWidget {
     this.padding = const EdgeInsets.only(bottom: Space.sm),
   });
 
-  final ApiForum forum;
-  final ApiPost post;
-  final int maxLines;
-  final TextOverflow overflow;
+  final ApiForum? forum;
+  final ApiPost? post;
+  final int? maxLines;
+  final TextOverflow? overflow;
   final TextStyle style;
   final EdgeInsets padding;
 
@@ -26,14 +26,14 @@ class PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (buildFor == 'view' && (post.content == null || post.content.isEmpty)) return SizedBox.shrink();
+    if (buildFor == 'view' && (post!.content == null || post!.content!.isEmpty)) return SizedBox.shrink();
 
-    return forum.postContentBuilder != null
-        ? forum.postContentBuilder(forum, post, buildFor)
+    return forum!.postContentBuilder != null
+        ? forum!.postContentBuilder!(forum, post, buildFor)
         : Padding(
             padding: padding,
             child: Text(
-              '${post.content}',
+              '${post!.content}',
               key: ValueKey(FirelampKeys.element.postContent),
               style: style,
               maxLines: maxLines,

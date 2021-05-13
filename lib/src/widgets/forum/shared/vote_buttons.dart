@@ -14,10 +14,10 @@ class VoteButtons extends StatefulWidget {
   });
   final ApiForum forum;
   final dynamic postOrComment;
-  final Function onSuccess;
-  final Function onError;
-  final Widget likeIcon;
-  final Widget dislikeIcon;
+  final Function? onSuccess;
+  final Function? onError;
+  final Widget? likeIcon;
+  final Widget? dislikeIcon;
 
   @override
   _VoteButtonsState createState() => _VoteButtonsState();
@@ -25,20 +25,20 @@ class VoteButtons extends StatefulWidget {
 
 class _VoteButtonsState extends State<VoteButtons> {
   onVote(String choice) async {
-    if (Api.instance.notLoggedIn) return widget.onError('login_first'.tr);
+    if (Api.instance!.notLoggedIn) return widget.onError!('login_first'.tr);
 
     try {
-      final re = await Api.instance.vote(widget.postOrComment, choice);
+      final re = await Api.instance!.vote(widget.postOrComment, choice);
       onVoteSuccess(re);
     } catch (e) {
-      if (widget.onError != null) widget.onError(e);
+      if (widget.onError != null) widget.onError!(e);
     }
   }
 
   onVoteSuccess(dynamic re) {
     widget.postOrComment.y = re.y;
     widget.postOrComment.n = re.n;
-    if (widget.onSuccess != null) widget.onSuccess();
+    if (widget.onSuccess != null) widget.onSuccess!();
     setState(() {});
   }
 
@@ -56,7 +56,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                       child: Row(
                         children: [
                           widget.likeIcon != null
-                              ? widget.likeIcon
+                              ? widget.likeIcon!
                               : Icon(
                                   Icons.thumb_up_alt_outlined,
                                   color: Color(0xff8cff82),
@@ -85,7 +85,7 @@ class _VoteButtonsState extends State<VoteButtons> {
                       child: Row(
                         children: [
                           widget.dislikeIcon != null
-                              ? widget.dislikeIcon
+                              ? widget.dislikeIcon!
                               : Icon(Icons.thumb_down_outlined, color: Color(0xffff7575), size: 20),
                           if ("${widget.postOrComment.n}".toInt > 0) ...[
                             SizedBox(width: Space.xs),

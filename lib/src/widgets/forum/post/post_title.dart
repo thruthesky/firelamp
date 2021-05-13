@@ -12,10 +12,10 @@ class PostTitle extends StatelessWidget {
     this.padding = const EdgeInsets.only(bottom: Space.sm),
   });
 
-  final ApiForum forum;
-  final ApiPost post;
-  final int maxLines;
-  final TextOverflow overflow;
+  final ApiForum? forum;
+  final ApiPost? post;
+  final int? maxLines;
+  final TextOverflow? overflow;
   final TextStyle style;
   final EdgeInsets padding;
 
@@ -25,14 +25,14 @@ class PostTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (buildFor == 'view' && (post.title == null || post.title.isEmpty)) return SizedBox.shrink();
+    if (buildFor == 'view' && (post!.title == null || post!.title!.isEmpty)) return SizedBox.shrink();
 
-    return forum.postTitleBuilder != null
-        ? forum.postTitleBuilder(forum, post, buildFor)
+    return forum!.postTitleBuilder != null
+        ? forum!.postTitleBuilder!(forum, post, buildFor)
         : Padding(
             padding: padding,
             child: Text(
-              '${post.title}',
+              '${post!.title}',
               key: ValueKey(FirelampKeys.element.postTitle),
               style: style,
               maxLines: maxLines,

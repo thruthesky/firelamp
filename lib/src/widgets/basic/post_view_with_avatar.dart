@@ -8,14 +8,14 @@ class PostViewWithAvatar extends StatefulWidget {
     this.actions = const [],
     this.onTap,
     this.onError,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
-  final ApiPost post;
-  final ApiForum forum;
+  final ApiPost? post;
+  final ApiForum? forum;
   final List<Widget> actions;
-  final Function onTap;
-  final Function onError;
+  final Function? onTap;
+  final Function? onError;
 
   @override
   _PostViewWithAvatarState createState() => _PostViewWithAvatarState();
@@ -31,15 +31,15 @@ class _PostViewWithAvatarState extends State<PostViewWithAvatar> {
           widget.post,
           onTap: widget.onTap,
         ),
-        if (widget.post.display) DisplayContent(widget.post),
-        if (widget.post.display) Row(children: widget.actions),
-        if (widget.post.display)
+        if (widget.post!.display) DisplayContent(widget.post),
+        if (widget.post!.display) Row(children: widget.actions),
+        if (widget.post!.display)
           CommentForm(
             comment: ApiComment(),
             post: widget.post,
             forum: widget.forum,
           ),
-        if (widget.post.display)
+        if (widget.post!.display)
           CommentList(
             post: widget.post,
             forum: widget.forum,
@@ -52,7 +52,7 @@ class _PostViewWithAvatarState extends State<PostViewWithAvatar> {
 
 class DisplayContent extends StatelessWidget {
   const DisplayContent(this.post);
-  final ApiPost post;
+  final ApiPost? post;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,9 +62,9 @@ class DisplayContent extends StatelessWidget {
             padding: EdgeInsets.all(Space.sm),
             width: double.infinity,
             // color: Colors.grey[100],
-            child: Text(post.content),
+            child: Text(post!.content!),
           ),
-          if (post.files.length > 0) DisplayFiles(postOrComment: post),
+          if (post!.files!.length > 0) DisplayFiles(postOrComment: post),
           Divider(thickness: 1.3),
         ],
       ),

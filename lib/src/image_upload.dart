@@ -8,13 +8,13 @@ import 'package:image_picker/image_picker.dart';
 /// [onProgress] will be called many times with percentage value.
 Future<ApiFile> imageUpload({
   int quality = 90,
-  Function onProgress,
+  Function? onProgress,
   String taxonomy = '',
   int entity = 0,
   String code = '',
   bool deletePreviousUpload = false,
 }) async {
-  ImageSource re = await Get.bottomSheet(
+  ImageSource? re = await Get.bottomSheet(
     Container(
       color: Colors.white,
       child: SafeArea(
@@ -38,7 +38,7 @@ Future<ApiFile> imageUpload({
   if (re == null) throw ERROR_IMAGE_NOT_SELECTED;
 
   print('code: $code in function.dart::imageUpload');
-  return Api.instance.takeUploadFile(
+  return Api.instance!.takeUploadFile(
     source: re,
     quality: quality,
     onProgress: onProgress,

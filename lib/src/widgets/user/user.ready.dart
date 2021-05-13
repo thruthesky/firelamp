@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 
 class UserReady extends StatelessWidget {
   UserReady({this.login, this.logout});
-  final Widget login;
-  final Widget logout;
+  final Widget? login;
+  final Widget? logout;
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: Api.instance.profileChanges,
+        stream: Api.instance!.profileChanges,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
-          ApiUser user = snapshot.data;
+          ApiUser? user = snapshot.data as ApiUser?;
           if (user == null) {
-            return this.logout;
+            return this.logout!;
           } else {
-            return this.login;
+            return this.login!;
           }
         });
   }

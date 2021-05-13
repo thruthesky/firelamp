@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class DisplayFiles extends StatelessWidget {
   const DisplayFiles({
-    Key key,
+    Key? key,
     this.postOrComment,
     this.displayedImage = 4,
   }) : super(key: key);
@@ -13,9 +13,9 @@ class DisplayFiles extends StatelessWidget {
   final dynamic postOrComment;
   final int displayedImage;
 
-  int get moreImage => postOrComment.files.length - displayedImage;
+  int? get moreImage => postOrComment.files.length - displayedImage;
 
-  onImageTap(String idx) {
+  onImageTap(String? idx) {
     final i = postOrComment.files.indexWhere((file) => file.idx == idx);
     Get.dialog(AppPhotoViewer(postOrComment.files, initialIndex: i));
   }
@@ -25,12 +25,12 @@ class DisplayFiles extends StatelessWidget {
 
     return ClipRRect(
       child: GestureDetector(
-        child: moreImage > 0
+        child: moreImage! > 0
             ? Stack(
                 fit: StackFit.expand,
                 children: [
                   image,
-                  if (moreImage > 0 && withMoreImageOverlay)
+                  if (moreImage! > 0 && withMoreImageOverlay)
                     Container(
                       color: Color.fromARGB(100, 0, 0, 0),
                       child: Row(
@@ -55,7 +55,7 @@ class DisplayFiles extends StatelessWidget {
   }
 
   Widget _gridBuilder({bool hideFirstImage = false}) {
-    List<ApiFile> _files = hideFirstImage
+    List<ApiFile>? _files = hideFirstImage
         ? postOrComment.files.getRange(1, postOrComment.files.length).toList()
         : postOrComment.files;
 
@@ -70,7 +70,7 @@ class DisplayFiles extends StatelessWidget {
                   child: (index + 1) > 4
                       ? SizedBox.shrink()
                       : _imageBuilder(
-                          _files[index],
+                          _files![index],
                           withMoreImageOverlay: (index + 1) == (displayedImage - 1),
                         ),
                 ),
@@ -89,14 +89,14 @@ class DisplayFiles extends StatelessWidget {
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 4.0,
             children: [
-              for (ApiFile file in _files) _imageBuilder(file),
+              for (ApiFile file in _files!) _imageBuilder(file),
             ],
           );
   }
 
   @override
   Widget build(BuildContext context) {
-    int filesLength = postOrComment.files.length;
+    int? filesLength = postOrComment.files.length;
 
     if (filesLength == 0) return SizedBox.shrink();
     // if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
@@ -116,7 +116,7 @@ class DisplayFiles extends StatelessWidget {
             ),
             SizedBox(height: 4.0),
           ],
-          if (filesLength > 1) _gridBuilder(hideFirstImage: filesLength == 3),
+          if (filesLength! > 1) _gridBuilder(hideFirstImage: filesLength == 3),
         ],
       ),
     );

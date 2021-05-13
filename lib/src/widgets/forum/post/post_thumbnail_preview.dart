@@ -2,20 +2,20 @@ import 'package:firelamp/firelamp.dart';
 import 'package:flutter/cupertino.dart';
 
 class PostThumbnailPreview extends StatelessWidget {
-  PostThumbnailPreview(this.post, this.forum, {this.onTap, this.avatarBuilder, Key key})
+  PostThumbnailPreview(this.post, this.forum, {this.onTap, this.avatarBuilder, Key? key})
       : super(key: key);
 
   final ApiPost post;
   final ApiForum forum;
-  final Function onTap;
-  final Function avatarBuilder;
+  final Function? onTap;
+  final Function? avatarBuilder;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       // key: key,
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       child: Column(
         children: [
           Row(
@@ -27,14 +27,14 @@ class PostThumbnailPreview extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: CachedImage(post.files[0].url, width: 100, height: 80),
+                      child: CachedImage(post.files![0].url, width: 100, height: 80),
                     ),
                     Positioned(
                         left: 10,
                         top: -15,
                         child: avatarBuilder != null
-                            ? avatarBuilder(post, 40.0)
-                            : UserAvatar(post.user.photoUrl, size: 40)),
+                            ? avatarBuilder!(post, 40.0)
+                            : UserAvatar(post.user!.photoUrl, size: 40)),
                   ],
                 ),
                 SizedBox(width: Space.xsm),
@@ -46,15 +46,15 @@ class PostThumbnailPreview extends StatelessWidget {
                       children: [
                         if (!post.hasFiles) ...[
                           avatarBuilder != null
-                              ? avatarBuilder(post, 65.0)
-                              : UserAvatar(post.user.photoUrl, size: 65),
+                              ? avatarBuilder!(post, 65.0)
+                              : UserAvatar(post.user!.photoUrl, size: 65),
                           SizedBox(width: Space.xsm),
                         ],
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(post.user.nicknameOrName),
+                              Text(post.user!.nicknameOrName!),
                               // forum.postTitleBuilder != null
                               //     ? forum.postTitleBuilder(forum, post, 'list')
                               //     : Text(

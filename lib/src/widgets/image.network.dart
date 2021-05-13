@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
@@ -8,13 +7,13 @@ class ImageNetwork extends StatefulWidget {
     this.url, {
     this.width,
     this.height,
-    @required this.onImageRenderComplete,
-  }) : assert(url != null);
+    required this.onImageRenderComplete,
+  });
 
   final String url;
-  final double width;
-  final double height;
-  final Function onImageRenderComplete;
+  final double? width;
+  final double? height;
+  final Function? onImageRenderComplete;
 
   @override
   _ImageNetworkState createState() => _ImageNetworkState();
@@ -22,9 +21,9 @@ class ImageNetwork extends StatefulWidget {
 
 class _ImageNetworkState extends State<ImageNetwork> {
   bool _loading = true;
-  Image _image;
+  late Image _image;
   bool error = false;
-  ImageStreamListener listener;
+  late ImageStreamListener listener;
 
   @override
   void initState() {
@@ -39,7 +38,7 @@ class _ImageNetworkState extends State<ImageNetwork> {
         _loading = false;
         if (widget.onImageRenderComplete != null) {
           // print('completed!');
-          widget.onImageRenderComplete();
+          widget.onImageRenderComplete!();
           stream.removeListener(listener);
         }
       });

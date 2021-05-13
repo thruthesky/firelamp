@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 class ApiFriend {
-  final String idx;
-  final String myIdx;
-  final String otherIdx;
-  final String block;
-  final String reason;
-  final String createdAt;
-  final String updatedAt;
+  final String? idx;
+  final String? myIdx;
+  final String? otherIdx;
+  final String? block;
+  final String? reason;
+  final String? createdAt;
+  final String? updatedAt;
   ApiFriend({
     this.idx,
     this.myIdx,
@@ -19,13 +19,13 @@ class ApiFriend {
   });
 
   ApiFriend copyWith({
-    String idx,
-    String myIdx,
-    String otherIdx,
-    String block,
-    String reason,
-    String createdAt,
-    String updatedAt,
+    String? idx,
+    String? myIdx,
+    String? otherIdx,
+    String? block,
+    String? reason,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return ApiFriend(
       idx: idx ?? this.idx,

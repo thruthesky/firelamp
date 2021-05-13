@@ -10,7 +10,7 @@ class PushNotificationIcon extends StatefulWidget {
 }
 
 class _PushNotificationIconState extends State<PushNotificationIcon> {
-  final api = Api.instance;
+  final Api api = Api.instance as Api;
 
   bool loading = true;
 
@@ -45,7 +45,7 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                       child: Row(
                         children: [
                           Icon(
-                            api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId))
+                            api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId!))
                                 ? Icons.notifications_on
                                 : Icons.notifications_off,
                             color: Colors.blue,
@@ -59,8 +59,7 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                         child: Row(
                           children: [
                             Icon(
-                              api.isSubscribeTopic(
-                                      NotificationOptions.comment(widget.forum.categoryId))
+                              api.isSubscribeTopic(NotificationOptions.comment(widget.forum.categoryId!))
                                   ? Icons.notifications_on
                                   : Icons.notifications_off,
                               color: Colors.blue,
@@ -73,13 +72,13 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
                   icon: Icon(Icons.notifications),
                   onSelected: onNotificationSelected,
                 ),
-                if (api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId)))
+                if (api.isSubscribeTopic(NotificationOptions.post(widget.forum.categoryId!)))
                   Positioned(
                     top: 15,
                     left: 5,
                     child: Icon(Icons.comment, size: Space.xsm, color: Colors.greenAccent),
                   ),
-                if (api.isSubscribeTopic(NotificationOptions.comment(widget.forum.categoryId)))
+                if (api.isSubscribeTopic(NotificationOptions.comment(widget.forum.categoryId!)))
                   Positioned(
                     top: 15,
                     right: 5,
@@ -98,21 +97,21 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
 
     /// Show spinner
     setState(() => loading = true);
-    String topic;
+    String? topic;
     String title = "Notification";
     if (selection == 'post') {
-      topic = NotificationOptions.post(widget.forum.categoryId);
+      topic = NotificationOptions.post(widget.forum.categoryId!);
       title = 'Post ' + title;
     } else if (selection == 'comment') {
-      topic = NotificationOptions.comment(widget.forum.categoryId);
+      topic = NotificationOptions.comment(widget.forum.categoryId!);
       title = 'Comment ' + title;
     }
 
-    final ApiUser res = await api.subscribeOrUnsubscribeTopic(topic);
+    final ApiUser res = await api.subscribeOrUnsubscribeTopic(topic) as ApiUser;
 
     /// Show spinner
     setState(() => loading = false);
-    String msg = res.data[topic] == 'on' ? 'Subscribed' : 'Unsubscribed';
+    String msg = res.data[topic!] == 'on' ? 'Subscribed' : 'Unsubscribed';
     Get.snackbar(title, msg);
   }
 }

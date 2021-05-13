@@ -5,7 +5,7 @@ import 'package:firelamp/firelamp.dart';
 class LoginFirstScaffold extends StatefulWidget {
   LoginFirstScaffold({this.title = 'Login', this.endDrawer});
   final String title;
-  final Widget endDrawer;
+  final Widget? endDrawer;
   @override
   _LoginFirstScaffoldState createState() => _LoginFirstScaffoldState();
 }

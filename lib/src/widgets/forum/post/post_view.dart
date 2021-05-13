@@ -3,7 +3,7 @@ import 'package:firelamp/firelamp.dart';
 
 class PostView extends StatefulWidget {
   const PostView({
-    Key key,
+    Key? key,
     this.post,
     this.forum,
     this.avatarBuilder,
@@ -12,18 +12,18 @@ class PostView extends StatefulWidget {
     this.onError,
   }) : super(key: key);
 
-  final ApiForum forum;
-  final ApiPost post;
+  final ApiForum? forum;
+  final ApiPost? post;
 
   // final List<Widget> actions;
-  final Function onError;
+  final Function? onError;
   final bool open;
 
   /// Move avatarBuilder to [ApiForum]. This is a common widget for post and comment.
-  final Function avatarBuilder;
+  final Function? avatarBuilder;
 
   /// Move nameBuilder to [ApiForum]. This is a common widget for post and comment.
-  final Function nameBuilder;
+  final Function? nameBuilder;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -32,7 +32,7 @@ class PostView extends StatefulWidget {
 class _PostViewState extends State<PostView> {
   bool get showContent {
     if (widget.open) return true;
-    if (widget.post.display) return true;
+    if (widget.post!.display) return true;
     return false;
   }
 
@@ -44,14 +44,14 @@ class _PostViewState extends State<PostView> {
         Row(
           children: [
             widget.avatarBuilder == null
-                ? UserAvatar(widget.post.user.photoUrl)
-                : widget.avatarBuilder(widget.post),
+                ? UserAvatar(widget.post!.user!.photoUrl)
+                : widget.avatarBuilder!(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  widget.nameBuilder == null ? name : widget.nameBuilder(widget.post),
+                  widget.nameBuilder == null ? name : widget.nameBuilder!(widget.post),
                   SizedBox(height: Space.xs),
                   PostMeta(widget.post, widget.forum),
                 ],
@@ -64,8 +64,8 @@ class _PostViewState extends State<PostView> {
         PostContent(widget.post, widget.forum, buildFor: 'view'),
         DisplayFiles(postOrComment: widget.post),
         Divider(height: Space.xs),
-        if (widget.forum.postBottomBuilder != null) widget.forum.postBottomBuilder(widget.post),
-        if (widget.forum.postButtonBuilder != null) widget.forum.postButtonBuilder(widget.post),
+        if (widget.forum!.postBottomBuilder != null) widget.forum!.postBottomBuilder!(widget.post),
+        if (widget.forum!.postButtonBuilder != null) widget.forum!.postButtonBuilder!(widget.post),
         CommentForm(
           post: widget.post,
           forum: widget.forum,
@@ -85,7 +85,7 @@ class _PostViewState extends State<PostView> {
 
   Widget get name {
     return Text(
-      '${widget.post.user.name.isNotEmpty ? widget.post.user.name : 'No name'}',
+      '${widget.post!.user!.name!.isNotEmpty ? widget.post!.user!.name : 'No name'}',
       style: TextStyle(fontWeight: FontWeight.w500),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

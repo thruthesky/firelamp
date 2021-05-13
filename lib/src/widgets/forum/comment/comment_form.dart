@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 
 class CommentForm extends StatefulWidget {
   const CommentForm({
-    Key key,
-    @required this.post,
+    Key? key,
+    required this.post,
     this.parent,
     this.comment,
-    @required this.forum,
+    required this.forum,
     this.onError,
     this.onSuccess,
     this.onCancel,
@@ -17,14 +17,14 @@ class CommentForm extends StatefulWidget {
   }) : super(key: key);
 
   /// post of the comment
-  final ApiPost post;
-  final ApiComment parent;
-  final ApiComment comment;
-  final ApiForum forum;
-  final Function onError;
-  final Function onSuccess;
-  final Function onCancel;
-  final int index;
+  final ApiPost? post;
+  final ApiComment? parent;
+  final ApiComment? comment;
+  final ApiForum? forum;
+  final Function? onError;
+  final Function? onSuccess;
+  final Function? onCancel;
+  final int? index;
   final String commentFormKeyFix;
 
   @override
@@ -39,11 +39,11 @@ class _CommentFormState extends State<CommentForm> {
   /// Attention, the reason why it has a copy in state class is because
   /// when the app does hot reload(in development mode), the state disappears
   /// (like when file is uploaded and it disappears on hot reload).
-  ApiComment comment;
+  ApiComment? comment;
 
   bool loading = false;
 
-  bool get canSubmit => (content.text != '' || comment.files.isNotEmpty) && !loading;
+  bool get canSubmit => (content.text != '' || comment!.files!.isNotEmpty) && !loading;
   double percentage = 0;
 
   // file upload
@@ -56,7 +56,7 @@ class _CommentFormState extends State<CommentForm> {
         onProgress: (p) => setState(() => percentage = p),
       );
       percentage = 0;
-      comment.files.add(file);
+      comment!.files!.add(file);
       setState(() => null);
     } catch (e) {
       if (e == ERROR_IMAGE_NOT_SELECTED) {
@@ -68,10 +68,10 @@ class _CommentFormState extends State<CommentForm> {
 
   // form submit
   onFormSubmit() async {
-    if (Api.instance.notLoggedIn) return onError("login_first".tr);
+    if (Api.instance!.notLoggedIn) return onError("login_first".tr);
 
-    if (widget.forum.commentCanEdit != null) {
-      if (widget.forum.commentCanEdit() == false) {
+    if (widget.forum!.commentCanEdit != null) {
+      if (widget.forum!.commentCanEdit!() == false) {
         return;
       }
     }
@@ -81,24 +81,24 @@ class _CommentFormState extends State<CommentForm> {
     FocusScope.of(context).requestFocus(FocusNode());
 
     try {
-      final editedComment = await Api.instance.commentEdit(
+      final editedComment = await Api.instance!.commentEdit(
         idx: comment?.idx,
         content: content.text,
-        rootIdx: widget.post.idx,
-        parentIdx: widget.parent != null ? widget.parent.idx : widget.post.idx,
+        rootIdx: widget.post!.idx,
+        parentIdx: widget.parent != null ? widget.parent!.idx : widget.post!.idx,
         comment: comment,
-        files: comment.files,
+        files: comment!.files,
       );
 
-      widget.post.insertOrUpdateComment(editedComment);
+      widget.post!.insertOrUpdateComment(editedComment);
       content.text = '';
-      comment.files = [];
+      comment!.files = [];
       loading = false;
-      if (widget.parent != null) widget.parent.mode = CommentMode.none;
-      if (widget.comment != null) comment.mode = CommentMode.none;
+      if (widget.parent != null) widget.parent!.mode = CommentMode.none;
+      if (widget.comment != null) comment!.mode = CommentMode.none;
       setState(() => null);
-      if (widget.forum.render != null) widget.forum.render();
-      if (widget.onSuccess != null) widget.onSuccess();
+      if (widget.forum!.render != null) widget.forum!.render!();
+      if (widget.onSuccess != null) widget.onSuccess!();
     } catch (e) {
       setState(() => loading = false);
       onError(e);
@@ -107,7 +107,7 @@ class _CommentFormState extends State<CommentForm> {
 
   onError(dynamic e) {
     if (widget.onError != null) {
-      widget.onError(e);
+      widget.onError!(e);
     }
   }
 
@@ -115,7 +115,7 @@ class _CommentFormState extends State<CommentForm> {
   void initState() {
     super.initState();
     comment = widget.comment;
-    content.text = comment.content;
+    content.text = comment!.content!;
   }
 
   @override
@@ -131,7 +131,7 @@ class _CommentFormState extends State<CommentForm> {
                   alignment: Alignment.center,
                   constraints: BoxConstraints(maxWidth: Space.md),
                   icon: Icon(Icons.close),
-                  onPressed: widget.onCancel,
+                  onPressed: widget.onCancel as void Function()?,
                   padding: EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
                 ),
               IconButton(

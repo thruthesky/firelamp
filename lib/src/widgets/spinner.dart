@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class Spinner extends StatelessWidget {
   const Spinner({
-    Key key,
+    Key? key,
     this.size = 24,
     this.loading = true,
     this.centered = true,
@@ -18,7 +18,7 @@ class Spinner extends StatelessWidget {
   final bool loading;
   final bool centered;
   final Color valueColor;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class Spinner extends StatelessWidget {
     );
 
     if (padding != null) {
-      spinner = Padding(padding: padding, child: spinner);
+      spinner = Padding(padding: padding!, child: spinner);
     }
 
     return centered ? Center(child: spinner) : spinner;

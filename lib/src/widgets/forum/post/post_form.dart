@@ -11,9 +11,9 @@ class PostForm extends StatefulWidget {
     this.onError,
   });
   final ApiForum forum;
-  final Function onSuccess;
-  final Function onCancel;
-  final Function onError;
+  final Function? onSuccess;
+  final Function? onCancel;
+  final Function? onError;
   final List<String> subcategories;
 
   @override
@@ -25,9 +25,9 @@ class _PostFormState extends State<PostForm> {
   final content = TextEditingController();
   double percentage = 0;
   bool loading = false;
-  ApiPost post;
-  List<String> categories;
-  String category;
+  ApiPost? post;
+  List<String>? categories;
+  String? category;
 
   InputDecoration _inputDecoration = InputDecoration(
     filled: true,
@@ -50,7 +50,7 @@ class _PostFormState extends State<PostForm> {
         ),
       );
       percentage = 0;
-      post.files.add(file);
+      post!.files!.add(file);
       setState(() => null);
     } catch (e) {
       if (e == ERROR_IMAGE_NOT_SELECTED) {
@@ -64,19 +64,19 @@ class _PostFormState extends State<PostForm> {
     if (loading) return;
     setState(() => loading = true);
 
-    if (Api.instance.notLoggedIn) return onError("login_first".tr);
+    if (Api.instance!.notLoggedIn) return onError("login_first".tr);
     try {
-      final editedPost = await Api.instance.postEdit(
-        idx: post.idx,
+      final editedPost = await Api.instance!.postEdit(
+        idx: post!.idx,
         categoryId: widget.forum.categoryId,
         subcategory: widget.forum.subcategory,
         title: title.text,
         content: content.text,
-        files: post.files,
+        files: post!.files,
       );
       widget.forum.insertOrUpdatePost(editedPost);
       setState(() => loading = false);
-      if (widget.onSuccess != null) widget.onSuccess(editedPost);
+      if (widget.onSuccess != null) widget.onSuccess!(editedPost);
     } catch (e) {
       setState(() => loading = false);
       onError(e);
@@ -84,15 +84,15 @@ class _PostFormState extends State<PostForm> {
   }
 
   onError(dynamic e) {
-    if (widget.onError != null) widget.onError(e);
+    if (widget.onError != null) widget.onError!(e);
   }
 
   @override
   void initState() {
     super.initState();
     post = widget.forum.postInEdit;
-    title.text = post.title;
-    content.text = post.content;
+    title.text = post!.title!;
+    content.text = post!.content!;
   }
 
   @override
@@ -189,7 +189,7 @@ class _PostFormState extends State<PostForm> {
                         ),
                         onPressed: () {
                           forum.postInEdit = null;
-                          if (widget.onCancel != null) widget.onCancel();
+                          if (widget.onCancel != null) widget.onCancel!();
                         },
                       ),
                     SizedBox(width: Space.xs),

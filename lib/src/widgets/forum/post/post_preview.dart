@@ -7,8 +7,8 @@ class PostPreview extends StatelessWidget {
   PostPreview(this.post, this.forum, {this.onTap, this.index});
   final ApiPost post;
   final ApiForum forum;
-  final Function onTap;
-  final int index;
+  final Function? onTap;
+  final int? index;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class PostPreview extends StatelessWidget {
     return GestureDetector(
       key: ValueKey("${FirelampKeys.element.postPreview}$index"),
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       child: forum.listView == 'gallery'
           ? PostGalleryPreview(post, forum)
           : Column(
@@ -37,7 +37,7 @@ class PostPreview extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: CachedImage(
-                              post.files[0].url,
+                              post.files![0].url,
                               width: 100,
                               height: 80,
                             ),
@@ -46,8 +46,8 @@ class PostPreview extends StatelessWidget {
                             left: 10,
                             top: -10,
                             child: forum.postAvatarBuilder == null
-                                ? UserAvatar(post.user.photoUrl, size: 40)
-                                : forum.postAvatarBuilder(post),
+                                ? UserAvatar(post.user!.photoUrl, size: 40)
+                                : forum.postAvatarBuilder!(post),
                           ),
                         ],
                       ),
@@ -60,15 +60,15 @@ class PostPreview extends StatelessWidget {
                             children: [
                               if (!post.hasFiles && forum.listView == 'thumbnail' || forum.listView == 'text') ...[
                                 forum.postAvatarBuilder == null
-                                    ? UserAvatar(post.user.photoUrl, size: 65)
-                                    : forum.postAvatarBuilder(post),
+                                    ? UserAvatar(post.user!.photoUrl, size: 65)
+                                    : forum.postAvatarBuilder!(post),
                                 SizedBox(width: Space.xsm),
                               ],
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(post.user.nicknameOrName),
+                                    Text(post.user!.nicknameOrName!),
                                     title,
                                     SizedBox(height: Space.xxs),
                                     Text(

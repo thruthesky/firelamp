@@ -1,13 +1,13 @@
 class ApiShortUser {
-  final String idx;
-  final String name;
-  final String nickname;
-  final String gender;
-  final String birthdate;
-  final String point;
-  final String photoIdx;
-  final String photoUrl;
-  final String firebaseUid;
+  final String? idx;
+  final String? name;
+  final String? nickname;
+  final String? gender;
+  final String? birthdate;
+  final String? point;
+  final String? photoIdx;
+  final String? photoUrl;
+  final String? firebaseUid;
 
   String get age {
     throw '@TODO No more return calAge(birthdate); ! Age class is not null safety. Make your own one.';
@@ -19,7 +19,7 @@ class ApiShortUser {
     return firstChar + '0';
   }
 
-  String get nicknameOrName {
+  String? get nicknameOrName {
     if (nickname != null && nickname != '') {
       return nickname;
     }

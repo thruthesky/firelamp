@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:get/get.dart';
 
-typedef OnSearch = Function(String searchKey, String category);
+typedef OnSearch = Function(String? searchKey, String category);
 
 class SearchBar extends StatefulWidget {
   SearchBar({
-    @required this.onSearch,
-    @required this.onCancel,
+    required this.onSearch,
+    required this.onCancel,
     this.categories = '',
     this.defaultSearchKeyValue,
     this.defaultSearchCategoryValue,
@@ -22,8 +22,8 @@ class SearchBar extends StatefulWidget {
   final String categories;
   final OnSearch onSearch;
   final Function onCancel;
-  final String defaultSearchCategoryValue;
-  final String defaultSearchKeyValue;
+  final String? defaultSearchCategoryValue;
+  final String? defaultSearchKeyValue;
   final Color backgroundColor;
 
   /// When `true`, search will work everytime the text input changes.
@@ -36,19 +36,19 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  TextEditingController _editingController;
+  TextEditingController? _editingController;
   FocusNode _focusNode = FocusNode();
 
   PublishSubject<String> input = PublishSubject();
-  StreamSubscription subscription;
+  StreamSubscription? subscription;
 
-  String _selectedCategory;
+  String? _selectedCategory;
 
   String get selected => _selectedCategory ?? '';
   set selected(String category) => setState(() => _selectedCategory = category);
-  String searchKey;
+  String? searchKey;
 
-  String get searchCategories => Api.instance.settings['search_categories'] ?? widget.categories;
+  String? get searchCategories => Api.instance!.settings['search_categories'] ?? widget.categories;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _SearchBarState extends State<SearchBar> {
     _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
     subscription = input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((_searchKey) {
       searchKey = _searchKey;
-      if (widget.onSearch != null) widget.onSearch(searchKey, selected);
+      widget.onSearch(searchKey, selected);
     });
   }
 
@@ -81,7 +81,7 @@ class _SearchBarState extends State<SearchBar> {
             child: IconButton(
               padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
               icon: Icon(Icons.close, color: Colors.redAccent),
-              onPressed: widget.onCancel,
+              onPressed: widget.onCancel as void Function()?,
             ),
           ),
           Expanded(
@@ -130,11 +130,12 @@ class _SearchBarState extends State<SearchBar> {
                   value: '',
                   textStyle: selected == '' ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
                 ),
-                for (final category in searchCategories.split(','))
+                for (final category in searchCategories!.split(','))
                   PopupMenuItem(
                     child: Text('$category'),
                     value: category,
-                    textStyle: selected == category ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
+                    textStyle:
+                        selected == category ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
                   )
               ],
               onSelected: (selectedCat) {

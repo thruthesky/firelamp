@@ -9,10 +9,10 @@ class UserAvatar extends StatelessWidget {
     this.onTap,
     this.color,
   });
-  final String url;
+  final String? url;
   final double size;
-  final Function onTap;
-  final Color color;
+  final Function? onTap;
+  final Color? color;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -32,7 +32,7 @@ class UserAvatar extends StatelessWidget {
           ],
         ),
       ),
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       behavior: HitTestBehavior.opaque,
     );
   }

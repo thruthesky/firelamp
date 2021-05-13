@@ -4,10 +4,10 @@ import 'package:firelamp/firelamp.dart';
 import 'package:get/get.dart';
 
 class DisplayUploadedFilesAndDeleteButtons extends StatefulWidget {
-  const DisplayUploadedFilesAndDeleteButtons({Key key, this.postOrComment, this.onError}) : super(key: key);
+  const DisplayUploadedFilesAndDeleteButtons({Key? key, this.postOrComment, this.onError}) : super(key: key);
 
   final postOrComment;
-  final Function onError;
+  final Function? onError;
 
   @override
   _DisplayUploadedFilesAndDeleteButtonsState createState() => _DisplayUploadedFilesAndDeleteButtonsState();
@@ -60,14 +60,14 @@ class _DisplayUploadedFilesAndDeleteButtonsState extends State<DisplayUploadedFi
                         // print('delete: $re');
                         if (re) {
                           try {
-                            await Api.instance.deleteFile(
+                            await Api.instance!.deleteFile(
                               file.idx,
                               postOrComment: widget.postOrComment,
                             );
                             setState(() => null);
                           } catch (e) {
                             if (widget.onError != null) {
-                              widget.onError(e);
+                              widget.onError!(e);
                             }
                           }
                         }

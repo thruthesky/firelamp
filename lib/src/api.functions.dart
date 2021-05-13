@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firelamp/firelamp.dart';
 
-bool isNumeric(String s) {
+bool isNumeric(String? s) {
   if (s == null) {
     return false;
   }
   return double.tryParse(s) != null;
 }
 
-extension StringExtension on String {
+extension StringExtension on String? {
   int get toInt {
     if (isNumeric(this) == false) return 0;
-    return int.parse(this);
+    return int.parse(this!);
   }
 
   String get moneyFormat {
@@ -38,7 +38,7 @@ String getFilenameFromPath(String path) {
 /// Returns a random string
 ///
 ///
-String getRandomString({int len = 16, String prefix}) {
+String getRandomString({int len = 16, String? prefix}) {
   const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
   var t = '';
   for (var i = 0; i < len; i++) {
@@ -53,7 +53,7 @@ String getRandomString({int len = 16, String prefix}) {
 /// 예를 선택하면 true, 아니오를 선택하면 false 를 리턴한다.
 Future<bool> confirm(String title, String message) async {
   return await showDialog(
-    context: Get.context,
+    context: Get.context!,
     builder: (_) => AlertDialog(
       title: Text(title),
       content: Column(
@@ -115,7 +115,7 @@ bool isImageUrl(t) {
 
 /// The [birthdate] may be in 'YYMMDD' format. ie) 001122
 ///   Or may be in 'YYYYMMDD' format. ie) 19770707
-age(String birthdate) {
+age(String? birthdate) {
   if (birthdate == null || birthdate == '') return '0';
   if (birthdate.length == 8) {
     birthdate = birthdate.substring(2);

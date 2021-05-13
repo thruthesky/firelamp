@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class RoundedBox extends StatelessWidget {
-  final Widget child;
-  final EdgeInsetsGeometry margin, padding;
-  final Color boxColor;
+  final Widget? child;
+  final EdgeInsetsGeometry? margin, padding;
+  final Color? boxColor;
   final double radius;
 
   RoundedBox({

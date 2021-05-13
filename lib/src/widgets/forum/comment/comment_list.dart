@@ -9,10 +9,10 @@ class CommentList extends StatefulWidget {
     this.onError,
     this.rerenderParent,
   });
-  final ApiPost post;
-  final ApiForum forum;
-  final Function onError;
-  final Function rerenderParent;
+  final ApiPost? post;
+  final ApiForum? forum;
+  final Function? onError;
+  final Function? rerenderParent;
 
   @override
   _CommentListState createState() => _CommentListState();
@@ -20,7 +20,7 @@ class CommentList extends StatefulWidget {
 
 class _CommentListState extends State<CommentList> {
   String get listText {
-    final commentCount = widget.post.comments.length;
+    final commentCount = widget.post!.comments!.length;
     final text = '$commentCount comment';
     return commentCount > 1 ? text + 's' : text;
   }
@@ -28,7 +28,7 @@ class _CommentListState extends State<CommentList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: widget.post.comments.isNotEmpty
+      child: widget.post!.comments!.isNotEmpty
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -37,21 +37,21 @@ class _CommentListState extends State<CommentList> {
                 ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: widget.post.comments.length,
+                    itemCount: widget.post!.comments!.length,
                     itemBuilder: (_, i) {
-                      if (widget.forum.commentVisibility != null) {
-                        if (widget.forum.commentVisibility(widget.post.comments[i]) == false) {
+                      if (widget.forum!.commentVisibility != null) {
+                        if (widget.forum!.commentVisibility!(widget.post!.comments![i]) == false) {
                           return SizedBox.shrink();
                         }
                       }
                       return CommentView(
-                        comment: widget.post.comments[i],
+                        comment: widget.post!.comments![i],
                         post: widget.post,
                         forum: widget.forum,
                         onError: widget.onError,
                         rerenderParent: () {
                           setState(() {});
-                          if (widget.rerenderParent != null) widget.rerenderParent();
+                          if (widget.rerenderParent != null) widget.rerenderParent!();
                         },
                         index: i,
                       );

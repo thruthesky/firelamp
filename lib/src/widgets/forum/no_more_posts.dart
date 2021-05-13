@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NoMorePosts extends StatelessWidget {
-  const NoMorePosts({Key key, @required this.forum}) : super(key: key);
+  const NoMorePosts({Key? key, required this.forum}) : super(key: key);
 
   final ApiForum forum;
 

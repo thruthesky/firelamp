@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class RegisterForm extends StatelessWidget {
   RegisterForm({this.onPressed});
 
-  final Function onPressed;
+  final Function? onPressed;
 
   final email = TextEditingController();
   final password = TextEditingController();
@@ -23,7 +23,7 @@ class RegisterForm extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () => onPressed(email.text, password.text),
+            onPressed: () => onPressed!(email.text, password.text),
             child: Text('회원 가입'),
           ),
         ),
