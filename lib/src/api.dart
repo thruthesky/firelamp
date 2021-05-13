@@ -209,7 +209,7 @@ class Api {
       /// 그래서, try / catch block 을 사용한다.
       await _initUserLogin();
     } catch (e) {
-      print('app.controller::init() _initUserLogin() throw an error: $e');
+      print('Api::init() _initUserLogin() throw an error: $e');
     }
     await _initializeFirebase();
     if (enableMessaging) _initMessaging();
@@ -425,6 +425,7 @@ class Api {
   }
 
   /// Returns null if the user has not logged in.
+  /// This will throw an error of `WidgetsFlutterBinding.ensureInitialized()`, for a test `TestWidgetsFlutterBinding.ensureInitialized()`.
   Future<ApiUser?> _loadUserProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user = prefs.getString('user');

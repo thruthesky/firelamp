@@ -5,7 +5,8 @@ import 'package:firelamp/firelamp.dart';
 final api = Api();
 
 void main() async {
-  await api.init(apiUrl: 'https://itsuda50.com/index.php', enableFirebase: false);
+  TestWidgetsFlutterBinding.ensureInitialized();
+  await api.init(apiUrl: 'https://local.itsuda50.com/index.php', enableFirebase: false);
   final now = DateTime.now();
 
   ///
@@ -21,10 +22,8 @@ void main() async {
     final unknownEmail = 'unknown${now.microsecondsSinceEpoch}@test.com';
 
     test('[REGISTER] -- Expect fail with empty email', () async {
-      final res = await api.register(email: '', password: testPassword).catchError((e) {
-        expect(e, 'error_malformed_email');
-      });
-      expect(res, null, reason: 'This should fail attempting to register without email.');
+      final res = await api.register(email: '', password: testPassword);
+      expect(res, 'error_malformed_email');
     });
 
     test('[REGISTER] -- Expect fail without password', () async {
@@ -71,8 +70,7 @@ void main() async {
 
     test('[LOGIN] -- Expect success', () async {
       final res = await api.login(email: testEmail, password: testPassword).catchError((e) {
-        expect(e, null,
-            reason: 'This test should success logging in with right email and password.');
+        expect(e, null, reason: 'This test should success logging in with right email and password.');
       });
       expect(res?.email, testEmail);
       expect(api.user?.email, testEmail);
@@ -90,8 +88,7 @@ void main() async {
       final res = await api.userUpdate({'nickname': testNickname + ' eddit'}).catchError((e) {
         expect(e, 'error_not_logged_in');
       });
-      expect(res, null,
-          reason: 'This test should fail attempting to update user without logging in');
+      expect(res, null, reason: 'This test should fail attempting to update user without logging in');
     });
   });
 
@@ -110,8 +107,7 @@ void main() async {
       final res = await api.postEdit(title: 'some title', content: 'some content').catchError((e) {
         expect(e, 'error_not_logged_in');
       });
-      expect(res, null,
-          reason: 'This test should fail attempting to create post without logging in');
+      expect(res, null, reason: 'This test should fail attempting to create post without logging in');
     });
 
     test('[CREATE] -- Expect fail creating post without category ID', () async {
@@ -119,8 +115,7 @@ void main() async {
       final res = await api.postEdit(title: 'some title', content: 'some content').catchError((e) {
         expect(e, 'error_category_id_is_empty');
       });
-      expect(res, null,
-          reason: 'This test should fail attempting to create post without category ID');
+      expect(res, null, reason: 'This test should fail attempting to create post without category ID');
     });
 
     test('[CREATE] -- Expect success', () async {
@@ -128,11 +123,8 @@ void main() async {
       final postContent = 'content ${now.microsecondsSinceEpoch}';
 
       await api.loginOrRegister(email: userAEmail, password: testPassword);
-      final res = await api
-          .postEdit(title: postTitle, content: postContent, categoryId: categoryId)
-          .catchError((e) {
-        expect(e, null,
-            reason: 'This test should fail attempting to create post without logging in');
+      final res = await api.postEdit(title: postTitle, content: postContent, categoryId: categoryId).catchError((e) {
+        expect(e, null, reason: 'This test should fail attempting to create post without logging in');
       });
 
       expect(res?.title, postTitle);
@@ -154,9 +146,8 @@ void main() async {
       );
 
       /// update post title and content
-      final resUp = await api
-          .postEdit(title: updatedPostTitle, content: updatedPostContent, idx: res?.idx)
-          .catchError((e) {
+      final resUp =
+          await api.postEdit(title: updatedPostTitle, content: updatedPostContent, idx: res?.idx).catchError((e) {
         expect(
           e,
           null,
@@ -181,9 +172,7 @@ void main() async {
       await api.loginOrRegister(email: userBEmail, password: testPassword); // login as B
 
       /// update post title and content
-      final resUp = await api
-          .postEdit(title: 'some title', content: 'some content', idx: res?.idx)
-          .catchError((e) {
+      final resUp = await api.postEdit(title: 'some title', content: 'some content', idx: res?.idx).catchError((e) {
         expect(e, 'error_not_your_post');
       });
       expect(resUp, null, reason: 'This test should fail updating other user post.');
