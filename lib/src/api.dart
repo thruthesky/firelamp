@@ -455,7 +455,9 @@ class Api {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('user');
     user = null;
-    FirebaseAuth.instance.signOut();
+    if (firebaseInitialized.value) {
+      FirebaseAuth.instance.signOut();
+    }
     authChanges.add(null);
     profileChanges.add(null);
   }
@@ -472,6 +474,10 @@ class Api {
     data['password'] = password;
     data['sessionId'] = '';
     data['token'] = token;
+
+    /// !TODO: handle also on backend
+    if (password == '') throw 'error_empty_password';
+
     final Map<String, dynamic> res = await request(data);
     // print('res: $res');
     user = ApiUser.fromJson(res);
@@ -626,7 +632,7 @@ class Api {
   }
 
   ///
-  Future<ApiPost> postEdit({
+  Future<ApiPost?> postEdit({
     String? idx,
     String? relationIdx,
     String? categoryId,
