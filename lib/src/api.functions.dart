@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'package:age/age.dart';
 import 'package:firelamp/firelamp.dart';
 
 bool isNumeric(String s) {
@@ -115,7 +113,8 @@ bool isImageUrl(t) {
   return false;
 }
 
-/// The [birthdate] must be in 'YYMMDD' format. ie) 001122
+/// The [birthdate] may be in 'YYMMDD' format. ie) 001122
+///   Or may be in 'YYYYMMDD' format. ie) 19770707
 age(String birthdate) {
   if (birthdate == null || birthdate == '') return '0';
   if (birthdate.length == 8) {
@@ -126,17 +125,14 @@ age(String birthdate) {
   final _mm = int.parse(birthdate.substring(2, 4));
   final _dd = int.parse(birthdate.substring(4, 6));
 
+  // Adjust year when two digit like '73' is set to birthday.
   DateTime birthday = DateTime(_yy < 20 ? 2000 + _yy : 1900 + _yy, _mm, _dd);
 
   DateTime today = DateTime.now();
 
-  AgeDuration _age;
-
-  // Set the age of the user
-  _age = Age.dateDifference(fromDate: birthday, toDate: today, includeToDate: false);
-
+  int age = today.year - birthday.year;
   // 한국 나이로 +1 을 해 준다.
-  return (_age.years + 1).toString();
+  return (age + 1).toString();
 }
 
 String calAge(String birthdate) => age(birthdate);
