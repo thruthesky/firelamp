@@ -1,3 +1,7 @@
+## [0.1.0] - Null safety
+
+- Null safety has applied to firelamp.
+
 ## [0.0.8] - Refacotring
 
 - A lot of changes had made. It is not recommended to use this version.
