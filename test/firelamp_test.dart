@@ -28,12 +28,14 @@ void main() async {
 
   /// !NOTE: this is used for comment group tests to prevent creating posts each and every comment test.
   ApiPost? testPost;
+  final testPostTitle = 'testPost';
+  final testPostContent = 'testPost Content';
 
   setUp(() async {
     await api.loginOrRegister(email: userAEmail, password: testPassword);
     testPost = await api.postEdit(
-      title: 'testPost',
-      content: 'testPost Content',
+      title: testPostTitle,
+      content: testPostContent,
       categoryId: categoryId,
     );
   });
@@ -42,6 +44,16 @@ void main() async {
     final res = await call(api.version());
     expect(res, isNot(null));
   });
+
+  /// TODO: post search
+  /// fix backend code also
+  // test('[POST SEARCH] -- search.', () async {
+  //   final res = await call(api.postSearch(userIdx: api.userIdx, categoryId: '20', limit: 2));
+
+  //   expect(res.length, 2);
+  //   expect(res[0].userIdx, api.userIdx);
+  //   expect(res[1].userIdx, api.userIdx);
+  // });
 
   ///
   /// USER CRUD
@@ -136,6 +148,8 @@ void main() async {
   ///  - Fail create without category ID
   ///  - Fail update post of other user
   ///  - Fail delete post of other user
+  ///  - Fail getting non existing post
+  ///  - Success getting existing post
   ///  - Success with login and category ID
   ///  - Success update own post
   ///  - Success delete own post
@@ -190,6 +204,19 @@ void main() async {
       /// update post title and content
       final res = await call(api.postDelete(createdPost!));
       expect(res, 'error_not_your_post');
+    });
+
+    test('[POST GET] -- Expect failure getting non existing post.', () async {
+      final res = await call(api.postGet('999999'));
+
+      expect(res, 'error_entity_not_found');
+    });
+
+    test('[POST GET] -- Expect success getting existing post.', () async {
+      final res = await call(api.postGet(testPost!.idx as String));
+
+      expect(res.title, testPostTitle);
+      expect(res.content, testPostContent);
     });
 
     test('[CREATE] -- Expect success on creating post.', () async {
@@ -409,7 +436,8 @@ void main() async {
       expect(voteB.y, '2'); // like must be 2
 
       final voteC = await call(api.vote(testPost, 'Y')); // vote like (same post)
-      expect(voteC.y, '1'); // like must be 1 because B already voted like which will remove his vote.
+      // like must be 1 because B already voted like which will remove his vote.
+      expect(voteC.y, '1');
 
       await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
       final voteD = await call(api.vote(testPost, 'N')); // vote like
