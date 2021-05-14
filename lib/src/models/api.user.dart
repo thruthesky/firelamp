@@ -120,7 +120,7 @@ class ApiUser {
     phoneNo = json['phoneNo'];
     name = json['name'];
     birthday = json['birthday'];
-    birthdate = json['birthdate'];
+    birthdate = "${json['birthdate']}";
     idx = "${json['idx']}";
     email = json['email'];
     firebaseUid = json['firebaseUid'];

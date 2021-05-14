@@ -454,7 +454,7 @@ class Api {
 
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('user');
+    if (prefs.containsKey('user')) prefs.remove('user');
     user = null;
     if (firebaseInitialized.value) {
       FirebaseAuth.instance.signOut();
@@ -840,7 +840,7 @@ class Api {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<String?> postDelete(ApiPost post, [ApiForum? forum]) async {
+  Future<int?> postDelete(ApiPost post, [ApiForum? forum]) async {
     final dynamic data = await request({
       'route': 'post.delete',
       'idx': post.idx,
