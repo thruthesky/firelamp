@@ -120,7 +120,6 @@ void main() async {
       expect(res?.nickname, testNickname); // result nickname must match input nickname
       expect(api.user?.nickname, testNickname); // api user's nickname must match input nickname
     });
-
   });
 
   ///
@@ -136,7 +135,6 @@ void main() async {
   ///  - Success delete own post
   ///
   group('Post CRUD', () {
-
     test('[CREATE] -- Expect failure creating post without logging in.', () async {
       await api.logout(); // ensure no user is logged in.
       final res = await call(api.postEdit(title: 'some title', content: 'some content'));
@@ -370,6 +368,48 @@ void main() async {
       testPost?.comments?.add(createdComment);
       final res = await api.commentDelete(createdComment, testPost!);
       expect(res, createdComment.idx);
+    });
+  });
+
+  ///
+  /// Vote
+  ///
+  ///
+  /// Tests
+  ///  - Fail when voting while not logged in
+  ///  - Fail when voting without provided choice
+  ///  -
+  ///
+  group('VOTE test', () {
+    test('[VOTE] -- Expect fail voting without choice.', () async {
+      await api.logout();
+      final res = await call(api.vote(testPost, 'Y'));
+      expect(res, 'error_not_logged_in');
+    });
+
+    test('[VOTE] -- Expect fail voting without choice.', () async {
+      await api.loginOrRegister(email: userAEmail, password: testPassword);
+      final res = await call(api.vote(testPost, ''));
+      expect(res, 'error_empty_vote_choice');
+    });
+
+    test('[VOTE] -- Expect success voting', () async {
+      await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
+      final voteA = await call(api.vote(testPost, 'Y')); // vote like
+      expect(voteA.y, 1); // like must be 1
+
+      await api.loginOrRegister(email: userBEmail, password: testPassword); // login as B
+      final voteB = await call(api.vote(testPost, 'Y')); // vote like (same post)
+      expect(voteB.y, 2); // like must be 2
+
+      final voteC = await call(api.vote(testPost, 'Y')); // vote like (same post)
+      expect(voteC.y, 1); // like must be 1 because B already voted which will remove the vote.
+
+
+      await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
+      final voteD = await call(api.vote(testPost, 'N')); // vote like
+      expect(voteD.n, 1); // dislike must be 1
+      expect(voteD.y, 0); // like must be 1
     });
   });
 }
