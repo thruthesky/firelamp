@@ -45,6 +45,16 @@ void main() async {
     expect(res, isNot(null));
   });
 
+  /// TODO: post search
+  /// this doesn't work properly, check api, it might need refactoring.
+  test('[POST SEARCH] -- search.', () async {
+    final res = await call(api.postSearch(categoryId: '20', limit: 2));
+
+    expect(res.length, 2);
+    expect(res[0].userIdx, api.userIdx);
+    expect(res[1].userIdx, api.userIdx);
+  });
+
   ///
   /// USER CRUD
   ///
