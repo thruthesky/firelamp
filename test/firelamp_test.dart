@@ -15,7 +15,7 @@ call(Future<dynamic> apiCall) async {
 }
 
 void main() async {
-  // TestWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
   await api.init(apiUrl: 'https://local.itsuda50.com/index.php', enableFirebase: false);
 
   /// Shared variables
@@ -404,7 +404,6 @@ void main() async {
 
       final voteC = await call(api.vote(testPost, 'Y')); // vote like (same post)
       expect(voteC.y, 1); // like must be 1 because B already voted which will remove the vote.
-
 
       await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
       final voteD = await call(api.vote(testPost, 'N')); // vote like
