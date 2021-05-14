@@ -48,6 +48,7 @@ void main() async {
   ///
   /// Tests
   ///  - Fail Register with empty email
+  ///  - Fail Register with malformed email
   ///  - Fail Register with empty password
   ///  - Fail Login with empty email
   ///  - Fail login with empty password
@@ -66,6 +67,11 @@ void main() async {
 
     test('[REGISTER] -- Expect failure with empty email', () async {
       final res = await call(api.register(email: '', password: testPassword));
+      expect(res, 'error_email_is_empty');
+    });
+
+    test('[REGISTER] -- Expect failure with malformed email', () async {
+      final res = await call(api.register(email: 'not email', password: testPassword));
       expect(res, 'error_malformed_email');
     });
 
@@ -396,20 +402,19 @@ void main() async {
     test('[VOTE] -- Expect success voting', () async {
       await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
       final voteA = await call(api.vote(testPost, 'Y')); // vote like
-      expect(voteA.y, 1); // like must be 1
+      expect(voteA.y, '1'); // like must be 1
 
       await api.loginOrRegister(email: userBEmail, password: testPassword); // login as B
       final voteB = await call(api.vote(testPost, 'Y')); // vote like (same post)
-      expect(voteB.y, 2); // like must be 2
+      expect(voteB.y, '2'); // like must be 2
 
       final voteC = await call(api.vote(testPost, 'Y')); // vote like (same post)
-      expect(voteC.y, 1); // like must be 1 because B already voted which will remove the vote.
-
+      expect(voteC.y, '1'); // like must be 1 because B already voted like which will remove his vote.
 
       await api.loginOrRegister(email: userAEmail, password: testPassword); // login as A
       final voteD = await call(api.vote(testPost, 'N')); // vote like
-      expect(voteD.n, 1); // dislike must be 1
-      expect(voteD.y, 0); // like must be 1
+      expect(voteD.n, '1'); // dislike must be 1
+      expect(voteD.y, '0'); // like must be 0
     });
   });
 }
