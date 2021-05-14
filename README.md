@@ -12,9 +12,7 @@ It is based on Firebase and LAMP stack.
 
   - null safety & mini library
 
-  - better widget usage.
-
-    - builder options for theming (or re-usable widget ).
+  - make it work with firelamp next version.
 
   - detail models
 
@@ -23,6 +21,10 @@ It is based on Firebase and LAMP stack.
     - api.post.model.dart extends apiforum.model.dart
     - api.mall.model.dart extends api.post.model.dart
     - api.comment.model.dart extends api.forum.model.dart
+
+  - better widget usage.
+
+    - builder options for theming (or re-usable widget ).
 
   - Flutter 2.0 null safety 를 적용한다.
   - 웹 지원은 필요 없다.
