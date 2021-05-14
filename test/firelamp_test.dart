@@ -51,8 +51,6 @@ void main() async {
     final res = await call(api.postSearch(categoryId: '20', limit: 2));
 
     expect(res.length, 2);
-    expect(res[0].userIdx, api.userIdx);
-    expect(res[1].userIdx, api.userIdx);
   });
 
   ///
