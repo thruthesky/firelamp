@@ -840,7 +840,7 @@ class Api {
   /// After the post has been deleted, it will be removed from [forum]
   ///
   /// It returns deleted file id.
-  Future<int?> postDelete(ApiPost post, [ApiForum? forum]) async {
+  Future<String?> postDelete(ApiPost post, [ApiForum? forum]) async {
     final dynamic data = await request({
       'route': 'post.delete',
       'idx': post.idx,
@@ -849,7 +849,7 @@ class Api {
       int i = forum.posts.indexWhere((p) => p!.idx == post.idx);
       forum.posts.removeAt(i);
     }
-    return data['idx'];
+    return data['idx'].toString();
   }
 
   /// count post based on the condition
