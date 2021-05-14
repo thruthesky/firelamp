@@ -15,7 +15,7 @@ call(Future<dynamic> apiCall) async {
 }
 
 void main() async {
-  // TestWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
   await api.init(apiUrl: 'https://local.itsuda50.com/index.php', enableFirebase: false);
 
   /// Shared variables
