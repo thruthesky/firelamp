@@ -872,7 +872,7 @@ class Api {
     });
     int i = post.comments!.indexWhere((c) => c.idx == comment.idx);
     post.comments!.removeAt(i);
-    return data['idx'];
+    return data['idx'].toString();
   }
 
   @Deprecated('use postSearch()')
