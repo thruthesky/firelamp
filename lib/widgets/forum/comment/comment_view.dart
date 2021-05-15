@@ -21,6 +21,7 @@ class CommentView extends StatefulWidget {
     @required this.forum,
     this.rerenderParent,
     this.index,
+    @required this.onFileDelete,
   }) : super(key: key);
 
   final ApiComment comment;
@@ -28,6 +29,7 @@ class CommentView extends StatefulWidget {
   final ApiForum forum;
   final Function onError;
   final Function rerenderParent;
+  final Function onFileDelete;
   final int index;
 
   @override
@@ -112,15 +114,15 @@ class _CommentViewState extends State<CommentView> {
                           PopupMenuItem(
                               key: ValueKey(FirelampKeys.button.commentMoreEdit),
                               child: Row(children: [
-                                Icon(Icons.edit, size: Space.sm, color: Colors.greenAccent),
+                                Icon(Icons.edit, size: Space.sm, color: Colors.black),
                                 SizedBox(width: Space.xs),
-                                Text('edit'.tr)
+                                Text('edit'.tr),
                               ]),
                               value: 'edit'),
                           PopupMenuItem(
                               key: ValueKey(FirelampKeys.button.commentMoreDelete),
                               child: Row(children: [
-                                Icon(Icons.delete, size: Space.sm, color: Colors.redAccent),
+                                Icon(Icons.delete, size: Space.sm, color: Colors.black),
                                 SizedBox(width: Space.xs),
                                 Text('delete'.tr)
                               ]),
@@ -139,6 +141,7 @@ class _CommentViewState extends State<CommentView> {
                     onSuccess: widget.rerenderParent,
                     onError: widget.onError,
                     index: widget.index,
+                    onFileDelete: widget.onFileDelete,
                   ),
                 if (widget.comment.mode == CommentMode.edit) ...[
                   SizedBox(height: Space.sm),
@@ -151,6 +154,7 @@ class _CommentViewState extends State<CommentView> {
                     index: widget.index,
                     onCancel: () => setState(() => widget.comment.mode = CommentMode.none),
                     commentFormKeyFix: 'edit',
+                    onFileDelete: widget.onFileDelete,
                   ),
                 ],
               ],

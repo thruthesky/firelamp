@@ -13,6 +13,7 @@ class PostViewWithAvatar extends StatefulWidget {
     this.actions = const [],
     this.onTap,
     this.onError,
+    @required this.onFileDelete,
     Key key,
   }) : super(key: key);
 
@@ -21,6 +22,7 @@ class PostViewWithAvatar extends StatefulWidget {
   final List<Widget> actions;
   final Function onTap;
   final Function onError;
+  final Function onFileDelete;
 
   @override
   _PostViewWithAvatarState createState() => _PostViewWithAvatarState();
@@ -43,12 +45,14 @@ class _PostViewWithAvatarState extends State<PostViewWithAvatar> {
             comment: ApiComment(),
             post: widget.post,
             forum: widget.forum,
+            onFileDelete: widget.onFileDelete,
           ),
         if (widget.post.display)
           CommentList(
             post: widget.post,
             forum: widget.forum,
             onError: widget.onError,
+            onFileDelete: widget.onFileDelete,
           ),
       ],
     );

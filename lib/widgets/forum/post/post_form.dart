@@ -15,11 +15,13 @@ class PostForm extends StatefulWidget {
     this.onSuccess,
     this.onCancel,
     this.onError,
+    @required this.onFileDelete,
   });
   final ApiForum forum;
   final Function onSuccess;
   final Function onCancel;
   final Function onError;
+  final Function onFileDelete;
   final List<String> subcategories;
 
   @override
@@ -165,7 +167,10 @@ class _PostFormState extends State<PostForm> {
               maxLines: 15,
               decoration: _inputDecoration,
             ),
-            DisplayUploadedFilesAndDeleteButtons(postOrComment: forum.postInEdit),
+            DisplayUploadedFilesAndDeleteButtons(
+              postOrComment: forum.postInEdit,
+              onFileDelete: widget.onFileDelete,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -190,7 +195,7 @@ class _PostFormState extends State<PostForm> {
                         child: Text(
                           'cancel'.tr,
                           style: TextStyle(
-                            color: Colors.red[300],
+                            color: Colors.black,
                           ),
                         ),
                         onPressed: () {
@@ -205,7 +210,7 @@ class _PostFormState extends State<PostForm> {
                           ? Spinner()
                           : Text(
                               'submit'.tr,
-                              style: TextStyle(color: Colors.green[300]),
+                              style: TextStyle(color: Colors.black),
                             ),
                       onPressed: onFormSubmit,
                     ),

@@ -10,7 +10,7 @@ class Spinner extends StatelessWidget {
     this.size = 24,
     this.loading = true,
     this.centered = true,
-    this.valueColor = Colors.blue,
+    this.valueColor = Colors.yellow,
     this.padding,
   }) : super(key: key);
 

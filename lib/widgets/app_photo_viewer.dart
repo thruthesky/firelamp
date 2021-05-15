@@ -55,8 +55,7 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
           ),
           Container(
             child: IconButton(
-                icon: Icon(Icons.close_rounded, color: Colors.redAccent, size: Space.xl),
-                onPressed: () => Get.back()),
+                icon: Icon(Icons.close_rounded, color: Colors.yellow, size: Space.xl), onPressed: () => Get.back()),
           ),
           if (currentIndex != 0)
             Positioned(
@@ -64,8 +63,7 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
               // left: Space.md,
               child: IconButton(
                 icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xxl),
-                onPressed: () => _controller.previousPage(
-                    duration: Duration(milliseconds: 500), curve: Curves.ease),
+                onPressed: () => _controller.previousPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),
           if (currentIndex != widget.files.length - 1)
@@ -74,8 +72,7 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
               right: Space.md,
               child: IconButton(
                 icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xxl),
-                onPressed: () =>
-                    _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
+                onPressed: () => _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),
         ],

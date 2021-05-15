@@ -19,6 +19,7 @@ class CommentForm extends StatefulWidget {
     this.onCancel,
     this.index,
     this.commentFormKeyFix = '',
+    @required this.onFileDelete,
   }) : super(key: key);
 
   /// post of the comment
@@ -29,6 +30,7 @@ class CommentForm extends StatefulWidget {
   final Function onError;
   final Function onSuccess;
   final Function onCancel;
+  final Function onFileDelete;
   final int index;
   final String commentFormKeyFix;
 
@@ -179,7 +181,10 @@ class _CommentFormState extends State<CommentForm> {
               if (canSubmit) SizedBox(width: Space.xsm),
             ],
           ),
-          DisplayUploadedFilesAndDeleteButtons(postOrComment: comment),
+          DisplayUploadedFilesAndDeleteButtons(
+            postOrComment: comment,
+            onFileDelete: widget.onFileDelete,
+          ),
         ],
       ),
     );

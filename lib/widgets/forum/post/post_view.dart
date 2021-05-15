@@ -19,6 +19,7 @@ class PostView extends StatefulWidget {
     this.nameBuilder,
     this.open = false,
     this.onError,
+    @required this.onFileDelete,
   }) : super(key: key);
 
   final ApiForum forum;
@@ -33,6 +34,8 @@ class PostView extends StatefulWidget {
 
   /// Move nameBuilder to [ApiForum]. This is a common widget for post and comment.
   final Function nameBuilder;
+
+  final Function onFileDelete;
 
   @override
   _PostViewState createState() => _PostViewState();
@@ -52,9 +55,7 @@ class _PostViewState extends State<PostView> {
       children: [
         Row(
           children: [
-            widget.avatarBuilder == null
-                ? UserAvatar(widget.post.user.photoUrl)
-                : widget.avatarBuilder(widget.post),
+            widget.avatarBuilder == null ? UserAvatar(widget.post.user.photoUrl) : widget.avatarBuilder(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
@@ -81,12 +82,14 @@ class _PostViewState extends State<PostView> {
           comment: ApiComment(),
           onError: widget.onError,
           onSuccess: () => setState(() => null),
+          onFileDelete: widget.onFileDelete,
         ),
         CommentList(
           post: widget.post,
           forum: widget.forum,
           onError: widget.onError,
           rerenderParent: () => setState(() => null),
+          onFileDelete: widget.onFileDelete,
         ),
       ],
     );

@@ -11,11 +11,13 @@ class CommentList extends StatefulWidget {
     this.forum,
     this.onError,
     this.rerenderParent,
+    @required this.onFileDelete,
   });
   final ApiPost post;
   final ApiForum forum;
   final Function onError;
   final Function rerenderParent;
+  final Function onFileDelete;
 
   @override
   _CommentListState createState() => _CommentListState();
@@ -57,6 +59,7 @@ class _CommentListState extends State<CommentList> {
                           if (widget.rerenderParent != null) widget.rerenderParent();
                         },
                         index: i,
+                        onFileDelete: widget.onFileDelete,
                       );
                     }),
               ],
