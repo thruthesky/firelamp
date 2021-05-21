@@ -50,7 +50,8 @@ class _SearchBarState extends State<SearchBar> {
   set selected(String category) => setState(() => _selectedCategory = category);
   String searchKey;
 
-  String get searchCategories => Api.instance.settings['search_categories'] ?? widget.categories;
+  String get searchCategories =>
+      Api.instance.settings['search_categories'] ?? widget.categories;
 
   @override
   void initState() {
@@ -58,8 +59,12 @@ class _SearchBarState extends State<SearchBar> {
     _selectedCategory = widget.defaultSearchCategoryValue;
 
     searchKey = widget.defaultSearchKeyValue;
-    _editingController = TextEditingController(text: widget.defaultSearchKeyValue);
-    subscription = input.debounceTime(Duration(milliseconds: 500)).distinct((a, b) => a == b).listen((_searchKey) {
+    _editingController =
+        TextEditingController(text: widget.defaultSearchKeyValue);
+    subscription = input
+        .debounceTime(Duration(milliseconds: 500))
+        .distinct((a, b) => a == b)
+        .listen((_searchKey) {
       searchKey = _searchKey;
       if (widget.onSearch != null) widget.onSearch(searchKey, selected);
     });
@@ -82,7 +87,7 @@ class _SearchBarState extends State<SearchBar> {
             width: 40,
             child: IconButton(
               padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-              icon: Icon(Icons.close, color: Colors.redAccent),
+              icon: Icon(Icons.close, color: Color(0xFFB8860B)),
               onPressed: widget.onCancel,
             ),
           ),
@@ -90,21 +95,34 @@ class _SearchBarState extends State<SearchBar> {
             child: Container(
               height: kToolbarHeight - Space.xsm,
               child: TextField(
-                autofocus: false,
+                cursorColor: Color(0xFFB8860B),
+                autofocus: true,
                 focusNode: _focusNode,
                 controller: _editingController,
                 textInputAction: TextInputAction.go,
                 onSubmitted: (value) => input.add(value),
-                onChanged: widget.searchOnInputChange ? (value) => input.add(value) : (value) => searchKey = value,
+                onChanged: widget.searchOnInputChange
+                    ? (value) => input.add(value)
+                    : (value) => searchKey = value,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding: EdgeInsets.symmetric(horizontal: Space.sm),
                   border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
+                    borderRadius:
+                        const BorderRadius.all(const Radius.circular(25.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius:
+                        const BorderRadius.all(const Radius.circular(25.0)),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFB8860B), width: 2),
                   ),
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
+                    icon: Icon(
+                      Icons.search,
+                      color: Color(0xFFB8860B),
+                    ),
                     onPressed: () {
                       _focusNode.unfocus();
                       print('$searchKey, $selected');
@@ -130,13 +148,20 @@ class _SearchBarState extends State<SearchBar> {
                 PopupMenuItem(
                   child: Text('all'.tr),
                   value: '',
-                  textStyle: selected == '' ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
+                  textStyle: selected == ''
+                      ? TextStyle(
+                          color: Colors.green[600], fontWeight: FontWeight.w700)
+                      : null,
                 ),
                 for (final category in searchCategories.split(','))
                   PopupMenuItem(
                     child: Text('$category'),
                     value: category,
-                    textStyle: selected == category ? TextStyle(color: Colors.green[600], fontWeight: FontWeight.w700) : null,
+                    textStyle: selected == category
+                        ? TextStyle(
+                            color: Colors.green[600],
+                            fontWeight: FontWeight.w700)
+                        : null,
                   )
               ],
               onSelected: (selectedCat) {

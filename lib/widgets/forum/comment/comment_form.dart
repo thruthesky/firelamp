@@ -50,7 +50,8 @@ class _CommentFormState extends State<CommentForm> {
 
   bool loading = false;
 
-  bool get canSubmit => (content.text != '' || comment.files.isNotEmpty) && !loading;
+  bool get canSubmit =>
+      (content.text != '' || comment.files.isNotEmpty) && !loading;
   double percentage = 0;
 
   // file upload
@@ -139,7 +140,8 @@ class _CommentFormState extends State<CommentForm> {
                   constraints: BoxConstraints(maxWidth: Space.md),
                   icon: Icon(Icons.close),
                   onPressed: widget.onCancel,
-                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
                 ),
               IconButton(
                 alignment: Alignment.center,
@@ -148,7 +150,9 @@ class _CommentFormState extends State<CommentForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  key: ValueKey('${FirelampKeys.element.commentFormTextField}${widget.commentFormKeyFix}'),
+                  key: ValueKey(
+                      '${FirelampKeys.element.commentFormTextField}${widget.commentFormKeyFix}'),
+                  cursorColor: Color(0xFFB8860B),
                   controller: content,
                   onChanged: (v) => setState(() => null),
                   minLines: 1,
@@ -161,6 +165,12 @@ class _CommentFormState extends State<CommentForm> {
                       borderRadius: const BorderRadius.all(
                         const Radius.circular(25.0),
                       ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:
+                          const BorderRadius.all(const Radius.circular(25.0)),
+                      borderSide:
+                          const BorderSide(color: Color(0xFFB8860B), width: 2),
                     ),
                   ),
                 ),

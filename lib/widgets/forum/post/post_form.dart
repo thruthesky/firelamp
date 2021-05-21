@@ -41,9 +41,11 @@ class _PostFormState extends State<PostForm> {
     filled: true,
     contentPadding: EdgeInsets.all(Space.sm),
     border: OutlineInputBorder(
-      borderRadius: const BorderRadius.all(
-        const Radius.circular(10.0),
-      ),
+      borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+      borderSide: const BorderSide(color: Color(0xFFB8860B), width: 2),
     ),
   );
 
@@ -132,13 +134,14 @@ class _PostFormState extends State<PostForm> {
                       setState(() {});
                     },
                     items: [
-                      DropdownMenuItem(child: Text('uncategorized'.tr), value: null),
+                      DropdownMenuItem(
+                          child: Text('uncategorized'.tr), value: null),
                       for (final String cat in widget.subcategories)
                         DropdownMenuItem(
                           child: Text(
                             '$cat',
                             style: cat == forum.subcategory
-                                ? TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)
+                                ? TextStyle(fontWeight: FontWeight.bold)
                                 : null,
                           ),
                           value: cat,
@@ -152,6 +155,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('title'.tr),
             ),
             TextFormField(
+              cursorColor: Color(0xFFB8860B),
               key: ValueKey(FirelampKeys.element.postTitleInput),
               controller: title,
               decoration: _inputDecoration,
@@ -161,6 +165,7 @@ class _PostFormState extends State<PostForm> {
               child: Text('content'.tr),
             ),
             TextFormField(
+              cursorColor: Color(0xFFB8860B),
               key: ValueKey(FirelampKeys.element.postContentInput),
               controller: content,
               minLines: 5,
@@ -183,7 +188,11 @@ class _PostFormState extends State<PostForm> {
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: Space.sm),
-                      child: LinearProgressIndicator(value: percentage),
+                      child: LinearProgressIndicator(
+                        value: percentage,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFFFFdd00)),
+                      ),
                     ),
                   ),
 
