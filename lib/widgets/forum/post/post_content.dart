@@ -2,6 +2,9 @@ import 'package:firelamp/firelamp.dart';
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PostContent extends StatelessWidget {
   PostContent(
@@ -27,10 +30,23 @@ class PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (buildFor == 'view' && (post.content == null || post.content.isEmpty)) return SizedBox.shrink();
+    if (buildFor == 'view' && (post.content == null || post.content.isEmpty))
+      return SizedBox.shrink();
 
     return forum.postContentBuilder != null
-        ? forum.postContentBuilder(forum, post, buildFor)
+        ? Linkify(
+            onOpen: (link) async {
+              if (await canLaunch(link.url)) {
+                await launch(link.url);
+              } else {
+                throw 'Could not launch $link';
+              }
+            },
+            text: "${post.content}",
+            style: TextStyle(color: Colors.black),
+            linkStyle: TextStyle(color: Colors.blue),
+          )
+        // ? forum.postContentBuilder(forum, post, buildFor)
         : Padding(
             padding: padding,
             child: Text(

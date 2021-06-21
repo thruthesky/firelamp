@@ -55,13 +55,17 @@ class _PostViewState extends State<PostView> {
       children: [
         Row(
           children: [
-            widget.avatarBuilder == null ? UserAvatar(widget.post.user.photoUrl) : widget.avatarBuilder(widget.post),
+            widget.avatarBuilder == null
+                ? UserAvatar(widget.post.user.photoUrl)
+                : widget.avatarBuilder(widget.post),
             SizedBox(width: Space.sm),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  widget.nameBuilder == null ? name : widget.nameBuilder(widget.post),
+                  widget.nameBuilder == null
+                      ? name
+                      : widget.nameBuilder(widget.post),
                   SizedBox(height: Space.xs),
                   PostMeta(widget.post, widget.forum),
                 ],
@@ -74,8 +78,10 @@ class _PostViewState extends State<PostView> {
         PostContent(widget.post, widget.forum, buildFor: 'view'),
         DisplayFiles(postOrComment: widget.post),
         Divider(height: Space.xs),
-        if (widget.forum.postBottomBuilder != null) widget.forum.postBottomBuilder(widget.post),
-        if (widget.forum.postButtonBuilder != null) widget.forum.postButtonBuilder(widget.post),
+        if (widget.forum.postBottomBuilder != null)
+          widget.forum.postBottomBuilder(widget.post),
+        if (widget.forum.postButtonBuilder != null)
+          widget.forum.postButtonBuilder(widget.post),
         CommentForm(
           post: widget.post,
           forum: widget.forum,
