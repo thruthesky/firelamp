@@ -68,18 +68,12 @@ class Api {
   String get photoUrl => user?.photoUrl;
   String get name => user?.name;
   String get nickname => user?.nickname;
-  String get nicknameOrName =>
-      nickname != null || nickname != '' ? nickname : name;
+  String get nicknameOrName => nickname != null || nickname != '' ? nickname : name;
   bool get profileComplete =>
-      loggedIn &&
-      photoUrl != null &&
-      photoUrl.isNotEmpty &&
-      name != null &&
-      name.isNotEmpty;
+      loggedIn && photoUrl != null && photoUrl.isNotEmpty && name != null && name.isNotEmpty;
 
   bool get loggedIn => user != null && user.sessionId != null;
-  bool get isAdmin =>
-      user != null && user.sessionId != null && user.admin == true;
+  bool get isAdmin => user != null && user.sessionId != null && user.admin == true;
   bool get notLoggedIn => !loggedIn;
 
   bool get isNewCommentOnMyPostOrComment {
@@ -102,8 +96,7 @@ class Api {
   bool enableFirebase;
 
   /// [firebaseInitialized] will be posted with `true` when it is initialized.
-  BehaviorSubject<bool> firebaseInitialized =
-      BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<bool> firebaseInitialized = BehaviorSubject<bool>.seeded(false);
 
   /// Firebase Messaging
   ///
@@ -186,8 +179,7 @@ class Api {
     this.enableFirebase = enableFirebase;
     this.enableMessaging = enableMessaging;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
-    this.onNotificationPermissionNotDetermined =
-        onNotificationPermissionNotDetermined;
+    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
 
     this.onForegroundMessage = onForegroundMessage;
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
@@ -235,38 +227,31 @@ class Api {
         await FirebaseAuth.instance.signOut();
       } else {
         String email = user.email;
-        String password = user.email +
-            user.idx +
-            user.createdAt +
-            ' Wc~7 difficult to guess string salt %^.^%;';
+        String password =
+            user.email + user.idx + user.createdAt + ' Wc~7 difficult to guess string salt %^.^%;';
 
         // User email already exists(registered), try to login.
         try {
-          await FirebaseAuth.instance
-              .signInWithEmailAndPassword(email: email, password: password);
+          await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
           await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
-            print(
-                '_initFirebaseAuth() => No user found for that email. going to register.');
+            print('_initFirebaseAuth() => No user found for that email. going to register.');
 
             try {
-              await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                  email: user.email, password: password);
+              await FirebaseAuth.instance
+                  .createUserWithEmailAndPassword(email: user.email, password: password);
               print(
                   'Firebase user created with: uid=${FirebaseAuth.instance.currentUser.uid}. going to save it into backend');
-              await userUpdateFirebaseUid(
-                  FirebaseAuth.instance.currentUser.uid);
+              await userUpdateFirebaseUid(FirebaseAuth.instance.currentUser.uid);
             } on FirebaseAuthException catch (e) {
               if (e.code == 'weak-password') {
                 print('The password provided is too weak.');
               } else if (e.code == 'email-already-in-use') {}
             }
           } else if (e.code == 'wrong-password') {
-            print(
-                'Firebase auth: Wrong password provided for that user. user: ${user.email}');
-            alert(
-                '앗! 데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
+            print('Firebase auth: Wrong password provided for that user. user: ${user.email}');
+            alert('앗! 데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
           }
         } catch (e) {
           print(e);
@@ -524,8 +509,7 @@ class Api {
   /// If [option] doesnt exist it switch to `on`.
   /// If [option] is `on` it switch to `off`.
   /// If [option] is `off` it switch to `on`.
-  Future<ApiUser> userOptionSwitch(
-      {String option, String route = 'user.switch'}) async {
+  Future<ApiUser> userOptionSwitch({String option, String route = 'user.switch'}) async {
     Map<String, dynamic> req = {
       'route': route,
       'option': option,
@@ -572,8 +556,7 @@ class Api {
   ///
   /// It only returns public informations like nickname, gender, ... Not private information like phone number, session_id.
   /// ! @todo cache it on memory, so, next time when it is called again, it will not get same information from server.
-  Future<ApiUser> otherUserProfile(
-      {String idx, String email, String firebaseUid}) async {
+  Future<ApiUser> otherUserProfile({String idx, String email, String firebaseUid}) async {
     final Map<String, dynamic> res = await request({
       'route': 'user.otherUserProfile',
       if (idx != null) 'idx': idx,
@@ -627,8 +610,7 @@ class Api {
       if (post.idx != null) data['ID'] = post.idx;
       if (post.categoryIdx != null) data['category'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
         data['files'] = ids.join(',');
@@ -678,8 +660,7 @@ class Api {
       if (post.relationIdx != null) data['relationIdx'] = post.relationIdx;
       if (post.categoryIdx != null) data['categoryIdx'] = post.categoryIdx;
       if (post.title != null && post.title != '') data['title'] = post.title;
-      if (post.content != null && post.content != '')
-        data['content'] = post.content;
+      if (post.content != null && post.content != '') data['content'] = post.content;
       if (post.subcategory != null) data['subcategory'] = post.subcategory;
       if (post.files.length > 0) {
         Set ids = post.files.map((file) => file.idx).toSet();
@@ -774,8 +755,7 @@ class Api {
 
   Future<List<ApiPost>> postGets(List<int> idxes) async {
     if (idxes.length == 0) return [];
-    final jsonList =
-        await request({'route': 'post.gets', 'idxes': idxes.join(',')});
+    final jsonList = await request({'route': 'post.gets', 'idxes': idxes.join(',')});
     List<ApiPost> _posts = [];
     for (int i = 0; i < jsonList.length; i++) {
       _posts.add(ApiPost.fromJson(jsonList[i]));
@@ -786,15 +766,9 @@ class Api {
   /// Returns a post of today based on the categoryId and userIdx.
   /// 오늘 작성한 글을 가져온다.
   Future<List<ApiPost>> postToday(
-      {@required String categoryId,
-      String userIdx = '0',
-      int limit = 10}) async {
-    final map = await request({
-      'route': 'post.today',
-      'categoryId': categoryId,
-      'userIdx': userIdx,
-      'limit': limit
-    });
+      {@required String categoryId, String userIdx = '0', int limit = 10}) async {
+    final map = await request(
+        {'route': 'post.today', 'categoryId': categoryId, 'userIdx': userIdx, 'limit': limit});
 
     final List<ApiPost> rets = [];
     for (final p in map) {
@@ -805,8 +779,7 @@ class Api {
 
   ///
   Future<ApiCategory> categoryCreate({String id, String title = ''}) async {
-    final re =
-        await request({'route': 'category.create', 'id': id, 'title': title});
+    final re = await request({'route': 'category.create', 'id': id, 'title': title});
     return ApiCategory.fromJson(re);
   }
 
@@ -815,10 +788,7 @@ class Api {
   /// The [data] is a map of key/value pair to save.
   /// You may save a value composing with [field] and [value].
   Future<ApiCategory> categoryUpdate(
-      {@required String id,
-      String field,
-      String value,
-      Map<String, dynamic> data}) async {
+      {@required String id, String field, String value, Map<String, dynamic> data}) async {
     if (data == null) data = {};
 
     data['route'] = 'category.update';
@@ -968,22 +938,18 @@ class Api {
     data['by'] = by;
 
     if (code != null) data['where'] = data['where'] + " and code='$code'";
-    if (userIdx != null)
-      data['where'] = data['where'] + " and userIdx=$userIdx";
-    if (relationIdx != null)
-      data['where'] = data['where'] + " and relationIdx=$relationIdx";
+    if (userIdx != null) data['where'] = data['where'] + " and userIdx=$userIdx";
+    if (relationIdx != null) data['where'] = data['where'] + " and relationIdx=$relationIdx";
     if (categoryId != null && categoryId != "")
       data['where'] = data['where'] + " and categoryId=<$categoryId>";
     if (categoryIds != null) {
-      data["where"] +=
-          " AND (categoryId=<" + categoryIds.join("> OR categoryId=<") + ">) ";
+      data["where"] += " AND (categoryId=<" + categoryIds.join("> OR categoryId=<") + ">) ";
     }
-    if (subcategory != null)
-      data['where'] = data['where'] + " and subcategory='$subcategory'";
+    if (subcategory != null) data['where'] = data['where'] + " and subcategory='$subcategory'";
 
     if (searchKey != null && searchKey != '') {
-      data['where'] = data['where'] +
-          " and (title like '%$searchKey%' or content like '%$searchKey%')";
+      data['where'] =
+          data['where'] + " and (title like '%$searchKey%' or content like '%$searchKey%')";
       // Deliver search key to backend to save.
       data['searchKey'] = searchKey;
     }
@@ -995,8 +961,7 @@ class Api {
 
     // post create time limit
     if (days != null) {
-      int seconds = (DateTime.now().millisecondsSinceEpoch / 1000).round() -
-          days * 24 * 60 * 60;
+      int seconds = (DateTime.now().millisecondsSinceEpoch / 1000).round() - days * 24 * 60 * 60;
       data['where'] += " AND createdAt > $seconds";
     }
 
@@ -1075,11 +1040,9 @@ class Api {
   }
 
   /// [getPosts] is an alias of [searchPosts]
-  Future<List<ApiPost>> getPosts(
-      {String category, int limit = 20, int paged = 1, String userIdx}) {
+  Future<List<ApiPost>> getPosts({String category, int limit = 20, int paged = 1, String userIdx}) {
     // return searchPost(category: category, limit: limit, paged: paged, author: author);
-    return postSearch(
-        categoryId: category, limit: limit, page: paged, userIdx: userIdx);
+    return postSearch(categoryId: category, limit: limit, page: paged, userIdx: userIdx);
   }
 
   ///
@@ -1090,8 +1053,7 @@ class Api {
     // } else {
     //   route = 'post.vote';
     // }
-    final re = await request(
-        {'route': 'post.vote', 'idx': postOrComment.idx, 'choice': choice});
+    final re = await request({'route': 'post.vote', 'idx': postOrComment.idx, 'choice': choice});
     if ("${postOrComment.parentIdx}".toInt > 0) {
       return ApiComment.fromJson(re);
     } else {
@@ -1118,8 +1080,10 @@ class Api {
     String taxonomy = '',
     int entity = 0,
     String code = '',
+    bool isVideo = false,
   }) async {
     Prefix.FormData formData;
+
     if (file != null) {
       /// [Prefix] 를 쓰는 이유는 Dio 의 FromData 와 Flutter 의 기본 HTTP 와 충돌하기 때문이다.
       formData = Prefix.FormData.fromMap({
@@ -1137,7 +1101,7 @@ class Api {
 
           /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
           filename: getFilenameFromPath(file.path),
-          contentType: MediaType('image', 'jpeg'),
+          contentType: isVideo ? MediaType('video', 'mp4') : MediaType('image', 'jpeg'),
         ),
       });
     } else if (bytes != null) {
@@ -1157,9 +1121,8 @@ class Api {
           bytes,
 
           /// `filename` 은 `$_FILES[userfile][name]` 와 같이 들어간다.
-          filename: getFilenameFromPath(
-              DateTime.now().toString().replaceAll(' ', '') + '.jpg'),
-          contentType: MediaType('image', 'jpeg'),
+          filename: getFilenameFromPath(DateTime.now().toString().replaceAll(' ', '') + '.jpg'),
+          contentType: isVideo ? MediaType('video', 'mp4') : MediaType('image', 'jpeg'),
         ),
       });
     }
@@ -1190,6 +1153,7 @@ class Api {
   ///
   Future<ApiFile> takeUploadFile({
     @required ImageSource source,
+    bool isVideo = false,
     int quality = 90,
     bool deletePreviousUpload = false,
     String taxonomy = '',
@@ -1197,11 +1161,18 @@ class Api {
     String code = '',
     @required Function onProgress,
   }) async {
+    print('takeUploadFile isVideo: $isVideo');
+
     /// Pick image
     final picker = ImagePicker();
-
-    final pickedFile = await picker.getImage(source: source);
-    if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
+    PickedFile pickedFile;
+    if (isVideo) {
+      pickedFile = await picker.getVideo(source: source, maxDuration: const Duration(seconds: 10));
+      if (pickedFile == null) throw ERROR_VIDEO_NOT_SELECTED;
+    } else {
+      pickedFile = await picker.getImage(source: source);
+      if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
+    }
 
     if (kIsWeb) {
       // final image = Image.network(pickedFile.path);
@@ -1209,6 +1180,7 @@ class Api {
 
       /// Upload with binary bytes
       return await uploadFile(
+        isVideo: isVideo,
         bytes: bytes,
         deletePreviousUpload: deletePreviousUpload,
         onProgress: onProgress,
@@ -1219,18 +1191,26 @@ class Api {
     } else {
       // If it's mobile.
       File file;
-      // If there is image compressor (mostly only mobile.)
-      if (imageCompressor != null) {
-        file = await imageCompressor(pickedFile.path, quality);
-      } else {
-        // if there is no compresstor.
-        file = File(pickedFile.path);
+
+      if (!isVideo) {
+        // If there is image compressor (mostly only mobile.)
+        if (imageCompressor != null) {
+          print('imageCompressor');
+          file = await imageCompressor(pickedFile.path, quality);
+        } else {
+          // if there is no compresstor.
+          print('imageNoCompressor');
+          file = File(pickedFile.path);
+        }
       }
 
       print('code: $code in api.controller.dart::takeUploadfile');
+      file = File(pickedFile.path);
+      print('uploadFild: $file');
 
       /// Upload with file
       return await uploadFile(
+        isVideo: isVideo,
         file: file,
         deletePreviousUpload: deletePreviousUpload,
         onProgress: onProgress,
@@ -1350,16 +1330,11 @@ class Api {
   ///
   /// `session_id` will be added if the user had logged in.
   Future updateToken(String token, {String topic = ''}) {
-    return request(
-        {'route': 'notification.updateToken', 'token': token, 'topic': topic});
+    return request({'route': 'notification.updateToken', 'token': token, 'topic': topic});
   }
 
   sendMessageToTokens(
-      {String tokens,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String tokens, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTokens',
       'tokens': tokens,
@@ -1372,11 +1347,7 @@ class Api {
   }
 
   sendMessageToTopic(
-      {String topic,
-      String title,
-      String body,
-      Map<String, dynamic> data,
-      String imageUrl}) {
+      {String topic, String title, String body, Map<String, dynamic> data, String imageUrl}) {
     Map<String, dynamic> req = {
       'route': 'notification.sendMessageToTopic',
       'topic': topic,
@@ -1453,8 +1424,7 @@ class Api {
   ///
   /// This should called at least one time even if firebase is not initialized.
   _loadTranslationFromCenterX() async {
-    final res = await request(
-        {'route': 'translation.list', 'format': 'language-first'});
+    final res = await request({'route': 'translation.list', 'format': 'language-first'});
 
     /// When it is a List, there is no translation. It should be a Map when it has data.
     if (res is List) return;
@@ -1481,8 +1451,7 @@ class Api {
   _initMessaging() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (kIsWeb || Platform.isIOS) {
-      NotificationSettings settings =
-          await FirebaseMessaging.instance.requestPermission(
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -1498,8 +1467,7 @@ class Api {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null)
-            onNotificationPermissionDenied();
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied();
           break;
         case AuthorizationStatus.notDetermined:
           if (onNotificationPermissionNotDetermined != null)
@@ -1514,8 +1482,7 @@ class Api {
     FirebaseMessaging.onMessage.listen(onForegroundMessage);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       onMessageOpenedFromTermiated(initialMessage);
     }
@@ -1621,8 +1588,7 @@ class Api {
   /// There is no pagination. And the data from backend is minimum. So, it would be okay without pagination.
   /// The [days] is the past days from today to get the searched keywords. It might be adjusted for the performance of getting resonable number of search results.
   Future<List<ApiSearchKeyStat>> searchKeyStats({int days = 1}) async {
-    final searchKeys =
-        await request({'route': 'searchKey.stats', 'days': days});
+    final searchKeys = await request({'route': 'searchKey.stats', 'days': days});
 
     List<ApiSearchKeyStat> rets = [];
     if (searchKeys is List) return rets;
@@ -1693,14 +1659,12 @@ class Api {
   }
 
   Future<int> pointMove({String postIdx, String point}) async {
-    final res = await request(
-        {'route': 'point.move', 'postIdx': postIdx, 'point': point});
+    final res = await request({'route': 'point.move', 'postIdx': postIdx, 'point': point});
     return res['logIdx'];
   }
 
   Future<List<ApiShortUser>> listUser({String name}) async {
-    final List list = await request(
-        {'route': 'user.newSearch', 'limit': '10000', 'name': name});
+    final List list = await request({'route': 'user.newSearch', 'limit': '10000', 'name': name});
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
   }
 }

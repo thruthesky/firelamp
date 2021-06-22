@@ -57,8 +57,6 @@ class ApiShortUser {
           .thumbnailUrl(src: photoIdx, width: 100, height: 100, quality: 95, original: true);
     }
 
-    print('ApiShortUser: "${json['photoIdx']}');
-
     return ApiShortUser(
       idx: "${json['idx']}",
       name: json['name'] ?? '',
