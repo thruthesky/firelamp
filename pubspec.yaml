@@ -59,6 +59,7 @@ dependencies:
   permission_handler: ^6.0.1
   fluttertoast: ^8.0.1-nullsafety.0
   image_gallery_saver: ^1.6.9
+  video_player: ^2.1.6
 
 
 

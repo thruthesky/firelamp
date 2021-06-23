@@ -51,7 +51,7 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
     final result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data),
         quality: 100, name: "itsuda_${DateFormat("yyyyMMddHHmmss").format(DateTime.now())}");
     print(result);
-    toastInfo("다운로드 성공");
+    toastInfo("이미지가 다운로드되었습니다.");
   }
 
   @override
