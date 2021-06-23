@@ -81,7 +81,7 @@ class _AppVideoViewerState extends State<AppVideoViewer> {
       savePath,
     );
     print(result);
-    toastInfo("동영상이 다운로드되었습니다.");
+    toastInfo("동영상을 저장하였습니다.");
   }
 
   @override
