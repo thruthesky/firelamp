@@ -1,11 +1,13 @@
-import 'package:firelamp/widgets/image.cache.dart';
+import 'package:firelamp/widgets/functions.dart';
+// import 'package:firelamp/widgets/image.cache.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
 
 import 'package:firelamp/widgets/defines.dart';
 
 class DisplayUploadedFilesAndDeleteButtons extends StatefulWidget {
-  const DisplayUploadedFilesAndDeleteButtons({Key key, this.postOrComment, this.onError, @required this.onFileDelete})
+  const DisplayUploadedFilesAndDeleteButtons(
+      {Key key, this.postOrComment, this.onError, @required this.onFileDelete})
       : super(key: key);
 
   final postOrComment;
@@ -13,13 +15,16 @@ class DisplayUploadedFilesAndDeleteButtons extends StatefulWidget {
   final Function onFileDelete;
 
   @override
-  _DisplayUploadedFilesAndDeleteButtonsState createState() => _DisplayUploadedFilesAndDeleteButtonsState();
+  _DisplayUploadedFilesAndDeleteButtonsState createState() =>
+      _DisplayUploadedFilesAndDeleteButtonsState();
 }
 
-class _DisplayUploadedFilesAndDeleteButtonsState extends State<DisplayUploadedFilesAndDeleteButtons> {
+class _DisplayUploadedFilesAndDeleteButtonsState
+    extends State<DisplayUploadedFilesAndDeleteButtons> {
   @override
   Widget build(BuildContext context) {
-    if (widget.postOrComment == null || widget.postOrComment.files.length == 0) return SizedBox.shrink();
+    if (widget.postOrComment == null || widget.postOrComment.files.length == 0)
+      return SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -38,7 +43,7 @@ class _DisplayUploadedFilesAndDeleteButtonsState extends State<DisplayUploadedFi
                 fit: StackFit.expand,
                 children: [
                   ClipRRect(
-                    child: CachedImage(file.url),
+                    child: FileViewData(file: file),
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   Positioned(

@@ -1,8 +1,9 @@
 import 'package:firelamp/firelamp.dart';
-import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PostContent extends StatelessWidget {
   PostContent(
@@ -33,15 +34,27 @@ class PostContent extends StatelessWidget {
 
     return forum.postContentBuilder != null
         ? forum.postContentBuilder(forum, post, buildFor)
-        : Padding(
-            padding: padding,
-            child: Text(
-              '${post.content}',
-              key: ValueKey(FirelampKeys.element.postContent),
-              style: style,
-              maxLines: maxLines,
-              overflow: overflow,
-            ),
+        : Linkify(
+            onOpen: (link) async {
+              if (await canLaunch(link.url)) {
+                await launch(link.url);
+              } else {
+                throw 'Could not launch $link';
+              }
+            },
+            text: post.content,
+            linkStyle: TextStyle(color: Colors.blue),
           );
+
+    // Padding(
+    //   padding: padding,
+    //   child: Text(
+    //     '${post.content}',
+    //     key: ValueKey(FirelampKeys.element.postContent),
+    //     style: style,
+    //     maxLines: maxLines,
+    //     overflow: overflow,
+    //   ),
+    // );
   }
 }

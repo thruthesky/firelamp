@@ -1,6 +1,7 @@
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/comment/comment_content.dart';
 import 'package:firelamp/widgets/forum/shared/display_files.dart';
+import 'package:firelamp/widgets/itsuda/itsuda_confirm_dialog.dart';
 import 'package:firelamp/widgets/popup_button.dart';
 import 'package:firelamp/widgets/rounded_box.dart';
 import 'package:flutter/material.dart';
@@ -48,26 +49,51 @@ class _CommentViewState extends State<CommentView> {
 
     /// Delete
     if (selected == 'delete') {
-      bool conf = await confirm(
-        'confirm'.tr,
-        'comment_confirm_delete_message'.tr,
+      await showDialog(
+        context: context,
+        builder: (context) => ItsudaConfirmDialog(
+          title: '채팅하기',
+          content: Text(
+            '이 글을 삭제하시겠습니까?',
+            style: TextStyle(fontSize: 20),
+          ),
+          okButton: () async {
+            try {
+              await Api.instance.commentDelete(widget.comment, widget.post);
+              widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
+              if (widget.rerenderParent != null) widget.rerenderParent();
+              if (widget.forum.render != null) widget.forum.render();
+              Get.back();
+            } catch (e) {
+              if (widget.onError != null) {
+                widget.onError(e);
+              }
+            }
+          },
+        ),
       );
-      if (conf == false) return;
 
-      try {
-        await Api.instance.commentDelete(widget.comment, widget.post);
-        widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
-        if (widget.rerenderParent != null) widget.rerenderParent();
-        if (widget.forum.render != null) widget.forum.render();
-      } catch (e) {
-        if (widget.onError != null) {
-          widget.onError(e);
-        }
-      }
+      // bool conf = await confirm(
+      //   'confirm'.tr,
+      //   'comment_confirm_delete_message'.tr,
+      // );
+      // if (conf == false) return;
+
+      // try {
+      //   await Api.instance.commentDelete(widget.comment, widget.post);
+      //   widget.post.comments.removeWhere((c) => c.idx == widget.comment.idx);
+      //   if (widget.rerenderParent != null) widget.rerenderParent();
+      //   if (widget.forum.render != null) widget.forum.render();
+      // } catch (e) {
+      //   if (widget.onError != null) {
+      //     widget.onError(e);
+      //   }
+      // }
     }
   }
 
-  bool get canCancel => widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
+  bool get canCancel =>
+      widget.comment.mode == CommentMode.reply || widget.comment.mode == CommentMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +101,8 @@ class _CommentViewState extends State<CommentView> {
         ? SizedBox.shrink()
         : RoundedBox(
             padding: EdgeInsets.all(Space.xsm),
-            margin: EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
+            margin:
+                EdgeInsets.only(top: Space.xsm, left: Space.sm * (widget.comment.depth.toInt - 1)),
             boxColor: Colors.grey[100],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,18 +116,23 @@ class _CommentViewState extends State<CommentView> {
                     CommentMeta(forum: widget.forum, comment: widget.comment),
                   ],
                 ),
-                if (widget.comment.mode == CommentMode.none || widget.comment.mode == CommentMode.reply) ...[
+                if (widget.comment.mode == CommentMode.none ||
+                    widget.comment.mode == CommentMode.reply) ...[
                   CommentContent(widget.comment),
                   DisplayFiles(postOrComment: widget.comment),
                   Divider(height: Space.sm, thickness: 1.3),
                   Row(children: [
                     IconButton(
-                      icon:
-                          Icon(widget.comment.mode == CommentMode.reply ? Icons.close : Icons.reply_rounded, size: 20),
+                      icon: Icon(
+                          widget.comment.mode == CommentMode.reply
+                              ? Icons.close
+                              : Icons.reply_rounded,
+                          size: 20),
                       onPressed: () {
                         setState(() {
-                          widget.comment.mode =
-                              widget.comment.mode == CommentMode.reply ? CommentMode.none : CommentMode.reply;
+                          widget.comment.mode = widget.comment.mode == CommentMode.reply
+                              ? CommentMode.none
+                              : CommentMode.reply;
                         });
                       },
                     ),

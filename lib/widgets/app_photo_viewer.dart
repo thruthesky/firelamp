@@ -56,6 +56,7 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
 
   @override
   Widget build(BuildContext context) {
+    print('AppPhotoViewer');
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(

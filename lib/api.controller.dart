@@ -1167,9 +1167,11 @@ class Api {
     final picker = ImagePicker();
     PickedFile pickedFile;
     if (isVideo) {
+      print('takeUploadFile getVideo');
       pickedFile = await picker.getVideo(source: source, maxDuration: const Duration(seconds: 10));
       if (pickedFile == null) throw ERROR_VIDEO_NOT_SELECTED;
     } else {
+      print('takeUploadFile getImage');
       pickedFile = await picker.getImage(source: source);
       if (pickedFile == null) throw ERROR_IMAGE_NOT_SELECTED;
     }

@@ -53,7 +53,13 @@ class _PostFormState extends State<PostForm> {
     FocusScope.of(context).requestFocus(new FocusNode());
 
     try {
-      final file = await imageUpload(
+      // final file = await imageUpload(
+      //   quality: 95,
+      //   onProgress: (p) => setState(
+      //     () => percentage = p,
+      //   ),
+      // );
+      final file = await fileUpload(
         quality: 95,
         onProgress: (p) => setState(
           () => percentage = p,
@@ -63,7 +69,7 @@ class _PostFormState extends State<PostForm> {
       post.files.add(file);
       setState(() => null);
     } catch (e) {
-      if (e == ERROR_IMAGE_NOT_SELECTED) {
+      if (e == ERROR_IMAGE_NOT_SELECTED || e == ERROR_VIDEO_NOT_SELECTED) {
       } else {
         onError(e);
       }
@@ -134,8 +140,7 @@ class _PostFormState extends State<PostForm> {
                       setState(() {});
                     },
                     items: [
-                      DropdownMenuItem(
-                          child: Text('uncategorized'.tr), value: null),
+                      DropdownMenuItem(child: Text('uncategorized'.tr), value: null),
                       for (final String cat in widget.subcategories)
                         DropdownMenuItem(
                           child: Text(
@@ -190,8 +195,7 @@ class _PostFormState extends State<PostForm> {
                       padding: EdgeInsets.only(right: Space.sm),
                       child: LinearProgressIndicator(
                         value: percentage,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xFFFFdd00)),
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFdd00)),
                       ),
                     ),
                   ),

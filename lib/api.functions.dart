@@ -105,6 +105,16 @@ bool isImageUrl(t) {
   return false;
 }
 
+bool isMovie(t) {
+  if (t == null || t == '') return false;
+  if (t.startsWith('http://') || t.startsWith('https://')) {
+    if (t.endsWith('.mp4') || t.endsWith('.mov')) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /// The [birthdate] must be in 'YYMMDD' format. ie) 001122
 age(String birthdate) {
   if (birthdate == null || birthdate == '') return '0';

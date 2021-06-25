@@ -50,8 +50,7 @@ class _CommentFormState extends State<CommentForm> {
 
   bool loading = false;
 
-  bool get canSubmit =>
-      (content.text != '' || comment.files.isNotEmpty) && !loading;
+  bool get canSubmit => (content.text != '' || comment.files.isNotEmpty) && !loading;
   double percentage = 0;
 
   // file upload
@@ -59,7 +58,11 @@ class _CommentFormState extends State<CommentForm> {
     FocusScope.of(context).requestFocus(new FocusNode());
 
     try {
-      final file = await imageUpload(
+      // final file = await imageUpload(
+      //   quality: 95,
+      //   onProgress: (p) => setState(() => percentage = p),
+      // );
+      final file = await fileUpload(
         quality: 95,
         onProgress: (p) => setState(() => percentage = p),
       );
@@ -67,9 +70,10 @@ class _CommentFormState extends State<CommentForm> {
       comment.files.add(file);
       setState(() => null);
     } catch (e) {
-      if (e == ERROR_IMAGE_NOT_SELECTED) {
+      if (e == ERROR_IMAGE_NOT_SELECTED || e == ERROR_VIDEO_NOT_SELECTED) {
       } else {
-        onError(e);
+        print(e);
+        // onError(e);
       }
     }
   }
@@ -140,8 +144,7 @@ class _CommentFormState extends State<CommentForm> {
                   constraints: BoxConstraints(maxWidth: Space.md),
                   icon: Icon(Icons.close),
                   onPressed: widget.onCancel,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: Space.xsm),
                 ),
               IconButton(
                 alignment: Alignment.center,
@@ -167,10 +170,8 @@ class _CommentFormState extends State<CommentForm> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius:
-                          const BorderRadius.all(const Radius.circular(25.0)),
-                      borderSide:
-                          const BorderSide(color: Color(0xFFB8860B), width: 2),
+                      borderRadius: const BorderRadius.all(const Radius.circular(25.0)),
+                      borderSide: const BorderSide(color: Color(0xFFB8860B), width: 2),
                     ),
                   ),
                 ),
