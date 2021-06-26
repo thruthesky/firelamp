@@ -17,6 +17,7 @@ class ApiPointHistory {
     this.toUserPointAfter,
     this.createdAt,
     this.updatedAt,
+    this.title,
   });
   String idx;
   String fromUserIdx;
@@ -33,6 +34,7 @@ class ApiPointHistory {
   String toUserPointAfter;
   String createdAt;
   String updatedAt;
+  String title;
 
   factory ApiPointHistory.fromJson(dynamic json) {
     return ApiPointHistory(
@@ -51,11 +53,24 @@ class ApiPointHistory {
       toUserPointAfter: "${json['toUserPointAfter']}",
       createdAt: "${json['createdAt']}",
       updatedAt: "${json['updatedAt']}",
+      title: json['title'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return '';
+    return "ApiPointHistory(${toJson()})";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idx': idx,
+      'fromUserIdx': fromUserIdx,
+      'toUserIdx': toUserIdx,
+      'taxonomy': taxonomy,
+      'entity': entity,
+      'categoryIdx': categoryIdx,
+      'title': title,
+    };
   }
 }

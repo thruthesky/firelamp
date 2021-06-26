@@ -1567,7 +1567,7 @@ class Api {
   }
 
   Future<List<ApiPointHistory>> pointHistorySearch(
-      {String select = 'idx, fromUserIdx, toUserIdx, createdAt',
+      {String select = 'idx, fromUserIdx, toUserIdx, createdAt, taxonomy, entity, categoryIdx',
       String where = '1',
       int page = 1,
       int limit = 10}) async {
