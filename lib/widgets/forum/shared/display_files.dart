@@ -5,76 +5,150 @@ import 'package:flutter/material.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 
-class DisplayFiles extends StatelessWidget {
-  const DisplayFiles({
+import '../../app_video_viewer.dart';
+
+class DisplayFiles extends StatefulWidget {
+  DisplayFiles({
     Key key,
     this.postOrComment,
-    this.displayedImage = 4,
+    this.displayedImageOrMovie = 4,
   }) : super(key: key);
 
   final dynamic postOrComment;
-  final int displayedImage;
+  final int displayedImageOrMovie;
 
-  int get moreImage => postOrComment.files.length - displayedImage;
+  @override
+  _DisplayFilesState createState() => _DisplayFilesState();
+}
 
-  onImageTap(String idx) {
-    final i = postOrComment.files.indexWhere((file) => file.idx == idx);
-    Get.dialog(AppPhotoViewer(postOrComment.files, initialIndex: i));
+class _DisplayFilesState extends State<DisplayFiles> {
+  VideoPlayerController videoPlayerController;
+
+  initializePlayer(String url) async {
+    videoPlayerController = VideoPlayerController.network(url);
+    await Future.wait([
+      videoPlayerController.initialize(),
+    ]);
   }
 
-  Widget _imageBuilder(file, {bool withMoreImageOverlay = false}) {
-    Widget image = CachedImage(file.url);
+  int get moreFile => widget.postOrComment.files.length - widget.displayedImageOrMovie;
+
+  onImageTap(String idx) {
+    final i = widget.postOrComment.files.indexWhere((file) => file.idx == idx);
+    if (isImageUrl(widget.postOrComment.files[i].url)) {
+      Get.dialog(AppPhotoViewer(widget.postOrComment.files, initialIndex: i));
+    }
+  }
+
+  Widget _fileBuilder(file, {bool withMoreImageOverlay = false}) {
+    Widget image;
+    if (isImageUrl(file.url)) {
+      image = CachedImage(file.url);
+      print('isImageUrl: $isImageUrl(file.url');
+    } else if (isMovie(file.url)) {
+      initializePlayer(file.url);
+      print('videoPlayerController.value ${videoPlayerController.value}');
+    }
+
+//  Stack(alignment: AlignmentDirectional.center, children: [
+//                 AspectRatio(
+//                   aspectRatio: videoPlayerController.value.aspectRatio,
+//                   child: ClipRRect(
+//                       borderRadius: BorderRadius.circular(Space.xsm),
+//                       child: VideoPlayer(videoPlayerController)),
+//                 ),
+//                 GestureDetector(
+//                     behavior: HitTestBehavior.opaque,
+//                     child: Icon(
+//                       Icons.play_circle_outline,
+//                       color: Colors.white,
+//                       size: Space.xxl,
+//                     ),
+//                     onTap: () {
+//                       Get.dialog(AppVideoViewer([file]));
+//                     }),
+//               ]),
 
     return ClipRRect(
-      child: GestureDetector(
-        child: moreImage > 0
-            ? Stack(
-                fit: StackFit.expand,
-                children: [
-                  image,
-                  if (moreImage > 0 && withMoreImageOverlay)
-                    Container(
-                      color: Color.fromARGB(100, 0, 0, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '+ $moreImage',
-                            style: TextStyle(color: Colors.white, fontSize: Space.md),
+      child: image != null
+          ? GestureDetector(
+              child: moreFile > 0
+                  ? Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        image,
+                        if (moreFile > 0 && withMoreImageOverlay)
+                          Container(
+                            color: Color.fromARGB(100, 0, 0, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '+ $moreFile',
+                                  style: TextStyle(color: Colors.white, fontSize: Space.md),
+                                ),
+                                SizedBox(width: Space.xxs),
+                                Icon(Icons.image_outlined, size: Space.lg, color: Colors.white)
+                              ],
+                            ),
                           ),
-                          SizedBox(width: Space.xxs),
-                          Icon(Icons.image_outlined, size: Space.lg, color: Colors.white)
-                        ],
+                      ],
+                    )
+                  : image,
+              onTap: () => onImageTap(file.idx),
+            )
+          : Container(
+              child: AspectRatio(
+                aspectRatio: videoPlayerController.value.aspectRatio,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Stack(alignment: AlignmentDirectional.center, children: [
+                      AspectRatio(
+                        aspectRatio: videoPlayerController.value.aspectRatio,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(Space.xsm),
+                            child: VideoPlayer(videoPlayerController)),
                       ),
-                    ),
-                ],
-              )
-            : image,
-        onTap: () => onImageTap(file.idx),
-      ),
+                      GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          child: Icon(
+                            Icons.play_circle_outline,
+                            color: Colors.white,
+                            size: Space.xxl,
+                          ),
+                          onTap: () {
+                            Get.dialog(AppVideoViewer([file]));
+                          }),
+                    ]),
+                  ],
+                ),
+              ),
+            ),
       borderRadius: BorderRadius.circular(5.0),
     );
   }
 
   Widget _gridBuilder({bool hideFirstImage = false}) {
     List<ApiFile> _files = hideFirstImage
-        ? postOrComment.files.getRange(1, postOrComment.files.length).toList()
-        : postOrComment.files;
+        ? widget.postOrComment.files.getRange(1, widget.postOrComment.files.length).toList()
+        : widget.postOrComment.files;
 
-    return postOrComment.files.length > 3
+    return widget.postOrComment.files.length > 3
         ? StaggeredGridView.countBuilder(
             shrinkWrap: true,
             padding: EdgeInsets.all(0),
             crossAxisCount: 4,
-            itemCount: displayedImage,
+            itemCount: widget.displayedImageOrMovie,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) => Container(
                   child: (index + 1) > 4
                       ? SizedBox.shrink()
-                      : _imageBuilder(
+                      : _fileBuilder(
                           _files[index],
-                          withMoreImageOverlay: (index + 1) == (displayedImage - 1),
+                          withMoreImageOverlay: (index + 1) == (widget.displayedImageOrMovie - 1),
                         ),
                 ),
             staggeredTileBuilder: (int index) => StaggeredTile.count(
@@ -88,21 +162,21 @@ class DisplayFiles extends StatelessWidget {
             padding: EdgeInsets.all(0),
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: postOrComment.files.length <= 3 ? 2 : 3,
+            crossAxisCount: widget.postOrComment.files.length <= 3 ? 2 : 3,
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 4.0,
             children: [
-              for (ApiFile file in _files) _imageBuilder(file),
+              for (ApiFile file in _files) _fileBuilder(file),
             ],
           );
   }
 
   @override
   Widget build(BuildContext context) {
-    int filesLength = postOrComment.files.length;
+    int filesLength = widget.postOrComment.files.length;
 
     if (filesLength == 0) return SizedBox.shrink();
-    // if (filesLength == 1) return _imageBuilder(postOrComment.files.first);
+    if (filesLength == 1) return _fileBuilder(widget.postOrComment.files.first);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.sm),
@@ -110,12 +184,12 @@ class DisplayFiles extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: Space.xsm),
-          if (filesLength == 1) _imageBuilder(postOrComment.files.first),
+          if (filesLength == 1) _fileBuilder(widget.postOrComment.files.first),
           if (filesLength == 3) ...[
             Container(
               height: 200,
               width: double.maxFinite,
-              child: _imageBuilder(postOrComment.files.first),
+              child: _fileBuilder(widget.postOrComment.files.first),
             ),
             SizedBox(height: 4.0),
           ],

@@ -187,20 +187,21 @@ class _FileViewDataState extends State<FileViewData> {
           Center(
             child: videoPlayerController.value != null
                 ? AspectRatio(
-                    aspectRatio: videoPlayerController.value.aspectRatio,
+                    aspectRatio: videoPlayerController.value.aspectRatio * 1.2,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(Space.xsm),
                         child: VideoPlayer(videoPlayerController)),
                   )
                 : Container(),
           ),
-          IconButton(
-              icon: Icon(
+          GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              child: Icon(
                 Icons.play_circle_outline,
                 color: Colors.white,
                 size: Space.xxl,
               ),
-              onPressed: () {
+              onTap: () {
                 ApiFile file = ApiFile.fromJson({'url': widget.file.url, 'idx': widget.file.idx});
                 Get.dialog(AppVideoViewer([file]));
               }),
