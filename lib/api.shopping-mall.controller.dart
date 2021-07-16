@@ -184,7 +184,7 @@ class Cart extends GetxController {
       // print(re);
 
     } catch (e) {
-      print('앗! 쇼핑몰 설정 정보를 가져오는데 실패했습니다. 에러메시지: ');
+      print('쇼핑몰 설정 정보를 가져오는데 실패했습니다. 에러메시지: ');
       print(e);
       rethrow;
     }

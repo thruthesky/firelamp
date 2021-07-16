@@ -12,6 +12,8 @@ class ApiUser {
   String plid;
   String agegroup;
   String point;
+  String token;
+  String recommendation;
 
   String get age {
     return calAge(birthdate);
@@ -97,6 +99,8 @@ class ApiUser {
     this.photoIdx,
     this.photoUrl,
     this.point,
+    this.token,
+    this.recommendation,
     this.createdAt,
     this.updatedAt,
   });
@@ -138,6 +142,8 @@ class ApiUser {
       photoUrl = json['photoUrl'];
     }
     point = "${json['point']}";
+    token = "${json['atoken']}";
+    recommendation = "${json['recommendation'] ?? ''}";
     createdAt = "${json['createdAt'] ?? 0}";
     updatedAt = "${json['updatedAt'] ?? 0}";
   }
@@ -170,6 +176,8 @@ class ApiUser {
     data['photoIdx'] = this.photoIdx;
     data['photoUrl'] = this.photoUrl;
     data['point'] = this.point;
+    data['atoken'] = this.token;
+    data['recommendation'] = this.recommendation;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
 

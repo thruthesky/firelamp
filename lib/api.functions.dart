@@ -95,7 +95,8 @@ int discount(int price, int rate) {
   return (price * (100 - rate) / 100).round();
 }
 
-bool isImageUrl(t) {
+bool isImageUrl(text) {
+  String t = text.toLowerCase();
   if (t == null || t == '') return false;
   if (t.startsWith('http://') || t.startsWith('https://')) {
     if (t.endsWith('.jpg') || t.endsWith('.jpeg') || t.endsWith('.gif') || t.endsWith('.png')) {
@@ -105,7 +106,8 @@ bool isImageUrl(t) {
   return false;
 }
 
-bool isMovie(t) {
+bool isMovie(text) {
+  String t = text.toLowerCase();
   if (t == null || t == '') return false;
   if (t.startsWith('http://') || t.startsWith('https://')) {
     if (t.endsWith('.mp4') || t.endsWith('.mov')) {

@@ -33,10 +33,6 @@ class PostThumbnailPreview extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     thumbnail,
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(8),
-                    //   child: CachedImage(post.files[0].url, width: 100, height: 80),
-                    // ),
                     Positioned(
                         left: -15,
                         bottom: -15,
@@ -48,10 +44,35 @@ class PostThumbnailPreview extends StatelessWidget {
                 SizedBox(width: Space.xsm),
               ],
               if (!post.hasFiles) ...[
-                avatarBuilder != null
-                    ? avatarBuilder(post, 65.0)
-                    : UserAvatar(post.user.photoUrl, size: 65),
-                SizedBox(width: Space.xsm),
+                if (forum.categoryId == 'attend') ...[
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 80,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset('assets/images/community_attend_background.png',
+                              fit: BoxFit.fill),
+                        ),
+                      ),
+                      Positioned(
+                          left: -15,
+                          bottom: -15,
+                          child: avatarBuilder != null
+                              ? avatarBuilder(post, 40.0)
+                              : UserAvatar(post.user.photoUrl, size: 40)),
+                    ],
+                  ),
+                  SizedBox(width: Space.xsm),
+                ],
+                if (forum.categoryId != 'attend') ...[
+                  avatarBuilder != null
+                      ? avatarBuilder(post, 65.0)
+                      : UserAvatar(post.user.photoUrl, size: 65),
+                  SizedBox(width: Space.xsm),
+                ]
               ],
               Expanded(
                 child: Column(

@@ -251,7 +251,7 @@ class Api {
             }
           } else if (e.code == 'wrong-password') {
             print('Firebase auth: Wrong password provided for that user. user: ${user.email}');
-            alert('앗! 데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
+            alert('데이터베이스 로그인에 실패하였습니다. (에러코드: Firebase auth: wrong password)');
           }
         } catch (e) {
           print(e);
@@ -346,7 +346,7 @@ class Api {
 
   Future<dynamic> request(Map<String, dynamic> data) async {
     // print('request: $data');
-    // _printDebugUrl(data);
+    _printDebugUrl(data);
     data = _addSessionId(data);
     // final res = await dio.get(url, queryParameters: data);
 
@@ -355,8 +355,13 @@ class Api {
       // _printDebugUrl(data);
       res = await dio.post(apiUrl, data: data);
     } catch (e) {
+      if (e.error is SocketException) {
+        alert('네트워크 연결을 확인해주세요.');
+      }
+
       print('dio.post() got error; apiUrl: $apiUrl');
       print(e);
+      print(data);
       _printDebugUrl(data);
       rethrow;
     }
@@ -541,6 +546,7 @@ class Api {
   ///   - update app
   ///   - return user
   Future<ApiUser> refreshProfile({String sessionId}) async {
+    print('refreshProfile');
     if (sessionId == null) sessionId = this.sessionId;
     loading.profile = true;
     final Map<String, dynamic> res =
@@ -1640,6 +1646,21 @@ class Api {
   Future<List<ApiShortUser>> listFriend() async {
     final List list = await request({'route': 'friend.list'});
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
+  }
+
+  Future<ApiUser> addRecommendation({@required String otherIdx}) async {
+    final res = await request({'route': 'recommendation.add', 'otherIdx': otherIdx})
+        .then((value) => ApiUser.fromJson(value));
+    return res;
+  }
+
+  Future<dynamic> getNickname() async {
+    try {
+      final Map<String, dynamic> res =
+          await request({'route': 'recommendation.getNickname'}).then((value) => value);
+      ApiUser user = ApiUser.fromJson(res);
+      return user.nickname;
+    } catch (e) {}
   }
 
   Future<List<ApiShortUser>> blockListFriend() async {

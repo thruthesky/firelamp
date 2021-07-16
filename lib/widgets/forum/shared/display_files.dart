@@ -190,8 +190,8 @@ class _DisplayFilesState extends State<DisplayFiles> {
       }
     }
 
-    print('videoFileslength: ${videoFiles.length}');
-    print('imagefileslength: ${imagefiles.length}');
+    // print('videoFileslength: ${videoFiles.length}');
+    // print('imagefileslength: ${imagefiles.length}');
 
     return Column(
       children: [

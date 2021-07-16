@@ -77,6 +77,7 @@ class _PostFormState extends State<PostForm> {
   }
 
   onFormSubmit() async {
+    print('onFormSubmit()');
     if (loading) return;
     setState(() => loading = true);
 
@@ -107,8 +108,9 @@ class _PostFormState extends State<PostForm> {
   void initState() {
     super.initState();
     post = widget.forum.postInEdit;
-    title.text = post.title;
-    content.text = post.content;
+    // title.text = post.title;
+
+    print('PostForm: ${widget.forum.categoryId}');
   }
 
   @override
@@ -157,7 +159,6 @@ class _PostFormState extends State<PostForm> {
               ]),
             Padding(
               padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
-              child: Text('title'.tr),
             ),
             TextFormField(
               cursorColor: Color(0xFFB8860B),

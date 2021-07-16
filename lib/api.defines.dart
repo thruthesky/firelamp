@@ -10,6 +10,10 @@ const String ERROR_EMPTY_TOKENS = 'ERROR_EMPTY_TOKENS';
 const String ERROR_EMPTY_RESPONSE = 'ERROR_EMPTY_RESPONSE';
 
 const String ERROR_ALREADY_ADDED_AS_FRIEND = 'error_already_added_as_friend';
+const String ERROR_CANNOT_ADD_ONESELF_AS_FRIEND = 'error_cannot_add_oneself_as_friend';
+const String ERROR_ALREADY_ADDED_AS_RECOMMENDATION = 'error_already_added_as_recommendation';
+const String ERROR_CANNOT_ADD_ONESELF_AS_RECOMMENDATION =
+    'error_cannot_add_oneself_as_recommendation';
 const String ERROR_USER_NOT_FOUND_BY_THAT_EMAIL = 'error_user_not_found_by_that_email';
 const String ERROR_NO_RELATIONSHIP = 'error_no_relationship';
 
