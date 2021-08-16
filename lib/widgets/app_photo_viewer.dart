@@ -67,14 +67,14 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
               scrollPhysics: const BouncingScrollPhysics(),
               builder: (BuildContext context, int i) {
                 return PhotoViewGalleryPageOptions(
-                  minScale: .3,
+                  // minScale: .3,
                   imageProvider: NetworkImage(widget.files[i].url),
                   initialScale: PhotoViewComputedScale.contained * 1,
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.files[i].idx),
                 );
               },
               loadingBuilder: (context, event) => Center(
-                child: Spinner(valueColor: Colors.white),
+                child: Spinner(valueColor: Color(0xFFFFdd00)),
               ),
               pageController: _controller,
               onPageChanged: (i) => setState(() => currentIndex = i),
@@ -91,28 +91,31 @@ class _AppPhotoViewerState extends State<AppPhotoViewer> {
                     icon: Icon(Icons.download_rounded, color: Colors.yellow, size: Space.xl),
                     onPressed: () {
                       requestPermission();
-                      getNetworkImage(widget.files[currentIndex].url);
+                      getNetworkImage(
+                        widget.files[currentIndex].url,
+                      );
                     }),
               ],
             ),
           ),
           if (currentIndex != 0)
             Positioned(
+              left: -20,
               bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
               // left: Space.md,
-              child: IconButton(
-                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: Space.xxl),
-                onPressed: () => _controller.previousPage(
+              child: GestureDetector(
+                child: Icon(Icons.arrow_left_rounded, color: Color(0xFFFFdd00), size: 100),
+                onTap: () => _controller.previousPage(
                     duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),
           if (currentIndex != widget.files.length - 1)
             Positioned(
               bottom: (MediaQuery.of(context).size.height / 2) - Space.xl,
-              right: Space.md,
-              child: IconButton(
-                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: Space.xxl),
-                onPressed: () =>
+              right: -20,
+              child: GestureDetector(
+                child: Icon(Icons.arrow_right_rounded, color: Color(0xFFFFdd00), size: 100),
+                onTap: () =>
                     _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease),
               ),
             ),

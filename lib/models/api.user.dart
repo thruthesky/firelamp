@@ -142,7 +142,7 @@ class ApiUser {
       photoUrl = json['photoUrl'];
     }
     point = "${json['point']}";
-    token = "${json['atoken']}";
+    token = "${json['atoken'] ?? 0}";
     recommendation = "${json['recommendation'] ?? ''}";
     createdAt = "${json['createdAt'] ?? 0}";
     updatedAt = "${json['updatedAt'] ?? 0}";

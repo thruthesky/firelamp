@@ -335,9 +335,9 @@ class Api {
     });
 
     try {
-      String queryString = Uri(queryParameters: params).query;
-      print("_printDebugUrl::: $apiUrl?$queryString");
-      debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
+      // String queryString = Uri(queryParameters: params).query;
+      // print("_printDebugUrl::: $apiUrl?$queryString");
+      // debugPrint("_printDebugUrl: $apiUrl?$queryString", wrapWidth: 1024);
     } catch (e) {
       print("Caught error on _printDebug() with data: ");
       print(data);
@@ -841,7 +841,7 @@ class Api {
       'route': 'post.delete',
       'idx': post.idx,
     });
-    if (forum != null) {
+    if (forum != null && forum.categoryId != 'noCategory') {
       int i = forum.posts.indexWhere((p) => p.idx == post.idx);
       forum.posts.removeAt(i);
     }
@@ -971,7 +971,7 @@ class Api {
       data['where'] += " AND createdAt > $seconds";
     }
 
-    print("where: ${data['where']}");
+    // print("where: ${data['where']}");
 
     final jsonList = await request(data);
 
@@ -1656,8 +1656,9 @@ class Api {
 
   Future<dynamic> getNickname() async {
     try {
-      final Map<String, dynamic> res =
+      final dynamic res =
           await request({'route': 'recommendation.getNickname'}).then((value) => value);
+      if (res == 'recommendation_is_empty') return '';
       ApiUser user = ApiUser.fromJson(res);
       return user.nickname;
     } catch (e) {}
@@ -1686,8 +1687,11 @@ class Api {
     return res['logIdx'];
   }
 
-  Future<List<ApiShortUser>> listUser({String name}) async {
-    final List list = await request({'route': 'user.newSearch', 'limit': '10000', 'name': name});
+  Future<List<ApiShortUser>> users() async {
+    List list = [];
+
+    list = await request({'route': 'user.list'});
+
     return list.map((e) => ApiShortUser.fromJson(e)).toList();
   }
 }

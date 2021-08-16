@@ -8,7 +8,7 @@ class PostMeta extends StatelessWidget {
     this.forum, {
     this.showAvatar = false,
     this.isInlineName = false,
-    this.iconColor = const Color(0xffbadbd8),
+    this.iconColor = const Color(0xFFFFdd00),
   });
 
   final ApiPost post;

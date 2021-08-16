@@ -42,6 +42,7 @@ class _CommentViewState extends State<CommentView> {
   onPopupMenuItemSelected(selected) async {
     /// Edit
     if (selected == 'edit') {
+      print('edit: $selected');
       setState(() {
         widget.comment.mode = CommentMode.edit;
       });
@@ -52,7 +53,7 @@ class _CommentViewState extends State<CommentView> {
       await showDialog(
         context: context,
         builder: (context) => ItsudaConfirmDialog(
-          title: '채팅하기',
+          title: '글 삭제하기',
           content: Text(
             '이 글을 삭제하시겠습니까?',
             style: TextStyle(fontSize: 20),

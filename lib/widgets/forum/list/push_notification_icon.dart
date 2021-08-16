@@ -24,7 +24,7 @@ class _PushNotificationIconState extends State<PushNotificationIcon> {
   }
 
   initPushNotificationIcons() {
-    if (widget.forum.categoryId == null) return;
+    if (widget.forum.categoryId == null || widget.forum.categoryId == 'noCategory') return;
 
     /// Get latest user's profile from backend
     if (api.loggedIn) {

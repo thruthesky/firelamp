@@ -1,5 +1,6 @@
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/functions.dart';
+import 'package:firelamp/widgets/itsuda/itsuda_confirm_dialog.dart';
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class PostForm extends StatefulWidget {
     this.onSuccess,
     this.onCancel,
     this.onError,
+    this.togglePostForm,
     @required this.onFileDelete,
   });
   final ApiForum forum;
@@ -22,6 +24,7 @@ class PostForm extends StatefulWidget {
   final Function onCancel;
   final Function onError;
   final Function onFileDelete;
+  final Function togglePostForm;
   final List<String> subcategories;
 
   @override
@@ -108,15 +111,16 @@ class _PostFormState extends State<PostForm> {
   void initState() {
     super.initState();
     post = widget.forum.postInEdit;
-    // title.text = post.title;
-
+    title.text = post.title;
+    content.text = post.content;
     print('PostForm: ${widget.forum.categoryId}');
   }
 
   @override
   Widget build(BuildContext context) {
     ApiForum forum = widget.forum;
-
+    // if (forum.postInEdit.subcategory != '' || forum.postInEdit.subcategory != null)
+    //   forum.subcategory = forum.postInEdit.subcategory;
     if (forum.postInEdit == null) return SizedBox.shrink();
     return SingleChildScrollView(
       child: Container(
@@ -206,28 +210,42 @@ class _PostFormState extends State<PostForm> {
                   children: [
                     if (!loading)
                       TextButton(
-                        child: Text(
-                          'cancel'.tr,
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                        onPressed: () {
-                          forum.postInEdit = null;
-                          if (widget.onCancel != null) widget.onCancel();
-                        },
-                      ),
-                    SizedBox(width: Space.xs),
-                    TextButton(
-                      key: ValueKey(FirelampKeys.button.postFormSubmit),
-                      child: loading
-                          ? Spinner()
-                          : Text(
-                              'submit'.tr,
-                              style: TextStyle(color: Colors.black),
+                          child: Text(
+                            'cancel'.tr,
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
-                      onPressed: onFormSubmit,
-                    ),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ItsudaConfirmDialog(
+                                title: '글쓰기 취소',
+                                content: Text(
+                                  '글쓰기에서 나가겠습니까?',
+                                  style: Theme.of(Get.context).textTheme.bodyText1,
+                                ),
+                                okButton: () {
+                                  forum.postInEdit = null;
+                                  if (widget.onCancel != null) widget.onCancel();
+                                  widget.togglePostForm();
+                                  Get.back();
+                                },
+                              ),
+                            );
+                          }),
+                    TextButton(
+                        key: ValueKey(FirelampKeys.button.postFormSubmit),
+                        child: loading
+                            ? Spinner()
+                            : Text(
+                                'submit'.tr,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                        onPressed: () {
+                          onFormSubmit();
+                          widget.togglePostForm();
+                        }),
                   ],
                 ),
               ],

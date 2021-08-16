@@ -153,6 +153,7 @@ class ApiForum {
   ApiPost get postInEdit => _postInEdit;
   set postInEdit(ApiPost post) {
     _postInEdit = post;
+    // debugPrint('set post: $post');
     render();
     notifyListeners(ForumEventType.edit, post);
   }
@@ -204,9 +205,14 @@ class ApiForum {
   final List _listeners = [];
   void addListener(listener) {
     _listeners.add(listener);
+    print('_listeners: $_listeners');
   }
 
   void notifyListeners(ForumEventType forumEventType, dynamic data) {
+    print('notifyListeners _listeners: $_listeners');
+    print('notifyListeners forumEventType: $forumEventType');
+    // debugPrint('notifyListeners data: $data');
+
     for (final listener in _listeners) {
       listener(ForumEvent(forumEventType, data));
     }
@@ -232,6 +238,7 @@ class ApiForum {
   /// ```
   editPost(ApiPost post) {
     postInEdit = post;
+    // debugPrint('editPost postInEdit: $postInEdit');
   }
 
   /// Inserts a new post on top or updates an existing post.
@@ -255,5 +262,35 @@ class ApiForum {
       WidgetsBinding.instance.addPostFrameCallback((x) {
         listController.jumpTo(index: jumpTo);
       });
+  }
+
+  Map<String, dynamic> toJson() => {
+        'setting': setting,
+        'subcategory': subcategory,
+        'userIdx': userIdx,
+        'relationIdx': relationIdx,
+        'searchKey': searchKey,
+        'limit': limit,
+        'render': render,
+        'loadMoreOn': loadMoreOn,
+        'loadMore': loadMore,
+        'categoryId': categoryId,
+        'post': post,
+        'onChatIconPressed': onChatIconPressed,
+        'commentButtonBuilder': commentButtonBuilder,
+        'postTitleBuilder': postTitleBuilder,
+        'postContentBuilder': postContentBuilder,
+        'postButtonBuilder': postButtonBuilder,
+        'postBottomBuilder': postBottomBuilder,
+        'postAvatarBuilder': postAvatarBuilder,
+        'commentAvatarBuilder': commentAvatarBuilder,
+        'commentNameBuilder': commentNameBuilder,
+        'commentVisibility': commentVisibility,
+        'commentCanEdit': commentCanEdit,
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
