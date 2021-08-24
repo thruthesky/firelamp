@@ -205,12 +205,12 @@ class ApiForum {
   final List _listeners = [];
   void addListener(listener) {
     _listeners.add(listener);
-    print('_listeners: $_listeners');
+    // print('addListener: $_listeners');
   }
 
   void notifyListeners(ForumEventType forumEventType, dynamic data) {
-    print('notifyListeners _listeners: $_listeners');
-    print('notifyListeners forumEventType: $forumEventType');
+    // print('notifyListeners _listeners: $_listeners');
+    // print('notifyListeners forumEventType: $forumEventType');
     // debugPrint('notifyListeners data: $data');
 
     for (final listener in _listeners) {

@@ -2,6 +2,7 @@ import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/functions.dart';
 import 'package:firelamp/widgets/itsuda/itsuda_confirm_dialog.dart';
 import 'package:firelamp/widgets/spinner.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:firelamp/firelamp.dart';
@@ -113,7 +114,13 @@ class _PostFormState extends State<PostForm> {
     post = widget.forum.postInEdit;
     title.text = post.title;
     content.text = post.content;
+    SchedulerBinding.instance.addPostFrameCallback((_) => widget.togglePostForm(true));
     print('PostForm: ${widget.forum.categoryId}');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -228,7 +235,7 @@ class _PostFormState extends State<PostForm> {
                                 okButton: () {
                                   forum.postInEdit = null;
                                   if (widget.onCancel != null) widget.onCancel();
-                                  widget.togglePostForm();
+                                  widget.togglePostForm(false);
                                   Get.back();
                                 },
                               ),
@@ -244,7 +251,7 @@ class _PostFormState extends State<PostForm> {
                               ),
                         onPressed: () {
                           onFormSubmit();
-                          widget.togglePostForm();
+                          widget.togglePostForm(false);
                         }),
                   ],
                 ),
