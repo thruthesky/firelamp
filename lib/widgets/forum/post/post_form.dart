@@ -1,6 +1,7 @@
 import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/functions.dart';
 import 'package:firelamp/widgets/itsuda/itsuda_confirm_dialog.dart';
+import 'package:firelamp/widgets/itsuda/itsuda_text_dialog.dart';
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,8 @@ import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_
 class PostForm extends StatefulWidget {
   PostForm(
     this.forum, {
-    this.subcategories = const [],
+    this.mainCategories = const [],
+    this.subcategories = const {},
     this.onSuccess,
     this.onCancel,
     this.onError,
@@ -26,20 +28,27 @@ class PostForm extends StatefulWidget {
   final Function onError;
   final Function onFileDelete;
   final Function togglePostForm;
-  final List<String> subcategories;
+  final List<String> mainCategories;
+  // final List<String> subcategories;
+  final Map<String, ApiCategory> subcategories;
 
   @override
   _PostFormState createState() => _PostFormState();
 }
 
 class _PostFormState extends State<PostForm> {
-  final title = TextEditingController();
-  final content = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  // final title = TextEditingController();
+  // final content = TextEditingController();
+  String title;
+  String content;
   double percentage = 0;
   bool loading = false;
   ApiPost post;
-  List<String> categories;
+  List<String> subCategories = [];
   String category;
+  String mainCategory;
+  String subCategory;
 
   InputDecoration _inputDecoration = InputDecoration(
     filled: true,
@@ -89,13 +98,19 @@ class _PostFormState extends State<PostForm> {
     try {
       final editedPost = await Api.instance.postEdit(
         idx: post.idx,
-        categoryId: widget.forum.categoryId,
-        subcategory: widget.forum.subcategory,
-        title: title.text,
-        content: content.text,
+        // categoryId: widget.forum.categoryId,
+        // subcategory: widget.forum.subcategory,
+        categoryId: mainCategory,
+        subcategory: subCategory,
+        title: title,
+        content: content,
         files: post.files,
       );
       widget.forum.insertOrUpdatePost(editedPost);
+      showDialog(
+          context: context,
+          builder: (_) =>
+              ItsudaTextDialog(content: '글쓰기 ${editedPost.appliedPoint}포인트를 취득하였습니다.'));
       setState(() => loading = false);
       if (widget.onSuccess != null) widget.onSuccess(editedPost);
     } catch (e) {
@@ -111,10 +126,19 @@ class _PostFormState extends State<PostForm> {
   @override
   void initState() {
     super.initState();
+
     post = widget.forum.postInEdit;
-    title.text = post.title;
-    content.text = post.content;
+    if (widget.forum.categoryId == null || widget.forum.categoryId == 'noCategory')
+      mainCategory = null;
+    else
+      mainCategory = widget.forum.categoryId;
+    subCategories = widget.subcategories[mainCategory]?.subcategories ?? [];
+    subCategory = post.subcategory;
+    title = post.title;
+    content = post.content;
+
     SchedulerBinding.instance.addPostFrameCallback((_) => widget.togglePostForm(true));
+
     print('PostForm: ${widget.forum.categoryId}');
   }
 
@@ -129,38 +153,41 @@ class _PostFormState extends State<PostForm> {
     // if (forum.postInEdit.subcategory != '' || forum.postInEdit.subcategory != null)
     //   forum.subcategory = forum.postInEdit.subcategory;
     if (forum.postInEdit == null) return SizedBox.shrink();
-    return SingleChildScrollView(
-      child: Container(
-        key: ValueKey(FirelampKeys.element.postEditForm),
-        padding: EdgeInsets.all(Space.sm),
-        decoration: BoxDecoration(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (widget.subcategories.isNotEmpty)
+    return Form(
+      key: formKey,
+      child: SingleChildScrollView(
+        child: Container(
+          key: ValueKey(FirelampKeys.element.postEditForm),
+          padding: EdgeInsets.all(Space.sm),
+          decoration: BoxDecoration(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Row(children: [
-                Text('subcategory'.tr),
+                Text('메인카테고리'),
                 SizedBox(width: Space.md),
                 Expanded(
-                  child: DropdownButton<String>(
+                  child: DropdownButtonFormField<String>(
                     isExpanded: true,
-                    value: forum.subcategory,
-                    hint: Text('uncategorized'.tr),
-                    onChanged: (cat) {
-                      if (cat == forum.subcategory) return;
-                      forum.subcategory = cat;
+                    value: mainCategory,
+                    hint: Text('메인카테고리를 선택해 주세요.'),
+                    onChanged: (cat) async {
+                      if (cat == mainCategory) return;
+                      mainCategory = cat;
+                      subCategories = widget.subcategories[mainCategory]?.subcategories ?? [];
+                      subCategory = null;
                       setState(() {});
                     },
+                    validator: (value) => value == null ? '메인카테고리를 선택해 주세요.' : null,
                     items: [
-                      DropdownMenuItem(child: Text('uncategorized'.tr), value: null),
-                      for (final String cat in widget.subcategories)
+                      DropdownMenuItem(child: Text('메인카테고리를 선택해 주세요.'), value: null),
+                      for (final String cat in widget.mainCategories)
                         DropdownMenuItem(
                           child: Text(
-                            '$cat',
-                            style: cat == forum.subcategory
-                                ? TextStyle(fontWeight: FontWeight.bold)
-                                : null,
+                            '$cat'.tr,
+                            style:
+                                cat == mainCategory ? TextStyle(fontWeight: FontWeight.bold) : null,
                           ),
                           value: cat,
                         ),
@@ -168,96 +195,167 @@ class _PostFormState extends State<PostForm> {
                   ),
                 ),
               ]),
-            Padding(
-              padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
-            ),
-            TextFormField(
-              cursorColor: Color(0xFFB8860B),
-              key: ValueKey(FirelampKeys.element.postTitleInput),
-              controller: title,
-              decoration: _inputDecoration,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: Space.md, bottom: Space.xs),
-              child: Text('content'.tr),
-            ),
-            TextFormField(
-              cursorColor: Color(0xFFB8860B),
-              key: ValueKey(FirelampKeys.element.postContentInput),
-              controller: content,
-              minLines: 5,
-              maxLines: 15,
-              decoration: _inputDecoration,
-            ),
-            DisplayUploadedFilesAndDeleteButtons(
-              postOrComment: forum.postInEdit,
-              onFileDelete: widget.onFileDelete,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                /// Upload Button
-                IconButton(
-                  icon: Icon(Icons.camera_alt),
-                  onPressed: onImageIconTap,
+              Row(children: [
+                Text('subcategory'.tr),
+                SizedBox(width: Space.md),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: subCategory,
+                    hint: Text('uncategorized'.tr),
+                    onChanged: (cat) {
+                      if (cat == subCategory) return;
+                      subCategory = cat;
+                      setState(() {});
+                    },
+                    validator: (value) => value == null ? '서브카테고리를 선택해 주세요.' : null,
+                    items: [
+                      DropdownMenuItem(child: Text('uncategorized'.tr), value: null),
+                      for (final String cat in subCategories)
+                        DropdownMenuItem(
+                          child: Text(
+                            '$cat',
+                            style:
+                                cat == subCategory ? TextStyle(fontWeight: FontWeight.bold) : null,
+                          ),
+                          value: cat,
+                        ),
+                    ],
+                  ),
                 ),
-                if (percentage > 0)
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: Space.sm),
-                      child: LinearProgressIndicator(
-                        value: percentage,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFdd00)),
+              ]),
+              Padding(
+                padding: EdgeInsets.only(top: Space.xs, bottom: Space.xs),
+              ),
+              TextFormField(
+                cursorColor: Color(0xFFB8860B),
+                key: ValueKey(FirelampKeys.element.postTitleInput),
+                // controller: title,
+                initialValue: title,
+                decoration: _inputDecoration,
+                onSaved: (val) {
+                  setState(() {
+                    this.title = val;
+                  });
+                },
+                validator: (val) {
+                  if (val.length < 1) {
+                    return '제목은 필수사항입니다.';
+                  }
+
+                  if (val.length < 2) {
+                    return '제목은 2글자 이상 입력 해주셔야합니다.';
+                  }
+
+                  return null;
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: Space.md, bottom: Space.xs),
+                child: Text('content'.tr),
+              ),
+              TextFormField(
+                cursorColor: Color(0xFFB8860B),
+                key: ValueKey(FirelampKeys.element.postContentInput),
+                // controller: content,
+                initialValue: content,
+
+                minLines: 5,
+                maxLines: 15,
+                decoration: _inputDecoration,
+                onSaved: (val) {
+                  setState(() {
+                    this.content = val;
+                  });
+                },
+                validator: (val) {
+                  if (val.length < 1) {
+                    return '내용은 필수사항입니다.';
+                  }
+
+                  if (val.length < 5) {
+                    return '내용은 5글자 이상 입력 해주셔야합니다.';
+                  }
+
+                  return null;
+                },
+              ),
+              DisplayUploadedFilesAndDeleteButtons(
+                postOrComment: forum.postInEdit,
+                onFileDelete: widget.onFileDelete,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  /// Upload Button
+                  IconButton(
+                    icon: Icon(Icons.camera_alt),
+                    onPressed: onImageIconTap,
+                  ),
+                  if (percentage > 0)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: Space.sm),
+                        child: LinearProgressIndicator(
+                          value: percentage,
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFdd00)),
+                        ),
                       ),
                     ),
-                  ),
 
-                /// Submit button
-                Row(
-                  children: [
-                    if (!loading)
-                      TextButton(
-                          child: Text(
-                            'cancel'.tr,
-                            style: TextStyle(
-                              color: Colors.black,
+                  /// Submit button
+                  Row(
+                    children: [
+                      if (!loading)
+                        TextButton(
+                            child: Text(
+                              'cancel'.tr,
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ItsudaConfirmDialog(
-                                title: '글쓰기 취소',
-                                content: Text(
-                                  '글쓰기에서 나가겠습니까?',
-                                  style: Theme.of(Get.context).textTheme.bodyText1,
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ItsudaConfirmDialog(
+                                  title: '글쓰기 취소',
+                                  content: Text(
+                                    '글쓰기에서 나가겠습니까?',
+                                    style: Theme.of(Get.context).textTheme.bodyText1,
+                                  ),
+                                  okButton: () {
+                                    forum.postInEdit = null;
+                                    if (widget.onCancel != null) widget.onCancel();
+                                    widget.togglePostForm(false);
+                                    Get.back();
+                                  },
                                 ),
-                                okButton: () {
-                                  forum.postInEdit = null;
-                                  if (widget.onCancel != null) widget.onCancel();
-                                  widget.togglePostForm(false);
-                                  Get.back();
-                                },
-                              ),
-                            );
+                              );
+                            }),
+                      TextButton(
+                          key: ValueKey(FirelampKeys.button.postFormSubmit),
+                          child: loading
+                              ? Spinner()
+                              : Text(
+                                  'submit'.tr,
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                          onPressed: () {
+                            if (formKey.currentState.validate()) {
+                              //form is valid, proceed further
+                              formKey.currentState
+                                  .save(); //save once fields are valid, onSaved method invoked for every form fields
+
+                              onFormSubmit();
+                              widget.togglePostForm(false);
+                            }
                           }),
-                    TextButton(
-                        key: ValueKey(FirelampKeys.button.postFormSubmit),
-                        child: loading
-                            ? Spinner()
-                            : Text(
-                                'submit'.tr,
-                                style: TextStyle(color: Colors.black),
-                              ),
-                        onPressed: () {
-                          onFormSubmit();
-                          widget.togglePostForm(false);
-                        }),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
