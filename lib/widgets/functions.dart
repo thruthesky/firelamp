@@ -90,24 +90,26 @@ Future<ApiFile> fileUpload({
                   leading: Icon(Icons.camera_alt, size: 28),
                   title: Text('카메라'),
                   onTap: () => Get.back(result: ImageSource.camera)),
-              ListTile(
-                  leading: Icon(Icons.video_library, size: 28),
-                  title: Text('비디오 앨범'),
-                  onTap: () {
-                    isVideo = true;
-                    return Get.back(result: ImageSource.gallery);
-                  }),
-              ListTile(
-                  leading: Icon(Icons.videocam, size: 28),
-                  title: Text('비디오'),
-                  onTap: () {
-                    isVideo = true;
-                    return Get.back(result: ImageSource.camera);
-                  }),
+              // ListTile(
+              //     leading: Icon(Icons.video_library, size: 28),
+              //     title: Text('비디오 앨범'),
+              //     onTap: () {
+              //       isVideo = true;
+              //       return Get.back(result: ImageSource.gallery);
+              //     }),
+              // ListTile(
+              //     leading: Icon(Icons.videocam, size: 28),
+              //     title: Text('비디오'),
+              //     onTap: () {
+              //       isVideo = true;
+              //       return Get.back(result: ImageSource.camera);
+              //     }),
               ListTile(
                   leading: Icon(Icons.cancel, size: 28),
                   title: Text('cancel'.tr),
-                  onTap: () => Get.back(result: null)),
+                  onTap: () {
+                    Get.back(result: null);
+                  }),
             ],
           ),
         ),

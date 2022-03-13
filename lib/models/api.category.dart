@@ -20,6 +20,10 @@ class ApiCategory {
     this.pointHourLimit,
     this.pointHourLimitCount,
     this.pointDailyLimitCount,
+    this.banOnCommentLimit,
+    this.pointCommentHourLimit,
+    this.pointCommentHourLimitCount,
+    this.pointCommentDailyLimitCount,
     this.listOnView,
     this.noOfPostsPerPage,
     this.mobilePostListWidget,
@@ -54,6 +58,10 @@ class ApiCategory {
   String pointHourLimit;
   String pointHourLimitCount;
   String pointDailyLimitCount;
+  String banOnCommentLimit;
+  String pointCommentHourLimit;
+  String pointCommentHourLimitCount;
+  String pointCommentDailyLimitCount;
   String listOnView;
   String noOfPostsPerPage;
   String mobilePostListWidget;
@@ -89,6 +97,10 @@ class ApiCategory {
       pointHourLimit: "${json["POINT_HOUR_LIMIT"]}",
       pointHourLimitCount: "${json["POINT_HOUR_LIMIT_COUNT"]}",
       pointDailyLimitCount: "${json["POINT_DAILY_LIMIT_COUNT"]}",
+      banOnCommentLimit: json["BAN_ON_COMMENT_LIMIT"],
+      pointCommentHourLimit: "${json["POINT_COMMENT_HOUR_LIMIT"]}",
+      pointCommentHourLimitCount: "${json["POINT_COMMENT_HOUR_LIMIT_COUNT"]}",
+      pointCommentDailyLimitCount: "${json["POINT_COMMENT_DAILY_LIMIT_COUNT"]}",
       listOnView: json["listOnView"],
       noOfPostsPerPage: "${json["noOfPostsPerPage"]}",
       mobilePostListWidget: json["mobilePostListWidget"],
@@ -122,6 +134,10 @@ class ApiCategory {
         "POINT_HOUR_LIMIT": pointHourLimit,
         "POINT_HOUR_LIMIT_COUNT": pointHourLimitCount,
         "POINT_DAILY_LIMIT_COUNT": pointDailyLimitCount,
+        "BAN_ON_COMMENT_LIMIT": banOnCommentLimit,
+        "POINT_COMMENT_HOUR_LIMIT": pointCommentHourLimit,
+        "POINT_COMMENT_HOUR_LIMIT_COUNT": pointCommentHourLimitCount,
+        "POINT_COMMENT_DAILY_LIMIT_COUNT": pointCommentDailyLimitCount,
         "listOnView": listOnView,
         "noOfPostsPerPage": noOfPostsPerPage,
         "mobilePostListWidget": mobilePostListWidget,
@@ -153,6 +169,10 @@ class ApiCategory {
         "POINT_HOUR_LIMIT": pointHourLimit,
         "POINT_HOUR_LIMIT_COUNT": pointHourLimitCount,
         "POINT_DAILY_LIMIT_COUNT": pointDailyLimitCount,
+        "BAN_ON_COMMENT_LIMIT": banOnCommentLimit,
+        "POINT_COMMENT_HOUR_LIMIT": pointCommentHourLimit,
+        "POINT_COMMENT_HOUR_LIMIT_COUNT": pointCommentHourLimitCount,
+        "POINT_COMMENT_DAILY_LIMIT_COUNT": pointCommentDailyLimitCount,
         "listOnView": listOnView,
         "noOfPostsPerPage": noOfPostsPerPage,
         "mobilePostListWidget": mobilePostListWidget,

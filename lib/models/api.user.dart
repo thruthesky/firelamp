@@ -13,6 +13,7 @@ class ApiUser {
   String agegroup;
   String point;
   String token;
+  String score;
   String recommendation;
 
   String get age {
@@ -100,6 +101,7 @@ class ApiUser {
     this.photoUrl,
     this.point,
     this.token,
+    this.score,
     this.recommendation,
     this.createdAt,
     this.updatedAt,
@@ -143,6 +145,7 @@ class ApiUser {
     }
     point = "${json['point']}";
     token = "${json['atoken'] ?? 0}";
+    score = "${int.parse(json['point']) + int.parse(json['atoken']) * 100}";
     recommendation = "${json['recommendation'] ?? ''}";
     createdAt = "${json['createdAt'] ?? 0}";
     updatedAt = "${json['updatedAt'] ?? 0}";

@@ -2,6 +2,7 @@ import 'package:firelamp/widget.keys.dart';
 import 'package:firelamp/widgets/forum/shared/display_uploaded_files_and_delete_buttons.dart';
 import 'package:firelamp/widgets/defines.dart';
 import 'package:firelamp/widgets/functions.dart';
+import 'package:firelamp/widgets/itsuda/itsuda_text_dialog.dart';
 import 'package:firelamp/widgets/spinner.dart';
 import 'package:firelamp/firelamp.dart';
 import 'package:flutter/material.dart';
@@ -108,11 +109,21 @@ class _CommentFormState extends State<CommentForm> {
       loading = false;
       if (widget.parent != null) widget.parent.mode = CommentMode.none;
       if (widget.comment != null) comment.mode = CommentMode.none;
+      if (editedComment.appliedPoint.toInt != 0)
+        showDialog(
+            context: context,
+            builder: (_) =>
+                ItsudaTextDialog(content: '댓글쓰기 ${editedComment.appliedPoint}포인트를 취득하였습니다.'));
       setState(() => null);
       if (widget.forum.render != null) widget.forum.render();
       if (widget.onSuccess != null) widget.onSuccess();
     } catch (e) {
       setState(() => loading = false);
+      if (e == 'error_comment_daily_limit') {
+        showDialog(
+            context: context, builder: (_) => ItsudaTextDialog(content: '댓글쓰기 횟수를 초과하셨습니다.'));
+        return;
+      }
       onError(e);
     }
   }

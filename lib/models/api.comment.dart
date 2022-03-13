@@ -28,6 +28,7 @@ class ApiComment {
     this.n,
     this.mode = CommentMode.none,
     this.shortDateTime,
+    this.appliedPoint,
   }) {
     if (files == null) files = [];
     if (content == null) content = '';
@@ -55,6 +56,7 @@ class ApiComment {
   String n;
 
   String shortDateTime;
+  String appliedPoint;
 
   /// [mode] becomes
   /// - `CommentMode.edit` when the comment is in edit mode.
@@ -101,6 +103,7 @@ class ApiComment {
       y: "${json['Y']}",
       n: "${json['N']}",
       shortDateTime: json['shortDate'] ?? '',
+      appliedPoint: "${json['appliedPoint']}",
     );
   }
 
@@ -122,6 +125,7 @@ class ApiComment {
         "y": y,
         "n": n,
         "shortDateTime": shortDateTime,
+        "appliedPoint": appliedPoint,
       };
   @override
   String toString() {

@@ -8,11 +8,13 @@ class ItsudaTextDialog extends StatelessWidget {
     Key key,
     this.title = '있;수다!',
     @required this.content,
+    this.subContent,
     // @required this.okButton,
   }) : super(key: key);
 
-  final String content;
   final String title;
+  final String content;
+  final String subContent;
   // final Function okButton;
 
   @override
@@ -36,14 +38,23 @@ class ItsudaTextDialog extends StatelessWidget {
                 children: [
                   Icon(MaterialCommunityIcons.chat, size: 30),
                   SizedBox(width: Space.xsm),
-                  Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
             Container(
-              padding: EdgeInsets.all(Space.xs),
-              child: Text(content, style: TextStyle(fontSize: 20)),
+              padding: EdgeInsets.all(Space.xxs),
+              child: Center(child: Text(content, style: TextStyle(fontSize: 20))),
             ),
+            if (subContent != null)
+              Container(
+                padding: EdgeInsets.all(Space.xxs),
+                child: Center(child: Text(subContent, style: TextStyle(fontSize: 20))),
+              ),
             Container(
                 padding: EdgeInsets.all(Space.xs), child: Divider(color: Colors.black, height: 1)),
             TextButton(

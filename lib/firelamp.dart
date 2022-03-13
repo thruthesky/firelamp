@@ -41,4 +41,5 @@ part 'models/api.short.user.dart';
 part 'models/api.forum.dart';
 part 'models/api.point_history.dart';
 part 'models/api.token_history.dart';
+part 'models/api.log.dart';
 part 'models/api.searchKey.dart';
